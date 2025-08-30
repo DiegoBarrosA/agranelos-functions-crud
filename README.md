@@ -75,8 +75,21 @@ erDiagram
         int Cantidad
         date Fecha
     }
-
 ```
+
+## Funciones Implementadas
+
+A continuación se detallan los endpoints de la API para la gestión de productos.
+
+### Productos
+
+| Verbo  | Ruta                  | Descripción                        |
+| :----- | :-------------------- | :--------------------------------- |
+| `GET`  | `/api/productos`      | Obtiene la lista de todos los productos. |
+| `GET`  | `/api/productos/{id}` | Obtiene un producto específico por su ID. |
+| `POST` | `/api/productos`      | Crea un nuevo producto.            |
+| `PUT`  | `/api/productos/{id}` | Actualiza un producto existente por su ID. |
+| `DELETE`| `/api/productos/{id}`| Elimina un producto por su ID.     |
 
 ## Pruebas y Despliegue del Proyecto
 
