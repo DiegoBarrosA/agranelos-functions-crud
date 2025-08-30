@@ -1,21 +1,25 @@
 package com.agranelos.inventario;
 
 import com.microsoft.azure.functions.*;
-
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The mock for HttpResponseMessage, can be used in unit tests to verify if the
  * returned response by HTTP trigger function is correct or not.
  */
 public class HttpResponseMessageMock implements HttpResponseMessage {
+
     private int httpStatusCode;
     private HttpStatusType httpStatus;
     private Object body;
     private Map<String, String> headers;
 
-    public HttpResponseMessageMock(HttpStatusType status, Map<String, String> headers, Object body) {
+    public HttpResponseMessageMock(
+        HttpStatusType status,
+        Map<String, String> headers,
+        Object body
+    ) {
         this.httpStatus = status;
         this.httpStatusCode = status.value();
         this.headers = headers;
@@ -42,7 +46,9 @@ public class HttpResponseMessageMock implements HttpResponseMessage {
         return this.body;
     }
 
-    public static class HttpResponseMessageBuilderMock implements HttpResponseMessage.Builder {
+    public static class HttpResponseMessageBuilderMock
+        implements HttpResponseMessage.Builder {
+
         private Object body;
         private int httpStatusCode;
         private Map<String, String> headers = new HashMap<>();
@@ -75,7 +81,11 @@ public class HttpResponseMessageMock implements HttpResponseMessage {
 
         @Override
         public HttpResponseMessage build() {
-            return new HttpResponseMessageMock(this.httpStatus, this.headers, this.body);
+            return new HttpResponseMessageMock(
+                this.httpStatus,
+                this.headers,
+                this.body
+            );
         }
     }
 }

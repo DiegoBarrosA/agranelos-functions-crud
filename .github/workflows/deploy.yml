@@ -1,0 +1,132 @@
+name: Build and Deploy Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  AZURE_FUNCTIONAPP_NAME: ${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: "./inventario-functions-create"
+  JAVA_VERSION: "11"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java SDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: microsoft
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+
+      - name: Restore dependencies
+        run: |
+          pushd $AZURE_FUNCTIONAPP_PACKAGE_PATH
+          mvn clean compile
+          popd
+
+      - name: Run tests
+        run: |
+          pushd $AZURE_FUNCTIONAPP_PACKAGE_PATH
+          mvn test
+          popd
+
+      - name: Package application
+        run: |
+          pushd $AZURE_FUNCTIONAPP_PACKAGE_PATH
+          mvn clean package
+          popd
+
+      - name: Upload build artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v3
+        with:
+          name: java-app
+          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/target/azure-functions/${{ secrets.AZURE_FUNCTIONAPP_NAME }}
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: java-app
+          path: ./deployment
+
+      - name: Deploy to Azure Functions
+        uses: azure/functions-action@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          package: "./deployment"
+
+      - name: Configure Application Settings
+        uses: azure/appservice-settings@v1
+        with:
+          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          app-settings-json: |
+            [
+              { "name": "DB_HOST",               "value": "${{ secrets.DB_HOST }}" },
+              { "name": "DB_PORT",               "value": "${{ secrets.DB_PORT }}" },
+              { "name": "DB_NAME",               "value": "${{ secrets.DB_NAME }}" },
+              { "name": "DB_USER",               "value": "${{ secrets.DB_USER }}" },
+              { "name": "DB_PASSWORD",           "value": "${{ secrets.DB_PASSWORD }}" },
+              { "name": "DB_SSL_MODE",           "value": "${{ secrets.DB_SSL_MODE }}" },
+              { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~4" },
+              { "name": "FUNCTIONS_WORKER_RUNTIME",    "value": "java" }
+            ]
+
+      - name: Initialize Database
+        run: |
+          echo "Waiting for function app to be ready..."
+          sleep 30
+          curl -X POST "https://${{ env.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/init" \
+            -H "Content-Type: application/json" \
+            -d '{}' \
+            --fail --show-error || echo "Database may already be initialized"
+
+  security-scan:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java SDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: microsoft
+
+      - name: Run Security Scan
+        run: |
+          pushd $AZURE_FUNCTIONAPP_PACKAGE_PATH
+          mvn org.owasp:dependency-check-maven:check || true
+          popd

@@ -1,38 +1,43 @@
 {
-  description = "A development environment for Azure Functions with Java 11 and Maven";
+  description = "Azure Functions Java project with automatic deployment";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
 
   outputs = { self, nixpkgs }:
-
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs { inherit system; };
     in {
-
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = with pkgs; [
-          # Java 11
-          jdk11
-
-          # Maven for building Java projects
+          openjdk17
           maven
-
-          # Azure CLI for managing Azure resources
-          azure-cli
           azure-functions-core-tools
-          # Node.js and npm for Azure Functions Core Tools
-          nodejs_24
-
-          # Any other tools you might need
+          nodejs_20
+          yarn
           git
+          unzip
+          curl
         ];
-
-        # Environment variables or other shell-specific configurations can go here
         shellHook = ''
-          echo "Development environment for Azure Functions with Java 11 and Maven is ready!"
+          if [ -f .env ]; then
+            set -a
+            . ./.env
+            set +a
+            echo "Loaded environment variables from .env"
+          fi
+          echo "Azure Functions devShell ready. Use 'mvn clean package' to build and 'func start' to run locally."
+          echo "To deploy: run './deploy.sh <your-azure-function-app-name>'"
         '';
       };
-
+      packages.${system}.deploy = pkgs.writeShellScriptBin "deploy" ''
+        set -e
+        if [ -z "$1" ]; then
+          echo "Usage: $0 <azure-function-app-name>"
+          exit 1
+        fi
+        mvn clean package
+        func azure functionapp publish "$1"
+      '';
     };
 }

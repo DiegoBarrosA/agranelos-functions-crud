@@ -109,15 +109,15 @@ Para probar y realizar despliegues del proyecto de Azure Functions con Java y Ma
 
         `mvn azure-functions:run`
         
-    - Alternativamente, puedes usar Azure Functions Core Tools:
+    1.    - Alternativamente, puedes usar Azure Functions Core Tools desde el directorio raíz del proyecto:
     
         1. Asegúrate de tener instaladas las [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local).
-        2. Navega al directorio de las funciones Java:
-        
-            ```bash
-            cd inventario-functions-create
-            ```
-        3. Inicia el host de funciones:
+        2.    Navega al directorio de la aplicación de funciones dentro del repositorio:
+
+                ```bash
+                cd agranelos-functions-crud-create/inventario-functions-create
+                ```
+        3.    Inicia el host de funciones desde el subdirectorio de las funciones:
         
             ```bash
             func start
