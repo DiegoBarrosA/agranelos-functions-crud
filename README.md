@@ -95,6 +95,80 @@ A continuación se detallan los endpoints de la API para la gestión de producto
 
 Para probar y realizar despliegues del proyecto de Azure Functions con Java y Maven, sigue estos pasos:
 
+---
+
+## Configuración de secretos y variables de entorno
+
+### 1. Subir secretos a GitHub Actions
+
+Los secretos permiten almacenar información sensible (como contraseñas, claves API, etc.) de forma segura para usarlas en tus workflows de GitHub Actions.
+
+**Pasos:**
+1. Ve a tu repositorio en GitHub.
+2. Haz clic en **Settings**.
+3. En el menú lateral, selecciona **Secrets and variables > Actions**.
+4. Haz clic en **New repository secret**.
+5. Escribe el nombre del secreto (por ejemplo: `DB_PASSWORD`) y su valor.
+6. Haz clic en **Add secret**.
+
+Repite para cada secreto necesario (`DB_HOST`, `DB_USER`, `DB_PASSWORD`, etc.).
+
+---
+
+### 2. Subir variables de entorno a Azure Function App
+
+Las Azure Function Apps usan “Application settings” para definir variables de entorno en producción.
+
+**Pasos:**
+1. Ve al portal de Azure: https://portal.azure.com/
+2. Busca y selecciona tu **Function App**.
+3. En el menú izquierdo, haz clic en **Configuration**.
+4. En la pestaña **Application settings**, haz clic en **New application setting**.
+5. Escribe el nombre (por ejemplo: `DB_PASSWORD`) y el valor.
+6. Haz clic en **OK** y luego en **Save** (parte superior).
+7. Reinicia la Function App si es necesario.
+
+Repite para cada variable que necesites.
+
+---
+
+### 3. Template para `local.settings.json` (sin valores)
+
+Este archivo es solo para desarrollo local y **no debe subirse a GitHub**. Sirve para definir variables de entorno cuando ejecutas las funciones localmente.
+
+```json
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "DB_HOST": "",
+    "DB_PORT": "",
+    "DB_NAME": "",
+    "DB_USER": "",
+    "DB_PASSWORD": "",
+    "DB_SSL_MODE": ""
+  }
+}
+```
+
+---
+
+### 4. Conectar GitHub con Azure (Deployment Center)
+
+Puedes automatizar el despliegue desde GitHub a Azure Functions usando el Deployment Center del portal de Azure:
+
+1. Ve a tu **Function App** en el portal de Azure.
+2. En el menú izquierdo, haz clic en **Deployment Center**.
+3. Selecciona **GitHub** como fuente.
+4. Autentica con tu cuenta de GitHub si es necesario.
+5. Selecciona el repositorio y la rama que deseas conectar.
+6. Completa el asistente y guarda la configuración.
+
+A partir de ahora, cada vez que hagas push a la rama seleccionada, Azure desplegará automáticamente tu aplicación.
+
+---
+
 1. **Construcción y Pruebas Locales:**
 
     - Asegúrate de estar en el directorio del proyecto y de haber ingresado al entorno de desarrollo configurado con Nix:
