@@ -107,7 +107,22 @@ Para probar y realizar despliegues del proyecto de Azure Functions con Java y Ma
 
     - Para probar las funciones localmente, puedes utilizar el siguiente comando:
 
-        `mvn azure-functions\:run`
+        `mvn azure-functions:run`
+        
+    - Alternativamente, puedes usar Azure Functions Core Tools:
+    
+        1. Asegúrate de tener instaladas las [Azure Functions Core Tools](https://learn.microsoft.com/azure/azure-functions/functions-run-local).
+        2. Navega al directorio de las funciones Java:
+        
+            ```bash
+            cd inventario-functions-create
+            ```
+        3. Inicia el host de funciones:
+        
+            ```bash
+            func start
+            ```
+        4. Las funciones estarán disponibles en <http://localhost:7071>.
 
 
     Esto iniciará un servidor local de Azure Functions, permitiéndote invocar y probar tus funciones directamente desde tu entorno de desarrollo.
