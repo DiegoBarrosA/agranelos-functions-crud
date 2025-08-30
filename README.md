@@ -91,11 +91,11 @@ A continuación se detallan los endpoints de la API para la gestión de producto
 | `PUT`  | `/api/productos/{id}` | Actualiza un producto existente por su ID. |
 | `DELETE`| `/api/productos/{id}`| Elimina un producto por su ID.     |
 
-## Pruebas y Despliegue del Proyecto
+## Compilación, Pruebas y Despliegue del Proyecto
 
 Para probar y realizar despliegues del proyecto de Azure Functions con Java y Maven, sigue estos pasos:
 
-1. **Pruebas Locales:**
+1. **Construcción y Pruebas Locales:**
 
     - Asegúrate de estar en el directorio del proyecto y de haber ingresado al entorno de desarrollo configurado con Nix:
 
