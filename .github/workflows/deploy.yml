@@ -66,58 +66,6 @@ jobs:
           name: java-app
           path: target/azure-functions/${{ secrets.AZURE_FUNCTIONAPP_NAME }}
 
-  deploy:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-    environment: production
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: java-app
-          path: ./deployment
-
-      - name: Deploy to Azure Functions
-        uses: azure/functions-action@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          package: "./deployment"
-
-      - name: Configure Application Settings
-        uses: azure/appservice-settings@v1
-        with:
-          app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-          app-settings-json: |
-            [
-              { "name": "DB_HOST",               "value": "${{ secrets.DB_HOST }}" },
-              { "name": "DB_PORT",               "value": "${{ secrets.DB_PORT }}" },
-              { "name": "DB_NAME",               "value": "${{ secrets.DB_NAME }}" },
-              { "name": "DB_USER",               "value": "${{ secrets.DB_USER }}" },
-              { "name": "DB_PASSWORD",           "value": "${{ secrets.DB_PASSWORD }}" },
-              { "name": "DB_SSL_MODE",           "value": "${{ secrets.DB_SSL_MODE }}" },
-              { "name": "FUNCTIONS_EXTENSION_VERSION", "value": "~4" },
-              { "name": "FUNCTIONS_WORKER_RUNTIME",    "value": "java" }
-            ]
-
-      - name: Initialize Database
-        run: |
-          echo "Waiting for function app to be ready..."
-          sleep 30
-          curl -X POST "https://${{ env.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net/api/init" \
-            -H "Content-Type: application/json" \
-            -d '{}' \
-            --fail --show-error || echo "Database may already be initialized"
-
   security-scan:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'

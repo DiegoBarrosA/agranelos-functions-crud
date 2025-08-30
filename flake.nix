@@ -13,6 +13,7 @@
           openjdk17
           maven
           azure-functions-core-tools
+          azure-cli
           nodejs_20
           yarn
           git
