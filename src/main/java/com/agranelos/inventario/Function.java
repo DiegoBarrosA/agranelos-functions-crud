@@ -122,7 +122,7 @@ public class Function {
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getQueryParameters().get("id");
+        String productId = request.getPathParameters().get("id");
         logger.info("Obteniendo producto con ID: " + productId);
 
         try {
@@ -257,7 +257,7 @@ public class Function {
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getQueryParameters().get("id");
+        String productId = request.getPathParameters().get("id");
         logger.info("Actualizando producto con ID: " + productId);
 
         try {
@@ -335,7 +335,7 @@ public class Function {
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getQueryParameters().get("id");
+        String productId = request.getPathParameters().get("id");
         logger.info("Eliminando producto con ID: " + productId);
 
         try {
