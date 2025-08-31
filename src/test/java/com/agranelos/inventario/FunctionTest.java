@@ -262,6 +262,7 @@ public class FunctionTest {
         try {
             final HttpResponseMessage ret = function.getProductoById(
                 req,
+                "1",
                 context
             );
             assertNotNull(ret);
@@ -311,7 +312,11 @@ public class FunctionTest {
             .when(req)
             .createResponseBuilder(any(HttpStatus.class));
 
-        final HttpResponseMessage ret = function.getProductoById(req, context);
+        final HttpResponseMessage ret = function.getProductoById(
+            req,
+            null,
+            context
+        );
 
         // Debería devolver BAD_REQUEST por falta de ID
         assertEquals(HttpStatus.BAD_REQUEST, ret.getStatus());
@@ -358,6 +363,7 @@ public class FunctionTest {
         try {
             final HttpResponseMessage ret = function.updateProducto(
                 req,
+                "1",
                 context
             );
             assertNotNull(ret);
@@ -410,6 +416,7 @@ public class FunctionTest {
         try {
             final HttpResponseMessage ret = function.deleteProducto(
                 req,
+                "1",
                 context
             );
             assertNotNull(ret);
