@@ -119,10 +119,11 @@ public class Function {
             authLevel = AuthorizationLevel.ANONYMOUS,
             route = "productos/{id}"
         ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("id") String id,
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getPathParameters().get("id");
+        String productId = id;
         logger.info("Obteniendo producto con ID: " + productId);
 
         try {
@@ -254,10 +255,11 @@ public class Function {
             authLevel = AuthorizationLevel.ANONYMOUS,
             route = "productos/{id}"
         ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("id") String id,
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getPathParameters().get("id");
+        String productId = id;
         logger.info("Actualizando producto con ID: " + productId);
 
         try {
@@ -332,10 +334,11 @@ public class Function {
             authLevel = AuthorizationLevel.ANONYMOUS,
             route = "productos/{id}"
         ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("id") String id,
         final ExecutionContext context
     ) {
         Logger logger = context.getLogger();
-        String productId = request.getPathParameters().get("id");
+        String productId = id;
         logger.info("Eliminando producto con ID: " + productId);
 
         try {
