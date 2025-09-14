@@ -1,25 +1,126 @@
 ---
 layout: default
-title: GraphQL API Documentation
-description: Complete documentation for the Agranelos Inventario GraphQL API
+title: Documentación API - Sistema Inventario Agranelos
+description: Documentación completa para las APIs REST y GraphQL del Sistema de Inventario Agranelos
 ---
 
-# GraphQL API Documentation
-## Sistema de Inventario Agranelos
+# 📚 Documentación API - Sistema Inventario Agranelos
 
-### Base URL
+> Sistema completo de gestión de inventario con APIs duales (REST y GraphQL)
+
+## 🎯 Visión General
+
+El Sistema de Inventario Agranelos proporciona APIs modernas para la gestión completa de productos y bodegas, implementado con tecnología cloud-native en Azure Functions.
+
+### 🌟 Características Principales
+
+- **🔗 API REST**: Endpoints tradicionales para operaciones CRUD
+- **🚀 API GraphQL**: Consultas flexibles y eficientes
+- **⚡ Field Mapping**: Mapeo automático de campos
+- **☁️ Cloud Native**: Desplegado en Azure Functions
+- **🧪 Testing Completo**: Scripts y Postman collection
+
+### 📡 URLs Base
+
 ```
-Production: https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql
+REST API:    https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
+GraphQL API: https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql
 ```
 
-### Headers
-```
-Content-Type: application/json
+### 🔧 Testing Tools
+
+- **📋 Scripts Automatizados**: [`scripts/testing/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/scripts/testing)
+- **📦 Postman Collection**: [`postman/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman)
+
+---
+
+## 🎨 Arquitectura del Sistema
+
+```mermaid
+graph TB
+    %% Frontend Layer
+    subgraph "�️ Frontend Layer"
+        WEB[Web Client]
+        MOB[Mobile App]
+        DESK[Desktop App]
+    end
+    
+    %% BFF Layer (Repositorio Separado)
+    subgraph "🌉 BFF Layer (Backend for Frontend)"
+        BFF[BFF Service<br/>Repository Separado]
+        CACHE[Cache Layer]
+        AUTH[Authentication]
+    end
+    
+    %% API Layer (Este Repositorio)
+    subgraph "🔌 API Layer - Este Repositorio"
+        subgraph "☁️ Azure Functions"
+            REST[REST API<br/>CRUD Operations]
+            GRAPHQL[GraphQL API<br/>Flexible Queries]
+        end
+        
+        subgraph "📊 Data Processing"
+            MAPPER[Field Mapping<br/>cantidad ↔ cantidadEnStock]
+            VALIDATOR[Data Validation]
+            TRANSFORMER[Data Transformation]
+        end
+    end
+    
+    %% Infrastructure Layer
+    subgraph "🏗️ Infrastructure Layer"
+        subgraph "☁️ AWS EC2"
+            DOCKER[🐳 Docker PostgreSQL]
+            BACKUP[Backup Service]
+        end
+        
+        AZURE[☁️ Azure Functions<br/>Hosting]
+    end
+    
+    %% Development & Testing
+    subgraph "🧪 Development & Testing"
+        SCRIPTS[📋 Test Scripts<br/>scripts/testing/]
+        POSTMAN[📦 Postman Collection<br/>postman/]
+        DOCS[📚 Documentation<br/>docs/]
+    end
+    
+    %% Connections
+    WEB --> BFF
+    MOB --> BFF
+    DESK --> BFF
+    
+    BFF --> REST
+    BFF --> GRAPHQL
+    BFF <--> CACHE
+    BFF <--> AUTH
+    
+    REST --> MAPPER
+    GRAPHQL --> MAPPER
+    
+    MAPPER --> VALIDATOR
+    VALIDATOR --> TRANSFORMER
+    TRANSFORMER --> DOCKER
+    
+    AZURE -.->|"Host"| REST
+    AZURE -.->|"Host"| GRAPHQL
+    
+    SCRIPTS -.->|"Test"| REST
+    SCRIPTS -.->|"Test"| GRAPHQL
+    POSTMAN -.->|"Test"| REST
+    POSTMAN -.->|"Test"| GRAPHQL
+    
+    DOCKER --> BACKUP
+    
+    style BFF fill:#e1f5fe
+    style REST fill:#fff3e0
+    style GRAPHQL fill:#f3e5f5
+    style DOCKER fill:#e8f5e8
+    style SCRIPTS fill:#fff8e1
+    style POSTMAN fill:#fce4ec
 ```
 
 ---
 
-## 🔍 QUERIES (Consultas)
+## 🔍 QUERIES GraphQL (Consultas)
 
 ### 1. Obtener todos los productos
 ```bash
@@ -360,11 +461,32 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 🚀 VENTAJAS DE GraphQL vs REST
+## 🚀 Enlaces Rápidos
 
-- ✅ **Queries flexibles**: Solicita solo los campos necesarios
-- ✅ **Una sola request**: Obtén datos de múltiples recursos
-- ✅ **Tipado fuerte**: Validación automática del esquema
-- ✅ **Introspección**: El esquema es autodocumentado
-- ✅ **Versionado**: No necesita versiones de API
-- ✅ **Desarrollo ágil**: Evolución del schema sin breaking changes
+- **🔧 Testing Scripts**: [scripts/testing/](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/scripts/testing) - Scripts automatizados para probar todas las APIs
+- **📦 Postman Collection**: [postman/](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman) - Colección completa para testing manual
+- **📊 REST API**: Endpoints tradicionales para operaciones CRUD
+- **🎯 GraphQL API**: Consultas flexibles y eficientes
+
+### 📋 Quick Commands
+
+```bash
+# Ejecutar todos los tests
+cd scripts/testing && ./test-all-endpoints.sh
+
+# Test GraphQL solamente
+./test-graphql.sh
+
+# Test REST solamente
+./test-rest.sh
+
+# Importar Postman collection
+# Archivo: postman/Agranelos-Inventario-API.postman_collection.json
+```
+
+---
+
+<div align="center">
+  <i>📚 Documentación completa del Sistema de Inventario Agranelos</i><br>
+  <small>Última actualización: 2025</small>
+</div>

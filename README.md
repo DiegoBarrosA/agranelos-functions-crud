@@ -1,366 +1,728 @@
-# Agranelos - Azure Functions Serverless Backend
+# 🏭 Sistema de Inventario Agranelos - Backend API# Agranelos - Azure Functions Serverless Backend
 
-Backend serverless para sistema de inventario de bodegas implementado con **Azure Functions** y PostgreSQL.
 
-## Arquitectura del Sistema
 
-```mermaid
+> Sistema completo de gestión de inventario con APIs REST y GraphQL, desarrollado con Azure Functions y Java 11.Backend serverless para sistema de inventario de bodegas implementado con **Azure Functions** y PostgreSQL.
+
+
+
+![Arquitectura](assets/agranelos-arquitectura.png)## Arquitectura del Sistema
+
+
+
+## 🎯 Descripción```mermaid
+
 graph TB
-    Client[Cliente/Frontend] --> Functions[Azure Functions<br/>Serverless :7071]
+
+Sistema backend para gestión de inventario que proporciona APIs duales (REST y GraphQL) para operaciones CRUD sobre productos y bodegas. Implementado como Azure Functions con base de datos PostgreSQL.    Client[Cliente/Frontend] --> Functions[Azure Functions<br/>Serverless :7071]
+
     Functions --> DB[(PostgreSQL<br/>Base de Datos)]
-    
+
+### 🌟 Características Principales    
+
     subgraph "Funciones Serverless"
-        Functions --> F1[GetProductos]
-        Functions --> F2[CreateProducto]
-        Functions --> F3[GetBodegas]
-        Functions --> F4[CreateBodega]
-        Functions --> F5[UpdateBodega]
-        Functions --> F6[DeleteBodega]
+
+- **📡 API Dual**: REST y GraphQL en la misma infraestructura        Functions --> F1[GetProductos]
+
+- **☁️ Cloud Native**: Desplegado en Azure Functions        Functions --> F2[CreateProducto]
+
+- **🗃️ Base de Datos**: PostgreSQL con manejo de caso sensitivo        Functions --> F3[GetBodegas]
+
+- **🔍 Field Mapping**: Mapeo automático de campos GraphQL-Java        Functions --> F4[CreateBodega]
+
+- **🧪 Testing Completo**: Scripts automatizados y colección Postman        Functions --> F5[UpdateBodega]
+
+- **📖 Documentación**: Sitio de documentación con Jekyll/GitHub Pages        Functions --> F6[DeleteBodega]
+
         Functions --> F7[InitializeDatabase]
-    end
+
+## 🏗️ Arquitectura del Sistema    end
+
 ```
 
-El sistema implementa:
+```mermaid
 
-- **Funciones Serverless**: Azure Functions para operaciones CRUD directas sobre la base de datos
-- **Base de Datos**: PostgreSQL con esquema normalizado para productos, bodegas, inventario y movimientos
-- **CI/CD Automático**: GitHub Actions para despliegue automático a Azure Functions
+graph TBEl sistema implementa:
+
+    subgraph "Frontend Layer"
+
+        WEB[Web Application]- **Funciones Serverless**: Azure Functions para operaciones CRUD directas sobre la base de datos
+
+        MOBILE[Mobile App]- **Base de Datos**: PostgreSQL con esquema normalizado para productos, bodegas, inventario y movimientos
+
+        POSTMAN[Postman Testing]- **CI/CD Automático**: GitHub Actions para despliegue automático a Azure Functions
+
+    end
 
 ## Modelo de Base de Datos
 
-```mermaid
-erDiagram
-    PRODUCTO {
-        int id PK
-        string nombre
-        string descripcion
-        decimal precio_unitario
-        int stock_minimo
-        datetime fecha_creacion
-        datetime fecha_actualizacion
-    }
-    
-    BODEGA {
-        int id PK
-        string nombre
-        string ubicacion
-        string descripcion
-        boolean activa
-        datetime fecha_creacion
-        datetime fecha_actualizacion
-    }
-    
-    INVENTARIO {
-        int id PK
-        int producto_id FK
-        int bodega_id FK
-        int cantidad
-        datetime fecha_actualizacion
-    }
-    
-    MOVIMIENTO {
-        int id PK
-        int producto_id FK
-        int bodega_id FK
-        string tipo_movimiento
-        int cantidad
-        date fecha
-    }
-    
-    PRODUCTO ||--o{ INVENTARIO : "stored_in"
-    BODEGA ||--o{ INVENTARIO : "contains"
-    PRODUCTO ||--o{ MOVIMIENTO : "involves"
-    BODEGA ||--o{ MOVIMIENTO : "location"
-```
+    subgraph "BFF Layer (Otro Repo)"
 
-## Funciones Implementadas
+        BFF[Backend for Frontend]```mermaid
+
+        BFF --> |"Orchestration"| APIerDiagram
+
+    end    PRODUCTO {
+
+        int id PK
+
+    subgraph "API Layer (Este Repo)"        string nombre
+
+        API[Azure Functions<br/>Java 11]        string descripcion
+
+                decimal precio_unitario
+
+        subgraph "API Endpoints"        int stock_minimo
+
+            REST[REST API<br/>/api/productos<br/>/api/bodegas]        datetime fecha_creacion
+
+            GQL[GraphQL API<br/>/api/graphql]        datetime fecha_actualizacion
+
+        end    }
+
+            
+
+        API --> REST    BODEGA {
+
+        API --> GQL        int id PK
+
+    end        string nombre
+
+        string ubicacion
+
+    subgraph "Data Processing"        string descripcion
+
+        MAPPER[Field Mapping<br/>cantidad ↔ cantidadEnStock]        boolean activa
+
+        FETCHER[Data Fetchers<br/>ProductoDataFetcher<br/>BodegaDataFetcher]        datetime fecha_creacion
+
+                datetime fecha_actualizacion
+
+        REST --> FETCHER    }
+
+        GQL --> MAPPER    
+
+        MAPPER --> FETCHER    INVENTARIO {
+
+    end        int id PK
+
+        int producto_id FK
+
+    subgraph "Infrastructure"        int bodega_id FK
+
+        subgraph "AWS EC2"        int cantidad
+
+            DOCKER[Docker Container]        datetime fecha_actualizacion
+
+            DB[(PostgreSQL<br/>inventario_agranelos)]    }
+
+            DOCKER --> DB    
+
+        end    MOVIMIENTO {
+
+                int id PK
+
+        AZURE[Azure Functions<br/>Consumption Plan]        int producto_id FK
+
+    end        int bodega_id FK
+
+        string tipo_movimiento
+
+    subgraph "Development & Testing"        int cantidad
+
+        SCRIPTS[Testing Scripts<br/>scripts/testing/]        date fecha
+
+        POSTMAN_COLL[Postman Collection<br/>postman/]    }
+
+        DOCS[Documentation Site<br/>docs/]    
+
+    end    PRODUCTO ||--o{ INVENTARIO : "stored_in"
+
+    BODEGA ||--o{ INVENTARIO : "contains"
+
+    %% Connections    PRODUCTO ||--o{ MOVIMIENTO : "involves"
+
+    WEB --> BFF    BODEGA ||--o{ MOVIMIENTO : "location"
+
+    MOBILE --> BFF```
+
+    WEB -.-> API
+
+    MOBILE -.-> API## Funciones Implementadas
+
+    POSTMAN --> API
 
 El sistema expone los siguientes endpoints a través de las funciones serverless de Azure Functions:
 
-### Azure Functions Serverless (Puerto 7071)
-Endpoints de las funciones serverless:
+    API --> AZURE
 
-#### Productos
-| Verbo  | Ruta                  | Descripción                        |
-| :----- | :-------------------- | :--------------------------------- |
-| `GET`  | `/api/productos`      | Obtiene la lista de todos los productos. |
-| `GET`  | `/api/productos/{id}` | Obtiene un producto específico por su ID. |
-| `POST` | `/api/productos`      | Crea un nuevo producto.            |
-| `PUT`  | `/api/productos/{id}` | Actualiza un producto existente por su ID. |
-| `DELETE`| `/api/productos/{id}`| Elimina un producto por su ID.     |
+    FETCHER --> DB### Azure Functions Serverless (Puerto 7071)
 
-#### Bodegas
-| Verbo  | Ruta                  | Descripción                        |
-| :----- | :-------------------- | :--------------------------------- |
-| `GET`  | `/api/bodegas`        | Obtiene la lista de todas las bodegas. |
+    Endpoints de las funciones serverless:
+
+    SCRIPTS --> API
+
+    POSTMAN_COLL --> API#### Productos
+
+    | Verbo  | Ruta                  | Descripción                        |
+
+    %% Styling| :----- | :-------------------- | :--------------------------------- |
+
+    classDef primary fill:#e1f5fe,stroke:#01579b,stroke-width:2px| `GET`  | `/api/productos`      | Obtiene la lista de todos los productos. |
+
+    classDef secondary fill:#f3e5f5,stroke:#4a148c,stroke-width:2px| `GET`  | `/api/productos/{id}` | Obtiene un producto específico por su ID. |
+
+    classDef infrastructure fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px| `POST` | `/api/productos`      | Crea un nuevo producto.            |
+
+    classDef tools fill:#fff3e0,stroke:#e65100,stroke-width:2px| `PUT`  | `/api/productos/{id}` | Actualiza un producto existente por su ID. |
+
+    | `DELETE`| `/api/productos/{id}`| Elimina un producto por su ID.     |
+
+    class API,REST,GQL primary
+
+    class MAPPER,FETCHER secondary#### Bodegas
+
+    class AZURE,DOCKER,DB infrastructure| Verbo  | Ruta                  | Descripción                        |
+
+    class SCRIPTS,POSTMAN_COLL,DOCS,POSTMAN tools| :----- | :-------------------- | :--------------------------------- |
+
+```| `GET`  | `/api/bodegas`        | Obtiene la lista de todas las bodegas. |
+
 | `GET`  | `/api/bodegas/{id}`   | Obtiene una bodega específica por su ID. |
-| `POST` | `/api/bodegas`        | Crea una nueva bodega.             |
+
+### 🔧 Componentes Técnicos| `POST` | `/api/bodegas`        | Crea una nueva bodega.             |
+
 | `PUT`  | `/api/bodegas/{id}`   | Actualiza una bodega existente por su ID. |
-| `DELETE`| `/api/bodegas/{id}`  | Elimina una bodega por su ID.      |
 
-#### Utilidades
-| Verbo  | Ruta          | Descripción                        | Seguridad |
-| :----- | :------------ | :--------------------------------- | :-------- |
-| `POST` | `/api/init`   | Inicializa la base de datos con esquemas y datos de prueba. | ⚠️ **Sólo desarrollo** - Requiere `ENABLE_INIT=true` y clave de función |
+#### Backend API (Este Repositorio)| `DELETE`| `/api/bodegas/{id}`  | Elimina una bodega por su ID.      |
 
-### GraphQL API (Alternativa Moderna)
+- **Azure Functions**: Runtime serverless Java 11
 
-Además de los endpoints REST tradicionales, el sistema incluye soporte completo para **GraphQL** como alternativa moderna y flexible:
+- **REST Endpoints**: `/api/productos`, `/api/bodegas`, `/api/initdb`#### Utilidades
+
+- **GraphQL Endpoint**: `/api/graphql` con schema completo| Verbo  | Ruta          | Descripción                        | Seguridad |
+
+- **Field Mapping**: Sistema de mapeo automático de campos| :----- | :------------ | :--------------------------------- | :-------- |
+
+- **Data Fetchers**: Capa de acceso a datos optimizada| `POST` | `/api/init`   | Inicializa la base de datos con esquemas y datos de prueba. | ⚠️ **Sólo desarrollo** - Requiere `ENABLE_INIT=true` y clave de función |
+
+
+
+#### Base de Datos### GraphQL API (Alternativa Moderna)
+
+- **PostgreSQL 14**: Ejecutándose en Docker en AWS EC2
+
+- **Schema**: Tablas `PRODUCTO` y `BODEGA` con campos case-sensitiveAdemás de los endpoints REST tradicionales, el sistema incluye soporte completo para **GraphQL** como alternativa moderna y flexible:
+
+- **Manejo de Casos**: Nombres de columnas con quotes para compatibilidad
 
 | Verbo  | Ruta          | Descripción                        |
-| :----- | :------------ | :--------------------------------- |
-| `POST` | `/api/graphql`| Endpoint único GraphQL para todas las operaciones |
 
-#### Ejemplo de Queries GraphQL
+#### BFF (Backend for Frontend)| :----- | :------------ | :--------------------------------- |
 
-**Query - Obtener todos los productos:**
+- **Ubicación**: Repositorio separado| `POST` | `/api/graphql`| Endpoint único GraphQL para todas las operaciones |
+
+- **Función**: Orquestación y agregación de datos
+
+- **Clients**: Web y Mobile applications#### Ejemplo de Queries GraphQL
+
+
+
+## 🚀 Inicio Rápido**Query - Obtener todos los productos:**
+
 ```graphql
-query {
+
+### Prerrequisitosquery {
+
   productos {
-    id
-    nombre
-    descripcion
+
+```bash    id
+
+# Java 11 o superior    nombre
+
+java -version    descripcion
+
     precio
-    cantidadEnStock
-    fechaCreacion
+
+# Maven 3.6+      cantidadEnStock
+
+mvn -version    fechaCreacion
+
   }
-}
+
+# Azure Functions Core Tools (opcional para desarrollo local)}
+
+func --version```
+
 ```
 
 **Query - Obtener producto específico:**
-```graphql
+
+### Instalación y Despliegue```graphql
+
 query {
-  producto(id: "1") {
-    id
-    nombre
-    descripcion
+
+```bash  producto(id: "1") {
+
+# Clonar repositorio    id
+
+git clone https://github.com/DiegoBarrosA/agranelos-functions-crud.git    nombre
+
+cd agranelos-functions-crud    descripcion
+
     precio
-    cantidadEnStock
-  }
-}
-```
 
-**Mutation - Crear nuevo producto:**
+# Compilar proyecto    cantidadEnStock
+
+mvn clean package  }
+
+}
+
+# Desplegar a Azure (configurar Azure CLI previamente)```
+
+mvn azure-functions:deploy
+
+```**Mutation - Crear nuevo producto:**
+
 ```graphql
-mutation {
+
+### Configuraciónmutation {
+
   crearProducto(input: {
-    nombre: "Producto GraphQL"
+
+Configurar variables de entorno en `local.settings.json`:    nombre: "Producto GraphQL"
+
     descripcion: "Creado via GraphQL"
-    precio: 29.99
-    cantidad: 100
-  }) {
-    success
-    message
-    producto {
-      id
-      nombre
-      precio
-    }
-    error
-  }
-}
-```
 
-**Mutation - Crear nueva bodega:**
+```json    precio: 29.99
+
+{    cantidad: 100
+
+  "IsEncrypted": false,  }) {
+
+  "Values": {    success
+
+    "FUNCTIONS_WORKER_RUNTIME": "java",    message
+
+    "DB_HOST": "your-db-host",    producto {
+
+    "DB_PORT": "5432",      id
+
+    "DB_NAME": "inventario_agranelos",      nombre
+
+    "DB_USER": "postgres",      precio
+
+    "DB_PASSWORD": "your-password",    }
+
+    "DB_SSL_MODE": "disable"    error
+
+  }  }
+
+}}
+
+``````
+
+
+
+## 📡 APIs Disponibles**Mutation - Crear nueva bodega:**
+
 ```graphql
-mutation {
+
+### 🔗 REST APImutation {
+
   crearBodega(input: {
-    nombre: "Bodega GraphQL"
+
+**Base URL**: `https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api`    nombre: "Bodega GraphQL"
+
     ubicacion: "Santiago Norte"
-    capacidad: 5000
-  }) {
-    success
-    message
-    bodega {
-      id
-      nombre
-      ubicacion
+
+#### Productos    capacidad: 5000
+
+```http  }) {
+
+GET    /productos           # Obtener todos los productos    success
+
+GET    /productos/{id}      # Obtener producto por ID    message
+
+POST   /productos           # Crear producto    bodega {
+
+PUT    /productos/{id}      # Actualizar producto      id
+
+DELETE /productos/{id}      # Eliminar producto      nombre
+
+```      ubicacion
+
       capacidad
-    }
-    error
-  }
-}
-```
 
-**Query - Health Check:**
-```graphql
+#### Bodegas    }
+
+```http    error
+
+GET    /bodegas             # Obtener todas las bodegas  }
+
+GET    /bodegas/{id}        # Obtener bodega por ID}
+
+POST   /bodegas             # Crear bodega```
+
+PUT    /bodegas/{id}        # Actualizar bodega
+
+DELETE /bodegas/{id}        # Eliminar bodega**Query - Health Check:**
+
+``````graphql
+
 query {
-  health
+
+### 🚀 GraphQL API  health
+
 }
-```
 
-#### Ventajas de GraphQL vs REST
+**Endpoint**: `https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql````
 
-- **Single Endpoint**: Un solo endpoint `/api/graphql` para todas las operaciones
-- **Precise Data Fetching**: Solo obtén los campos que necesitas
-- **Batching**: Múltiples queries en una sola petición
-- **Introspección**: Schema auto-documentado
-- **Type Safety**: Schema tipado fuerte
-- **Real-time**: Soporte para subscripciones (futuro)
 
-#### Ejemplo de Petición HTTP a GraphQL
 
-```bash
-curl -X POST http://localhost:7071/api/graphql \
-  -H "Content-Type: application/json" \
-  -d '{
-    "query": "query { productos { id nombre precio } }"
-  }'
-```
+#### Ejemplo de Query#### Ventajas de GraphQL vs REST
 
-> **💡 Tip**: Puedes usar tanto REST como GraphQL según tus necesidades. REST para operaciones simples, GraphQL para consultas complejas y flexibilidad.
+```graphql
 
-> **⚠️ Importante**: El endpoint `/api/init` debe estar **deshabilitado en producción**. Configure `ENABLE_INIT=false` y use autenticación con clave de función cuando esté habilitado.
+query {- **Single Endpoint**: Un solo endpoint `/api/graphql` para todas las operaciones
 
-## Despliegue y Ejecución
+  productos {- **Precise Data Fetching**: Solo obtén los campos que necesitas
 
-### Prerrequisitos
-- Java 11 (como está configurado en el workflow de GitHub Actions)
-- Maven 3.6+
-- PostgreSQL 13+
-- Azure Functions Core Tools (para desarrollo local)
-- Nix (opcional, para entorno de desarrollo)
+    id- **Batching**: Múltiples queries en una sola petición
 
-### Configuración de Base de Datos
-1. **PostgreSQL Local**:
-   ```bash
-   # Crear archivo .env en la raíz del proyecto (asegurar que esté en .gitignore)
-   echo "POSTGRES_USER=inventario_user" > .env
-   echo "POSTGRES_PASSWORD=inventario_pass" >> .env
-   echo "POSTGRES_DB=inventario_db" >> .env
-   
-   # Usar PostgreSQL con archivo .env (evita credenciales en historial)
+    nombre- **Introspección**: Schema auto-documentado
+
+    descripcion- **Type Safety**: Schema tipado fuerte
+
+    precio- **Real-time**: Soporte para subscripciones (futuro)
+
+    cantidad          # ⚡ Campo mapeado automáticamente
+
+    fechaCreacion#### Ejemplo de Petición HTTP a GraphQL
+
+    fechaActualizacion
+
+  }```bash
+
+  bodegas {curl -X POST http://localhost:7071/api/graphql \
+
+    id  -H "Content-Type: application/json" \
+
+    nombre  -d '{
+
+    ubicacion    "query": "query { productos { id nombre precio } }"
+
+    capacidad  }'
+
+  }```
+
+}
+
+```> **💡 Tip**: Puedes usar tanto REST como GraphQL según tus necesidades. REST para operaciones simples, GraphQL para consultas complejas y flexibilidad.
+
+
+
+#### Ejemplo de Mutation> **⚠️ Importante**: El endpoint `/api/init` debe estar **deshabilitado en producción**. Configure `ENABLE_INIT=false` y use autenticación con clave de función cuando esté habilitado.
+
+```graphql
+
+mutation {## Despliegue y Ejecución
+
+  crearProducto(input: {
+
+    nombre: "Producto Nuevo"### Prerrequisitos
+
+    descripcion: "Descripción del producto"- Java 11 (como está configurado en el workflow de GitHub Actions)
+
+    precio: 29.99- Maven 3.6+
+
+    cantidad: 100- PostgreSQL 13+
+
+  }) {- Azure Functions Core Tools (para desarrollo local)
+
+    success- Nix (opcional, para entorno de desarrollo)
+
+    message
+
+    producto {### Configuración de Base de Datos
+
+      id1. **PostgreSQL Local**:
+
+      nombre   ```bash
+
+      precio   # Crear archivo .env en la raíz del proyecto (asegurar que esté en .gitignore)
+
+      cantidad   echo "POSTGRES_USER=inventario_user" > .env
+
+    }   echo "POSTGRES_PASSWORD=inventario_pass" >> .env
+
+  }   echo "POSTGRES_DB=inventario_db" >> .env
+
+}   
+
+```   # Usar PostgreSQL con archivo .env (evita credenciales en historial)
+
    docker run --name postgres-agranelos --env-file .env -p 5432:5432 -d postgres:13
-   ```
 
-2. **Inicialización del esquema**:
+## 🧪 Testing   ```
+
+
+
+### Scripts Automatizados2. **Inicialización del esquema**:
+
    El esquema se crea automáticamente usando el archivo `schema.sql`. También puedes usar la función de inicialización:
-   ```bash
-   # ⚠️ SOLO EN DESARROLLO - Configurar variables de entorno primero
-   export ENABLE_INIT=true
+
+```bash   ```bash
+
+# Ejecutar todos los tests   # ⚠️ SOLO EN DESARROLLO - Configurar variables de entorno primero
+
+./scripts/testing/test-all-apis.sh   export ENABLE_INIT=true
+
    export FUNCTION_KEY=your-dev-function-key
+
+# Tests específicos   
+
+./scripts/testing/test-rest-api.sh      # Solo REST   # Llamada POST con autenticación
+
+./scripts/testing/test-graphql-api.sh   # Solo GraphQL   curl -X POST "http://localhost:7071/api/init?code=$FUNCTION_KEY" \
+
+./scripts/testing/test-performance.sh   # Rendimiento     -H "x-functions-key: $FUNCTION_KEY"
+
+```   ```
+
    
-   # Llamada POST con autenticación
-   curl -X POST "http://localhost:7071/api/init?code=$FUNCTION_KEY" \
-     -H "x-functions-key: $FUNCTION_KEY"
-   ```
-   
-   **Configuración de seguridad para `/api/init`:**
+
+### Postman Collection   **Configuración de seguridad para `/api/init`:**
+
    - **Desarrollo**: `ENABLE_INIT=true` en `local.settings.json`
-   - **Producción**: `ENABLE_INIT=false` (por defecto)
-   - **Autenticación**: Siempre requiere clave de función Azure
-   - **Almacenamiento seguro**: Usar Azure Key Vault o variables de entorno para claves
 
-### Ejecución Local
+1. Importar colección desde `postman/Agranelos-Inventario-API-Collection.postman_collection.json`   - **Producción**: `ENABLE_INIT=false` (por defecto)
 
-#### Opción 1: Usando Nix (Recomendado)
+2. Las variables de entorno se configuran automáticamente   - **Autenticación**: Siempre requiere clave de función Azure
+
+3. Ejecutar tests en orden: Database Setup → REST → GraphQL   - **Almacenamiento seguro**: Usar Azure Key Vault o variables de entorno para claves
+
+
+
+Ver documentación completa: [`postman/README.md`](postman/README.md)### Ejecución Local
+
+
+
+### Testing Scripts#### Opción 1: Usando Nix (Recomendado)
+
 ```bash
-# Entrar al entorno de desarrollo
+
+Documentación detallada de scripts: [`scripts/testing/README.md`](scripts/testing/README.md)# Entrar al entorno de desarrollo
+
 nix develop
 
+## 🔧 Configuración de Desarrollo
+
 # Compilar y ejecutar funciones serverless
-mvn clean package
+
+### Estructura del Proyectomvn clean package
+
 func host start --java
+
+``````
+
+agranelos-functions-crud/
+
+├── src/main/java/com/agranelos/inventario/#### Opción 2: Ejecución Manual
+
+│   ├── Function.java                    # Azure Functions endpoints```bash
+
+│   ├── graphql/# Compilar y ejecutar Azure Functions
+
+│   │   ├── GraphQLSchemaBuilder.java   # Schema y field mappingmvn clean package
+
+│   │   ├── ProductoDataFetcher.java    # Data fetchers productosfunc host start --java
+
+│   │   └── BodegaDataFetcher.java      # Data fetchers bodegas```
+
+│   ├── model/                          # Modelos de datos
+
+│   └── db/                            # Gestión de base de datos### Acceso a la Aplicación
+
+├── scripts/testing/                    # Scripts de testing- **Azure Functions**: http://localhost:7071
+
+├── postman/                           # Colección Postman
+
+├── docs/                             # Documentación Jekyll### Pruebas
+
+├── assets/                           # Imágenes y recursos```bash
+
+└── README.md                         # Este archivo# Ejecutar pruebas de las funciones serverless
+
+```mvn test
+
 ```
 
-#### Opción 2: Ejecución Manual
-```bash
-# Compilar y ejecutar Azure Functions
-mvn clean package
-func host start --java
-```
-
-### Acceso a la Aplicación
-- **Azure Functions**: http://localhost:7071
-
-### Pruebas
-```bash
-# Ejecutar pruebas de las funciones serverless
-mvn test
-```
+### Configuración Local
 
 ### Despliegue en Producción
 
-#### Azure Functions
 ```bash
+
+# Configurar base de datos local (opcional)#### Azure Functions
+
+docker-compose up -d```bash
+
 # Compilar para producción
+
+# Ejecutar función localmentemvn clean package
+
 mvn clean package
 
-# Despliegue en Azure (requiere Azure CLI configurado)
-func azure functionapp publish agranelos --java
-```
+cd target/azure-functions/*/# Despliegue en Azure (requiere Azure CLI configurado)
 
-### Variables de Entorno
+func host startfunc azure functionapp publish agranelos --java
 
-#### Azure Functions (local.settings.json)
+``````
+
+
+
+## 🚀 Despliegue### Variables de Entorno
+
+
+
+### Azure Functions#### Azure Functions (local.settings.json)
+
 ```json
-{
-  "IsEncrypted": false,
-  "Values": {
+
+```bash{
+
+# Compilar y desplegar  "IsEncrypted": false,
+
+mvn clean package azure-functions:deploy  "Values": {
+
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "java",
-    "DB_HOST": "localhost",
-    "DB_PORT": "5432", 
+
+# Configurar variables de entorno en Azure Portal    "FUNCTIONS_WORKER_RUNTIME": "java",
+
+# Settings → Configuration → Application Settings    "DB_HOST": "localhost",
+
+```    "DB_PORT": "5432", 
+
     "DB_NAME": "inventario_db",
-    "DB_USER": "inventario_user",
+
+### Variables de Producción    "DB_USER": "inventario_user",
+
     "DB_PASSWORD": "inventario_pass",
-    "DB_SSL_MODE": "disable"
-  }
-}
+
+Configurar en Azure Portal las siguientes variables:    "DB_SSL_MODE": "disable"
+
+- `DB_HOST`: Host de la base de datos  }
+
+- `DB_PORT`: Puerto PostgreSQL (5432)}
+
+- `DB_NAME`: Nombre de la base de datos```
+
+- `DB_USER`: Usuario de conexión
+
+- `DB_PASSWORD`: Contraseña## Estructura del Proyecto
+
+- `DB_SSL_MODE`: Modo SSL (disable/require)
+
 ```
 
-## Estructura del Proyecto
+## 📖 Documentación Adicionalagranelos-functions-crud-create/
 
-```
-agranelos-functions-crud-create/
 ├── src/                                    # Funciones serverless Azure
-│   ├── main/java/com/agranelos/inventario/
-│   │   ├── Function.java                   # Endpoints CRUD (productos y bodegas)
-│   │   ├── db/                            # Gestión de base de datos
-│   │   └── model/                         # Modelos de datos
+
+- **📚 Documentación Completa**: [GitHub Pages Site](https://diegobarrosa.github.io/agranelos-functions-crud/)│   ├── main/java/com/agranelos/inventario/
+
+- **🔍 GraphQL Schema**: Usar introspección en `/api/graphql`│   │   ├── Function.java                   # Endpoints CRUD (productos y bodegas)
+
+- **📋 API Testing**: Ver `scripts/testing/README.md`│   │   ├── db/                            # Gestión de base de datos
+
+- **📦 Postman**: Ver `postman/README.md`│   │   └── model/                         # Modelos de datos
+
 │   └── test/                              # Pruebas unitarias
-├── .github/workflows/main.yml             # Pipeline CI/CD GitHub Actions
+
+## 🔑 Características Técnicas Destacadas├── .github/workflows/main.yml             # Pipeline CI/CD GitHub Actions
+
 ├── schema.sql                            # Esquema de base de datos PostgreSQL
-├── flake.nix                            # Entorno de desarrollo Nix
-├── pom.xml                              # Build principal (Azure Functions)
-├── host.json                            # Configuración Azure Functions
-└── local.settings.json                  # Variables locales (no versionado)
-```
 
-## Configuración de Entornos
+### ⚡ Field Mapping Automático├── flake.nix                            # Entorno de desarrollo Nix
 
-### Desarrollo Local
-- **Azure Functions**: Puerto 7071
+El sistema incluye mapeo automático de campos entre GraphQL y Java:├── pom.xml                              # Build principal (Azure Functions)
+
+- **GraphQL**: `cantidad` (schema estándar)├── host.json                            # Configuración Azure Functions
+
+- **Java Model**: `cantidadEnStock` (modelo de negocio)└── local.settings.json                  # Variables locales (no versionado)
+
+- **Mapeo**: Transparente via `GraphQLSchemaBuilder````
+
+
+
+### 🗃️ Manejo de Base de Datos## Configuración de Entornos
+
+- **Case Sensitivity**: Manejo correcto de columnas PostgreSQL
+
+- **Column Quotes**: Nombres de columnas con quotes para compatibilidad### Desarrollo Local
+
+- **Connection Pooling**: Pool de conexiones optimizado- **Azure Functions**: Puerto 7071
+
 - **PostgreSQL**: Puerto 5432
 
-### Variables de Entorno
+### 🔒 Validaciones y Error Handling
 
-#### Azure Functions (local.settings.json)
+- Validación de tipos GraphQL### Variables de Entorno
+
+- Manejo de errores HTTP apropiado
+
+- Responses consistentes entre REST y GraphQL#### Azure Functions (local.settings.json)
+
 ```json
-{
+
+## 👥 Contribución{
+
   "IsEncrypted": false,
-  "Values": {
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "FUNCTIONS_WORKER_RUNTIME": "java",
-    "DB_HOST": "localhost",
-    "DB_PORT": "5432",
+
+1. Fork del repositorio  "Values": {
+
+2. Crear branch de feature (`git checkout -b feature/nueva-funcionalidad`)    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+
+3. Commit de cambios (`git commit -m 'Agregar nueva funcionalidad'`)    "FUNCTIONS_WORKER_RUNTIME": "java",
+
+4. Push al branch (`git push origin feature/nueva-funcionalidad`)    "DB_HOST": "localhost",
+
+5. Crear Pull Request    "DB_PORT": "5432",
+
     "DB_NAME": "inventario_db", 
-    "DB_USER": "inventario_user",
+
+## 📄 Licencia    "DB_USER": "inventario_user",
+
     "DB_PASSWORD": "inventario_pass",
-    "DB_SSL_MODE": "disable"
+
+Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para detalles.    "DB_SSL_MODE": "disable"
+
   }
-}
+
+## 📞 Contacto}
+
 ```
 
-### Seguridad y Secretos
+- **Repositorio**: [agranelos-functions-crud](https://github.com/DiegoBarrosA/agranelos-functions-crud)
+
+- **Documentación**: [GitHub Pages](https://diegobarrosa.github.io/agranelos-functions-crud/)### Seguridad y Secretos
+
+- **Issues**: [GitHub Issues](https://github.com/DiegoBarrosA/agranelos-functions-crud/issues)
 
 #### GitHub Actions Secrets (Para Despliegue Automático)
-El proyecto incluye un workflow de GitHub Actions (`.github/workflows/main.yml`) que despliega automáticamente las Azure Functions cada vez que se hace push a la rama `main`.
 
-**Secretos necesarios en GitHub:**
-1. Ve a **Settings > Secrets and variables > Actions**
-2. Agrega los siguientes secretos:
-   - `DB_HOST`: Host de la base de datos PostgreSQL
+---El proyecto incluye un workflow de GitHub Actions (`.github/workflows/main.yml`) que despliega automáticamente las Azure Functions cada vez que se hace push a la rama `main`.
+
+
+
+<p align="center">**Secretos necesarios en GitHub:**
+
+  <strong>🏭 Sistema de Inventario Agranelos</strong><br>1. Ve a **Settings > Secrets and variables > Actions**
+
+  Backend API con Azure Functions + PostgreSQL + GraphQL2. Agrega los siguientes secretos:
+
+</p>   - `DB_HOST`: Host de la base de datos PostgreSQL
    - `DB_PORT`: Puerto de la base de datos (normalmente 5432)
    - `DB_NAME`: Nombre de la base de datos (ej: `inventario_db`)
    - `DB_USER`: Usuario de la base de datos

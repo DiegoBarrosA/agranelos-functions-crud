@@ -1,0 +1,783 @@
+{
+  "info": {
+    "name": "Agranelos Inventario API - Complete Test Collection",
+    "description": "Comprehensive Postman collection for testing both REST and GraphQL APIs of the Agranelos Inventario system. Includes all CRUD operations, error handling, and advanced GraphQL queries.",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api",
+      "type": "string"
+    },
+    {
+      "key": "graphql_url",
+      "value": "https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql",
+      "type": "string"
+    },
+    {
+      "key": "producto_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "bodega_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Database Setup",
+      "item": [
+        {
+          "name": "Initialize Database",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/initdb",
+              "host": ["{{base_url}}"],
+              "path": ["initdb"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "1. REST API - Productos",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos",
+              "host": ["{{base_url}}"],
+              "path": ["productos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos/{{producto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{producto_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.id) {",
+                  "    pm.collectionVariables.set('producto_id', response.id);",
+                  "    console.log('Product ID set to:', response.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Postman Test\",\n  \"descripcion\": \"Producto creado desde Postman\",\n  \"precio\": 45.99,\n  \"cantidadEnStock\": 100\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/productos",
+              "host": ["{{base_url}}"],
+              "path": ["productos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Producto Postman Test - Actualizado\",\n  \"descripcion\": \"Producto actualizado desde Postman\",\n  \"precio\": 55.99,\n  \"cantidadEnStock\": 150\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/productos/{{producto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{producto_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos/{{producto_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "{{producto_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. REST API - Bodegas",
+      "item": [
+        {
+          "name": "Get All Bodegas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bodegas",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bodega by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bodegas/{{bodega_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas", "{{bodega_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Bodega",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.id) {",
+                  "    pm.collectionVariables.set('bodega_id', response.id);",
+                  "    console.log('Bodega ID set to:', response.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bodega Postman Test\",\n  \"ubicacion\": \"Zona Industrial Postman\",\n  \"capacidad\": 5000\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/bodegas",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Bodega",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Bodega Postman Test - Actualizada\",\n  \"ubicacion\": \"Zona Industrial Postman - Nueva\",\n  \"capacidad\": 7500\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/bodegas/{{bodega_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas", "{{bodega_id}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Bodega",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bodegas/{{bodega_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas", "{{bodega_id}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. GraphQL - Query Operations",
+      "item": [
+        {
+          "name": "Get All Products (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { productos { id nombre descripcion precio cantidad fechaCreacion fechaActualizacion } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Products (Minimal Fields)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { productos { id nombre precio cantidad } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetProduct($id: ID!) { producto(id: $id) { id nombre descripcion precio cantidad fechaCreacion fechaActualizacion } }\",\n  \"variables\": {\n    \"id\": \"{{producto_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Bodegas (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { bodegas { id nombre ubicacion capacidad fechaCreacion fechaActualizacion } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Bodega by ID (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query GetBodega($id: ID!) { bodega(id: $id) { id nombre ubicacion capacidad fechaCreacion fechaActualizacion } }\",\n  \"variables\": {\n    \"id\": \"{{bodega_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Combined Query (Products + Bodegas)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { productos { id nombre precio cantidad } bodegas { id nombre ubicacion capacidad } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. GraphQL - Mutation Operations",
+      "item": [
+        {
+          "name": "Create Product (GraphQL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.data && response.data.crearProducto && response.data.crearProducto.producto && response.data.crearProducto.producto.id) {",
+                  "    pm.collectionVariables.set('producto_id', response.data.crearProducto.producto.id);",
+                  "    console.log('GraphQL Product ID set to:', response.data.crearProducto.producto.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateProduct($input: ProductoInput!) { crearProducto(input: $input) { success message error producto { id nombre descripcion precio cantidad fechaCreacion fechaActualizacion } } }\",\n  \"variables\": {\n    \"input\": {\n      \"nombre\": \"Producto GraphQL Postman\",\n      \"descripcion\": \"Producto creado via GraphQL desde Postman\",\n      \"precio\": 75.50,\n      \"cantidad\": 200\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateProduct($id: ID!, $input: ProductoUpdateInput!) { actualizarProducto(id: $id, input: $input) { success message error producto { id nombre descripcion precio cantidad fechaCreacion fechaActualizacion } } }\",\n  \"variables\": {\n    \"id\": \"{{producto_id}}\",\n    \"input\": {\n      \"nombre\": \"Producto GraphQL Postman - Actualizado\",\n      \"descripcion\": \"Producto actualizado via GraphQL desde Postman\",\n      \"precio\": 85.75,\n      \"cantidad\": 250\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Bodega (GraphQL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const response = pm.response.json();",
+                  "  if (response.data && response.data.crearBodega && response.data.crearBodega.bodega && response.data.crearBodega.bodega.id) {",
+                  "    pm.collectionVariables.set('bodega_id', response.data.crearBodega.bodega.id);",
+                  "    console.log('GraphQL Bodega ID set to:', response.data.crearBodega.bodega.id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation CreateBodega($input: BodegaInput!) { crearBodega(input: $input) { success message error bodega { id nombre ubicacion capacidad fechaCreacion fechaActualizacion } } }\",\n  \"variables\": {\n    \"input\": {\n      \"nombre\": \"Bodega GraphQL Postman\",\n      \"ubicacion\": \"Zona GraphQL Postman\",\n      \"capacidad\": 8000\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Bodega (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation UpdateBodega($id: ID!, $input: BodegaUpdateInput!) { actualizarBodega(id: $id, input: $input) { success message error bodega { id nombre ubicacion capacidad fechaCreacion fechaActualizacion } } }\",\n  \"variables\": {\n    \"id\": \"{{bodega_id}}\",\n    \"input\": {\n      \"nombre\": \"Bodega GraphQL Postman - Actualizada\",\n      \"ubicacion\": \"Zona GraphQL Postman - Nueva\",\n      \"capacidad\": 10000\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteProduct($id: ID!) { eliminarProducto(id: $id) { success message error } }\",\n  \"variables\": {\n    \"id\": \"{{producto_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Bodega (GraphQL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation DeleteBodega($id: ID!) { eliminarBodega(id: $id) { success message error } }\",\n  \"variables\": {\n    \"id\": \"{{bodega_id}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. GraphQL - Advanced Operations",
+      "item": [
+        {
+          "name": "Schema Introspection - Types",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { __schema { types { name kind description } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Schema Introspection - Producto Type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { __type(name: \\\"Producto\\\") { name fields { name type { name kind } description } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Schema Introspection - Bodega Type",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { __type(name: \\\"Bodega\\\") { name fields { name type { name kind } description } } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Field Validation Test (Invalid Field)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { productos { id nombre invalidField } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missing Required Argument Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { producto { id nombre } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Mutation Input Test",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"mutation { crearProducto(input: { descripcion: \\\"Sin nombre ni precio\\\" }) { success message error } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Error Handling Tests",
+      "item": [
+        {
+          "name": "REST - Product Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/productos/999999",
+              "host": ["{{base_url}}"],
+              "path": ["productos", "999999"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "REST - Bodega Not Found (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/bodegas/999999",
+              "host": ["{{base_url}}"],
+              "path": ["bodegas", "999999"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "REST - Invalid Product Data (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"\",\n  \"precio\": -10.50,\n  \"cantidadEnStock\": \"invalid\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/productos",
+              "host": ["{{base_url}}"],
+              "path": ["productos"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - Non-existent Product Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { producto(id: \\\"999999\\\") { id nombre precio cantidad } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GraphQL - Non-existent Bodega Query",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"query { bodega(id: \\\"999999\\\") { id nombre ubicacion capacidad } }\"\n}"
+            },
+            "url": {
+              "raw": "{{graphql_url}}",
+              "host": ["{{graphql_url}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
