@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 /**
@@ -32,24 +33,27 @@ public class BodegaDataFetcher {
             List<Bodega> bodegas = new ArrayList<>();
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT id, nombre, ubicacion, capacidad, fecha_creacion, fecha_actualizacion FROM BODEGA ORDER BY id";
+                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA ORDER BY ID";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql);
                      ResultSet resultSet = statement.executeQuery()) {
                     
                     while (resultSet.next()) {
                         Bodega bodega = new Bodega();
-                        bodega.setId(resultSet.getInt("id"));
-                        bodega.setNombre(resultSet.getString("nombre"));
-                        bodega.setUbicacion(resultSet.getString("ubicacion"));
-                        bodega.setCapacidad(resultSet.getInt("capacidad"));
+                        bodega.setId(resultSet.getInt("ID"));
+                        bodega.setNombre(resultSet.getString("Nombre"));
+                        bodega.setUbicacion(resultSet.getString("Ubicacion"));
+                        bodega.setCapacidad(resultSet.getInt("Capacidad"));
                         
-                        Timestamp fechaCreacion = resultSet.getTimestamp("fecha_creacion");
+                        Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                         if (fechaCreacion != null) {
                             bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                         }
                         
-                        // Nota: Bodega no tiene fechaActualizacion en el modelo actual
+                        Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                        if (fechaActualizacion != null) {
+                            bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
+                        }
                         
                         bodegas.add(bodega);
                     }
@@ -72,7 +76,7 @@ public class BodegaDataFetcher {
             int id = Integer.parseInt(idString);
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT id, nombre, ubicacion, capacidad, fecha_creacion, fecha_actualizacion FROM BODEGA WHERE id = ?";
+                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA WHERE ID = ?";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql)) {
                     statement.setInt(1, id);
@@ -80,17 +84,20 @@ public class BodegaDataFetcher {
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
                             Bodega bodega = new Bodega();
-                            bodega.setId(resultSet.getInt("id"));
-                            bodega.setNombre(resultSet.getString("nombre"));
-                            bodega.setUbicacion(resultSet.getString("ubicacion"));
-                            bodega.setCapacidad(resultSet.getInt("capacidad"));
+                            bodega.setId(resultSet.getInt("ID"));
+                            bodega.setNombre(resultSet.getString("Nombre"));
+                            bodega.setUbicacion(resultSet.getString("Ubicacion"));
+                            bodega.setCapacidad(resultSet.getInt("Capacidad"));
                             
-                            Timestamp fechaCreacion = resultSet.getTimestamp("fecha_creacion");
+                            Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                             if (fechaCreacion != null) {
                                 bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                             }
                             
-                            // Nota: Bodega no tiene fechaActualizacion en el modelo actual
+                            Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                            if (fechaActualizacion != null) {
+                                bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
+                            }
                             
                             return bodega;
                         }
@@ -114,31 +121,60 @@ public class BodegaDataFetcher {
             Map<String, Object> response = new HashMap<>();
             
             try {
-                // Validaciones básicas
-                String nombre = (String) input.get("nombre");
-                if (nombre == null || nombre.trim().isEmpty()) {
+                // Validaciones básicas con sanitización
+                String nombre = Optional.ofNullable(input.get("nombre"))
+                    .map(Object::toString)
+                    .map(String::trim)
+                    .orElse(null);
+                if (nombre == null || nombre.isEmpty()) {
                     response.put("success", false);
-                    response.put("message", "");
+                    response.put("message", "Validación fallida: nombre requerido");
                     response.put("error", "El nombre de la bodega es requerido");
+                    response.put("bodega", null);
                     return response;
                 }
                 
-                String ubicacion = (String) input.get("ubicacion");
-                if (ubicacion == null || ubicacion.trim().isEmpty()) {
+                String ubicacion = Optional.ofNullable(input.get("ubicacion"))
+                    .map(Object::toString)
+                    .map(String::trim)
+                    .orElse(null);
+                if (ubicacion == null || ubicacion.isEmpty()) {
                     response.put("success", false);
-                    response.put("message", "");
+                    response.put("message", "Validación fallida: ubicación requerida");
                     response.put("error", "La ubicación de la bodega es requerida");
+                    response.put("bodega", null);
                     return response;
+                }
+                
+                // Validar capacidad defensivamente
+                Integer capacidad = DEFAULT_CAPACITY;
+                if (input.get("capacidad") != null) {
+                    try {
+                        Object capacidadObj = input.get("capacidad");
+                        if (capacidadObj instanceof Number) {
+                            capacidad = ((Number) capacidadObj).intValue();
+                        } else {
+                            capacidad = Integer.parseInt(capacidadObj.toString().trim());
+                        }
+                        
+                        if (capacidad < 0) {
+                            response.put("success", false);
+                            response.put("message", "Validación fallida: capacidad negativa");
+                            response.put("error", "La capacidad no puede ser negativa");
+                            response.put("bodega", null);
+                            return response;
+                        }
+                    } catch (NumberFormatException e) {
+                        logger.warning("Capacidad inválida, usando valor por defecto: " + e.getMessage());
+                        capacidad = DEFAULT_CAPACITY;
+                    }
                 }
                 
                 // Crear bodega
                 Bodega bodega = new Bodega();
                 bodega.setNombre(nombre);
                 bodega.setUbicacion(ubicacion);
-                
-                // Capacidad opcional (usar default si no se proporciona)
-                Integer capacidad = (Integer) input.get("capacidad");
-                bodega.setCapacidad(capacidad != null ? capacidad : DEFAULT_CAPACITY);
+                bodega.setCapacidad(capacidad);
                 
                 // Insertar en base de datos
                 Integer bodegaId = insertBodega(bodega);
@@ -151,8 +187,9 @@ public class BodegaDataFetcher {
                 
             } catch (Exception e) {
                 logger.severe("Error creando bodega: " + e.getMessage());
+                e.printStackTrace(); // Log full stack trace
                 response.put("success", false);
-                response.put("message", "");
+                response.put("message", "Error interno del servidor");
                 response.put("error", "Error creando bodega: " + e.getMessage());
                 response.put("bodega", null);
             }
@@ -246,7 +283,7 @@ public class BodegaDataFetcher {
     // Métodos auxiliares de base de datos
     private static Integer insertBodega(Bodega bodega) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO BODEGA (nombre, ubicacion, capacidad, fecha_creacion, fecha_actualizacion) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO BODEGA (Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             
             try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, bodega.getNombre());
@@ -271,23 +308,23 @@ public class BodegaDataFetcher {
     
     private static boolean updateBodega(Bodega bodega) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            StringBuilder sql = new StringBuilder("UPDATE BODEGA SET fecha_actualizacion = CURRENT_TIMESTAMP");
+            StringBuilder sql = new StringBuilder("UPDATE BODEGA SET FechaActualizacion = CURRENT_TIMESTAMP");
             List<Object> params = new ArrayList<>();
             
             if (bodega.getNombre() != null) {
-                sql.append(", nombre = ?");
+                sql.append(", Nombre = ?");
                 params.add(bodega.getNombre());
             }
             if (bodega.getUbicacion() != null) {
-                sql.append(", ubicacion = ?");
+                sql.append(", Ubicacion = ?");
                 params.add(bodega.getUbicacion());
             }
             if (bodega.getCapacidad() != null) {
-                sql.append(", capacidad = ?");
+                sql.append(", Capacidad = ?");
                 params.add(bodega.getCapacidad());
             }
             
-            sql.append(" WHERE id = ?");
+            sql.append(" WHERE ID = ?");
             params.add(bodega.getId());
             
             try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
@@ -302,7 +339,7 @@ public class BodegaDataFetcher {
     
     private static boolean deleteBodega(int id) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM BODEGA WHERE id = ?";
+            String sql = "DELETE FROM BODEGA WHERE ID = ?";
             
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, id);

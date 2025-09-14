@@ -72,8 +72,8 @@
         </dependency>
         <dependency>
             <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java-tools</artifactId>
-            <version>5.2.4</version>
+            <artifactId>graphql-java-extended-scalars</artifactId>
+            <version>20.2</version>
         </dependency>
     </dependencies>
 

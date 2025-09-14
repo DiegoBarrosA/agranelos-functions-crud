@@ -8,6 +8,7 @@ public class Bodega {
     private String ubicacion;
     private Integer capacidad;
     private LocalDateTime fechaCreacion;
+    private LocalDateTime fechaActualizacion;
 
     // Constructors
     public Bodega() {}
@@ -59,6 +60,14 @@ public class Bodega {
         this.fechaCreacion = fechaCreacion;
     }
 
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(LocalDateTime fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
+    }
+
     @Override
     public String toString() {
         return "Bodega{" +
@@ -67,6 +76,7 @@ public class Bodega {
                 ", ubicacion='" + ubicacion + '\'' +
                 ", capacidad=" + capacidad +
                 ", fechaCreacion=" + fechaCreacion +
+                ", fechaActualizacion=" + fechaActualizacion +
                 '}';
     }
 

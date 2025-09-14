@@ -32,25 +32,25 @@ public class ProductoDataFetcher {
             List<Producto> productos = new ArrayList<>();
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT id, nombre, descripcion, precio, cantidad, fecha_creacion, fecha_actualizacion FROM PRODUCTO ORDER BY id";
+                String sql = "SELECT ID, Nombre, Descripcion, Precio, CantidadEnStock, FechaCreacion, FechaActualizacion FROM PRODUCTO ORDER BY ID";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql);
                      ResultSet resultSet = statement.executeQuery()) {
                     
                     while (resultSet.next()) {
                         Producto producto = new Producto();
-                        producto.setId(resultSet.getInt("id"));
-                        producto.setNombre(resultSet.getString("nombre"));
-                        producto.setDescripcion(resultSet.getString("descripcion"));
-                        producto.setPrecio(resultSet.getBigDecimal("precio"));
-                        producto.setCantidadEnStock(resultSet.getInt("cantidad"));
+                        producto.setId(resultSet.getInt("ID"));
+                        producto.setNombre(resultSet.getString("Nombre"));
+                        producto.setDescripcion(resultSet.getString("Descripcion"));
+                        producto.setPrecio(resultSet.getBigDecimal("Precio"));
+                        producto.setCantidadEnStock(resultSet.getInt("CantidadEnStock"));
                         
-                        Timestamp fechaCreacion = resultSet.getTimestamp("fecha_creacion");
+                        Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                         if (fechaCreacion != null) {
                             producto.setFechaCreacion(fechaCreacion.toLocalDateTime());
                         }
                         
-                        Timestamp fechaActualizacion = resultSet.getTimestamp("fecha_actualizacion");
+                        Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
                         if (fechaActualizacion != null) {
                             producto.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
                         }
@@ -75,7 +75,7 @@ public class ProductoDataFetcher {
             int id = Integer.parseInt(idString);
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT id, nombre, descripcion, precio, cantidad, fecha_creacion, fecha_actualizacion FROM PRODUCTO WHERE id = ?";
+                String sql = "SELECT ID, Nombre, Descripcion, Precio, CantidadEnStock, FechaCreacion, FechaActualizacion FROM PRODUCTO WHERE ID = ?";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql)) {
                     statement.setInt(1, id);
@@ -83,18 +83,18 @@ public class ProductoDataFetcher {
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
                             Producto producto = new Producto();
-                            producto.setId(resultSet.getInt("id"));
-                            producto.setNombre(resultSet.getString("nombre"));
-                            producto.setDescripcion(resultSet.getString("descripcion"));
-                            producto.setPrecio(resultSet.getBigDecimal("precio"));
-                            producto.setCantidadEnStock(resultSet.getInt("cantidad"));
+                            producto.setId(resultSet.getInt("ID"));
+                            producto.setNombre(resultSet.getString("Nombre"));
+                            producto.setDescripcion(resultSet.getString("Descripcion"));
+                            producto.setPrecio(resultSet.getBigDecimal("Precio"));
+                            producto.setCantidadEnStock(resultSet.getInt("CantidadEnStock"));
                             
-                            Timestamp fechaCreacion = resultSet.getTimestamp("fecha_creacion");
+                            Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                             if (fechaCreacion != null) {
                                 producto.setFechaCreacion(fechaCreacion.toLocalDateTime());
                             }
                             
-                            Timestamp fechaActualizacion = resultSet.getTimestamp("fecha_actualizacion");
+                            Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
                             if (fechaActualizacion != null) {
                                 producto.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
                             }
@@ -245,7 +245,7 @@ public class ProductoDataFetcher {
     // Métodos auxiliares de base de datos
     private static Integer insertProducto(Producto producto) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO PRODUCTO (nombre, descripcion, precio, cantidad, fecha_creacion, fecha_actualizacion) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO PRODUCTO (Nombre, Descripcion, Precio, CantidadEnStock, FechaCreacion, FechaActualizacion) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             
             try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, producto.getNombre());
@@ -271,27 +271,27 @@ public class ProductoDataFetcher {
     
     private static boolean updateProducto(Producto producto) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            StringBuilder sql = new StringBuilder("UPDATE PRODUCTO SET fecha_actualizacion = CURRENT_TIMESTAMP");
+            StringBuilder sql = new StringBuilder("UPDATE PRODUCTO SET FechaActualizacion = CURRENT_TIMESTAMP");
             List<Object> params = new ArrayList<>();
             
             if (producto.getNombre() != null) {
-                sql.append(", nombre = ?");
+                sql.append(", Nombre = ?");
                 params.add(producto.getNombre());
             }
             if (producto.getDescripcion() != null) {
-                sql.append(", descripcion = ?");
+                sql.append(", Descripcion = ?");
                 params.add(producto.getDescripcion());
             }
             if (producto.getPrecio() != null) {
-                sql.append(", precio = ?");
+                sql.append(", Precio = ?");
                 params.add(producto.getPrecio());
             }
             if (producto.getCantidadEnStock() != null) {
-                sql.append(", cantidad = ?");
+                sql.append(", CantidadEnStock = ?");
                 params.add(producto.getCantidadEnStock());
             }
             
-            sql.append(" WHERE id = ?");
+            sql.append(" WHERE ID = ?");
             params.add(producto.getId());
             
             try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
@@ -306,7 +306,7 @@ public class ProductoDataFetcher {
     
     private static boolean deleteProducto(int id) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM PRODUCTO WHERE id = ?";
+            String sql = "DELETE FROM PRODUCTO WHERE ID = ?";
             
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, id);

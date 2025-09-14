@@ -1,6 +1,9 @@
 # Esquema GraphQL para Inventario Agranelos
 # Alternativa a los endpoints REST existentes
 
+# Scalars personalizados
+scalar DateTime
+
 # Tipos de datos
 type Producto {
     id: ID!
@@ -8,8 +11,8 @@ type Producto {
     descripcion: String
     precio: Float!
     cantidad: Int!
-    fechaCreacion: String
-    fechaActualizacion: String
+    fechaCreacion: DateTime
+    fechaActualizacion: DateTime
 }
 
 type Bodega {
@@ -17,8 +20,8 @@ type Bodega {
     nombre: String!
     ubicacion: String!
     capacidad: Int!
-    fechaCreacion: String
-    fechaActualizacion: String
+    fechaCreacion: DateTime
+    fechaActualizacion: DateTime
 }
 
 # Inputs para mutations

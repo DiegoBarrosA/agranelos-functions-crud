@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
@@ -1231,7 +1232,7 @@ public class Function {
      */
     public static class GraphQLRequest {
         private String query;
-        private String variables;
+        private Map<String, Object> variables;
         private String operationName;
 
         public String getQuery() {
@@ -1242,11 +1243,11 @@ public class Function {
             this.query = query;
         }
 
-        public String getVariables() {
+        public Map<String, Object> getVariables() {
             return variables;
         }
 
-        public void setVariables(String variables) {
+        public void setVariables(Map<String, Object> variables) {
             this.variables = variables;
         }
 

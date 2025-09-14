@@ -10,10 +10,12 @@ import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
 import graphql.schema.idl.TypeDefinitionRegistry;
+import graphql.scalars.ExtendedScalars;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -26,7 +28,18 @@ public class GraphQLSchemaBuilder {
     
     private static final Logger logger = Logger.getLogger(GraphQLSchemaBuilder.class.getName());
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
-    private static GraphQL graphQL;
+    private static volatile GraphQL graphQL;
+    
+    // Cache the schema string to avoid IO overhead
+    private static final String CACHED_SCHEMA;
+    
+    static {
+        try {
+            CACHED_SCHEMA = loadSchemaFromClasspathInternal("schema.graphqls");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load GraphQL schema", e);
+        }
+    }
     
     /**
      * Construye y configura el esquema GraphQL
@@ -37,8 +50,8 @@ public class GraphQLSchemaBuilder {
                 if (graphQL == null) {
                     logger.info("Inicializando esquema GraphQL...");
                     
-                    // Leer el esquema desde el archivo
-                    String schemaString = loadSchemaFromClasspath("schema.graphqls");
+                    // Usar el esquema cached
+                    String schemaString = CACHED_SCHEMA;
                     
                     // Crear el registry de definiciones de tipos
                     SchemaParser schemaParser = new SchemaParser();
@@ -69,6 +82,8 @@ public class GraphQLSchemaBuilder {
      */
     private static RuntimeWiring buildWiring() {
         return newRuntimeWiring()
+            // Register DateTime scalar
+            .scalar(ExtendedScalars.DateTime)
             // Query resolvers
             .type("Query", builder -> builder
                 .dataFetcher("productos", ProductoDataFetcher.getProductos())
@@ -101,15 +116,14 @@ public class GraphQLSchemaBuilder {
     /**
      * Ejecuta una consulta GraphQL
      */
-    public static ExecutionResult executeQuery(String query, String variables, String operationName) throws IOException {
+    public static ExecutionResult executeQuery(String query, Map<String, Object> variables, String operationName) throws IOException {
         GraphQL graphQL = buildSchema();
         
         ExecutionInput.Builder inputBuilder = ExecutionInput.newExecutionInput()
             .query(query);
             
-        if (variables != null && !variables.trim().isEmpty()) {
-            // En un caso real, aquí parsearíamos el JSON de variables
-            // Para simplicidad, asumimos que no hay variables complejas por ahora
+        if (variables != null && !variables.isEmpty()) {
+            inputBuilder.variables(variables);
         }
         
         if (operationName != null && !operationName.trim().isEmpty()) {
@@ -120,9 +134,9 @@ public class GraphQLSchemaBuilder {
     }
     
     /**
-     * Carga el esquema GraphQL desde el classpath
+     * Carga el esquema GraphQL desde el classpath (internal method for static init)
      */
-    private static String loadSchemaFromClasspath(String path) throws IOException {
+    private static String loadSchemaFromClasspathInternal(String path) throws IOException {
         try (InputStream inputStream = GraphQLSchemaBuilder.class.getClassLoader().getResourceAsStream(path)) {
             if (inputStream == null) {
                 throw new IOException("No se pudo encontrar el archivo de esquema: " + path);
