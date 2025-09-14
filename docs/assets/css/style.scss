@@ -1,0 +1,107 @@
+---
+---
+
+@import "minima";
+
+/* Custom styles for API documentation */
+
+.highlight {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+    overflow-x: auto;
+}
+
+.language-bash {
+    background-color: #2d3748;
+    color: #e2e8f0;
+}
+
+.language-json {
+    background-color: #f7fafc;
+    color: #2d3748;
+}
+
+.language-graphql {
+    background-color: #e6fffa;
+    color: #234e52;
+}
+
+/* API table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+/* Navigation improvements */
+.site-nav {
+    line-height: 56px;
+}
+
+.site-nav .page-link {
+    color: #424242;
+    line-height: 1.5;
+    margin-left: 20px;
+}
+
+/* Content improvements */
+.post-content h1,
+.post-content h2,
+.post-content h3 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.post-content h2 {
+    border-bottom: 2px solid #e8e8e8;
+    padding-bottom: 5px;
+}
+
+/* Code block improvements */
+pre {
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+code {
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-size: 90%;
+}
+
+/* Emoji improvements */
+h1, h2, h3 {
+    display: flex;
+    align-items: center;
+}
+
+/* Response examples */
+.response-example {
+    background-color: #f8f9fa;
+    border-left: 4px solid #28a745;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+/* Error examples */
+.error-example {
+    background-color: #fff5f5;
+    border-left: 4px solid #e53e3e;
+    padding: 15px;
+    margin: 15px 0;
+}

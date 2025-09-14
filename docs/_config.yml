@@ -1,0 +1,41 @@
+title: "Agranelos Inventario API"
+description: "GraphQL and REST API documentation for inventory management system"
+baseurl: "/agranelos-functions-crud"
+url: "https://diegobarrosa.github.io"
+
+# Jekyll theme
+theme: minima
+
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Markdown processor
+markdown: kramdown
+highlighter: rouge
+
+# Collections
+collections:
+  docs:
+    output: true
+    permalink: /:collection/:name/
+
+# Navigation
+header_pages:
+  - index.md
+  - quick-reference.md
+
+# Social links
+github_username: DiegoBarrosA
+
+# SEO settings
+author: Diego Barros
+twitter:
+  username: DiegoBarrosA
+  card: summary
+
+# Build settings
+incremental: true
+safe: true

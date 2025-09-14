@@ -33,7 +33,7 @@ public class BodegaDataFetcher {
             List<Bodega> bodegas = new ArrayList<>();
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA ORDER BY ID";
+                String sql = "SELECT \"ID\", \"Nombre\", \"Ubicacion\", \"Capacidad\", \"FechaCreacion\", \"FechaActualizacion\" FROM BODEGA ORDER BY \"ID\"";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql);
                      ResultSet resultSet = statement.executeQuery()) {
@@ -76,7 +76,7 @@ public class BodegaDataFetcher {
             int id = Integer.parseInt(idString);
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA WHERE ID = ?";
+                String sql = "SELECT \"ID\", \"Nombre\", \"Ubicacion\", \"Capacidad\", \"FechaCreacion\", \"FechaActualizacion\" FROM BODEGA WHERE \"ID\" = ?";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql)) {
                     statement.setInt(1, id);
@@ -283,7 +283,7 @@ public class BodegaDataFetcher {
     // Métodos auxiliares de base de datos
     private static Integer insertBodega(Bodega bodega) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "INSERT INTO BODEGA (Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+            String sql = "INSERT INTO BODEGA (\"Nombre\", \"Ubicacion\", \"Capacidad\", \"FechaCreacion\", \"FechaActualizacion\") VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
             
             try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
                 statement.setString(1, bodega.getNombre());
@@ -308,23 +308,23 @@ public class BodegaDataFetcher {
     
     private static boolean updateBodega(Bodega bodega) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            StringBuilder sql = new StringBuilder("UPDATE BODEGA SET FechaActualizacion = CURRENT_TIMESTAMP");
+            StringBuilder sql = new StringBuilder("UPDATE BODEGA SET \"FechaActualizacion\" = CURRENT_TIMESTAMP");
             List<Object> params = new ArrayList<>();
             
             if (bodega.getNombre() != null) {
-                sql.append(", Nombre = ?");
+                sql.append(", \"Nombre\" = ?");
                 params.add(bodega.getNombre());
             }
             if (bodega.getUbicacion() != null) {
-                sql.append(", Ubicacion = ?");
+                sql.append(", \"Ubicacion\" = ?");
                 params.add(bodega.getUbicacion());
             }
             if (bodega.getCapacidad() != null) {
-                sql.append(", Capacidad = ?");
+                sql.append(", \"Capacidad\" = ?");
                 params.add(bodega.getCapacidad());
             }
             
-            sql.append(" WHERE ID = ?");
+            sql.append(" WHERE \"ID\" = ?");
             params.add(bodega.getId());
             
             try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
@@ -339,7 +339,7 @@ public class BodegaDataFetcher {
     
     private static boolean deleteBodega(int id) throws SQLException {
         try (Connection connection = DatabaseManager.getConnection()) {
-            String sql = "DELETE FROM BODEGA WHERE ID = ?";
+            String sql = "DELETE FROM BODEGA WHERE \"ID\" = ?";
             
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, id);
