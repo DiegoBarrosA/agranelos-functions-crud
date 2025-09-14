@@ -19,6 +19,10 @@
           git
           unzip
           curl
+          docker
+          docker-compose
+          postgresql
+          # Spring Boot será incluido como dependencia Maven, no necesitamos instalarlo globalmente
         ];
         shellHook = ''
           if [ -f .env ]; then
