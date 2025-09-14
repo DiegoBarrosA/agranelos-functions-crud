@@ -4,6 +4,7 @@ import com.agranelos.inventario.db.DatabaseInitializer;
 import com.agranelos.inventario.db.DatabaseManager;
 import com.agranelos.inventario.model.Producto;
 import com.agranelos.inventario.model.Bodega;
+import com.agranelos.inventario.graphql.GraphQLSchemaBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -1146,6 +1147,115 @@ public class Function {
         } catch (SQLException e) {
             logger.severe("Error eliminando bodega: " + e.getMessage());
             throw e;
+        }
+    }
+
+    /**
+     * GraphQL Endpoint - Maneja consultas y mutaciones GraphQL
+     * Alternativa moderna a los endpoints REST tradicionales
+     */
+    @FunctionName("GraphQL")
+    public HttpResponseMessage graphql(
+        @HttpTrigger(
+            name = "req",
+            methods = { HttpMethod.POST },
+            authLevel = AuthorizationLevel.ANONYMOUS,
+            route = "graphql"
+        ) HttpRequestMessage<Optional<String>> request,
+        final ExecutionContext context
+    ) {
+        Logger logger = context.getLogger();
+        logger.info("Ejecutando consulta GraphQL...");
+
+        try {
+            ensureDatabaseInitialized();
+            
+            String requestBody = request.getBody().orElse("");
+            if (requestBody.isEmpty()) {
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"errors\": [{\"message\": \"Cuerpo de la petición requerido\"}]}")
+                    .build();
+            }
+
+            // Parsear el request GraphQL
+            GraphQLRequest graphQLRequest;
+            try {
+                graphQLRequest = objectMapper.readValue(requestBody, GraphQLRequest.class);
+            } catch (JsonProcessingException e) {
+                logger.warning("Error parsing GraphQL request JSON: " + e.getMessage());
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"errors\": [{\"message\": \"JSON inválido\"}]}")
+                    .build();
+            }
+
+            if (graphQLRequest.getQuery() == null || graphQLRequest.getQuery().trim().isEmpty()) {
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"errors\": [{\"message\": \"Query GraphQL requerida\"}]}")
+                    .build();
+            }
+
+            // Ejecutar la consulta GraphQL
+            graphql.ExecutionResult result = GraphQLSchemaBuilder.executeQuery(
+                graphQLRequest.getQuery(),
+                graphQLRequest.getVariables(),
+                graphQLRequest.getOperationName()
+            );
+
+            // Convertir resultado a JSON
+            String responseJson = objectMapper.writeValueAsString(result.toSpecification());
+
+            return request
+                .createResponseBuilder(HttpStatus.OK)
+                .header("Content-Type", "application/json")
+                .body(responseJson)
+                .build();
+
+        } catch (Exception e) {
+            logger.severe("Error ejecutando consulta GraphQL: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header("Content-Type", "application/json")
+                .body("{\"errors\": [{\"message\": \"Error interno del servidor\"}]}")
+                .build();
+        }
+    }
+
+    /**
+     * Clase interna para parsear requests GraphQL
+     */
+    public static class GraphQLRequest {
+        private String query;
+        private String variables;
+        private String operationName;
+
+        public String getQuery() {
+            return query;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+
+        public String getVariables() {
+            return variables;
+        }
+
+        public void setVariables(String variables) {
+            this.variables = variables;
+        }
+
+        public String getOperationName() {
+            return operationName;
+        }
+
+        public void setOperationName(String operationName) {
+            this.operationName = operationName;
         }
     }
 }

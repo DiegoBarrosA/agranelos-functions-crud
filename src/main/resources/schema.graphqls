@@ -1,0 +1,108 @@
+# Esquema GraphQL para Inventario Agranelos
+# Alternativa a los endpoints REST existentes
+
+# Tipos de datos
+type Producto {
+    id: ID!
+    nombre: String!
+    descripcion: String
+    precio: Float!
+    cantidad: Int!
+    fechaCreacion: String
+    fechaActualizacion: String
+}
+
+type Bodega {
+    id: ID!
+    nombre: String!
+    ubicacion: String!
+    capacidad: Int!
+    fechaCreacion: String
+    fechaActualizacion: String
+}
+
+# Inputs para mutations
+input ProductoInput {
+    nombre: String!
+    descripcion: String
+    precio: Float!
+    cantidad: Int!
+}
+
+input ProductoUpdateInput {
+    id: ID!
+    nombre: String
+    descripcion: String
+    precio: Float
+    cantidad: Int
+}
+
+input BodegaInput {
+    nombre: String!
+    ubicacion: String!
+    capacidad: Int
+}
+
+input BodegaUpdateInput {
+    id: ID!
+    nombre: String
+    ubicacion: String
+    capacidad: Int
+}
+
+# Responses para mutations
+type ProductoResponse {
+    success: Boolean!
+    message: String!
+    producto: Producto
+    error: String
+}
+
+type BodegaResponse {
+    success: Boolean!
+    message: String!
+    bodega: Bodega
+    error: String
+}
+
+type DeleteResponse {
+    success: Boolean!
+    message: String!
+    error: String
+}
+
+# Queries (consultas)
+type Query {
+    # Productos
+    productos: [Producto!]!
+    producto(id: ID!): Producto
+    
+    # Bodegas
+    bodegas: [Bodega!]!
+    bodega(id: ID!): Bodega
+    
+    # Health check
+    health: String!
+}
+
+# Mutations (operaciones de escritura)
+type Mutation {
+    # Productos
+    crearProducto(input: ProductoInput!): ProductoResponse!
+    actualizarProducto(input: ProductoUpdateInput!): ProductoResponse!
+    eliminarProducto(id: ID!): DeleteResponse!
+    
+    # Bodegas
+    crearBodega(input: BodegaInput!): BodegaResponse!
+    actualizarBodega(input: BodegaUpdateInput!): BodegaResponse!
+    eliminarBodega(id: ID!): DeleteResponse!
+    
+    # Utilidades
+    inicializarBaseDatos: String!
+}
+
+# Schema root
+schema {
+    query: Query
+    mutation: Mutation
+}

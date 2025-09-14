@@ -103,6 +103,113 @@ Endpoints de las funciones serverless:
 | :----- | :------------ | :--------------------------------- | :-------- |
 | `POST` | `/api/init`   | Inicializa la base de datos con esquemas y datos de prueba. | ⚠️ **Sólo desarrollo** - Requiere `ENABLE_INIT=true` y clave de función |
 
+### GraphQL API (Alternativa Moderna)
+
+Además de los endpoints REST tradicionales, el sistema incluye soporte completo para **GraphQL** como alternativa moderna y flexible:
+
+| Verbo  | Ruta          | Descripción                        |
+| :----- | :------------ | :--------------------------------- |
+| `POST` | `/api/graphql`| Endpoint único GraphQL para todas las operaciones |
+
+#### Ejemplo de Queries GraphQL
+
+**Query - Obtener todos los productos:**
+```graphql
+query {
+  productos {
+    id
+    nombre
+    descripcion
+    precio
+    cantidadEnStock
+    fechaCreacion
+  }
+}
+```
+
+**Query - Obtener producto específico:**
+```graphql
+query {
+  producto(id: "1") {
+    id
+    nombre
+    descripcion
+    precio
+    cantidadEnStock
+  }
+}
+```
+
+**Mutation - Crear nuevo producto:**
+```graphql
+mutation {
+  crearProducto(input: {
+    nombre: "Producto GraphQL"
+    descripcion: "Creado via GraphQL"
+    precio: 29.99
+    cantidad: 100
+  }) {
+    success
+    message
+    producto {
+      id
+      nombre
+      precio
+    }
+    error
+  }
+}
+```
+
+**Mutation - Crear nueva bodega:**
+```graphql
+mutation {
+  crearBodega(input: {
+    nombre: "Bodega GraphQL"
+    ubicacion: "Santiago Norte"
+    capacidad: 5000
+  }) {
+    success
+    message
+    bodega {
+      id
+      nombre
+      ubicacion
+      capacidad
+    }
+    error
+  }
+}
+```
+
+**Query - Health Check:**
+```graphql
+query {
+  health
+}
+```
+
+#### Ventajas de GraphQL vs REST
+
+- **Single Endpoint**: Un solo endpoint `/api/graphql` para todas las operaciones
+- **Precise Data Fetching**: Solo obtén los campos que necesitas
+- **Batching**: Múltiples queries en una sola petición
+- **Introspección**: Schema auto-documentado
+- **Type Safety**: Schema tipado fuerte
+- **Real-time**: Soporte para subscripciones (futuro)
+
+#### Ejemplo de Petición HTTP a GraphQL
+
+```bash
+curl -X POST http://localhost:7071/api/graphql \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "query { productos { id nombre precio } }"
+  }'
+```
+
+> **💡 Tip**: Puedes usar tanto REST como GraphQL según tus necesidades. REST para operaciones simples, GraphQL para consultas complejas y flexibilidad.
+
 > **⚠️ Importante**: El endpoint `/api/init` debe estar **deshabilitado en producción**. Configure `ENABLE_INIT=false` y use autenticación con clave de función cuando esté habilitado.
 
 ## Despliegue y Ejecución
