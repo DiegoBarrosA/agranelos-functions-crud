@@ -84,6 +84,13 @@ public class GraphQLSchemaBuilder {
         return newRuntimeWiring()
             // Register DateTime scalar
             .scalar(ExtendedScalars.DateTime)
+            // Type resolvers for custom field mappings
+            .type("Producto", builder -> builder
+                .dataFetcher("cantidad", environment -> {
+                    com.agranelos.inventario.model.Producto producto = environment.getSource();
+                    return producto.getCantidadEnStock();
+                })
+            )
             // Query resolvers
             .type("Query", builder -> builder
                 .dataFetcher("productos", ProductoDataFetcher.getProductos())
