@@ -7,6 +7,7 @@ import com.agranelos.inventario.model.Bodega;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
@@ -211,10 +212,17 @@ public class Function {
                     .build();
             }
 
-            Producto producto = objectMapper.readValue(
-                requestBody,
-                Producto.class
-            );
+            Producto producto;
+            try {
+                producto = objectMapper.readValue(requestBody, Producto.class);
+            } catch (JsonProcessingException e) {
+                logger.warning("Error parsing JSON: " + e.getMessage());
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"JSON inválido\"}")
+                    .build();
+            }
 
             // Validaciones básicas
             if (
@@ -290,10 +298,17 @@ public class Function {
                     .build();
             }
 
-            Producto producto = objectMapper.readValue(
-                requestBody,
-                Producto.class
-            );
+            Producto producto;
+            try {
+                producto = objectMapper.readValue(requestBody, Producto.class);
+            } catch (JsonProcessingException e) {
+                logger.warning("Error parsing JSON: " + e.getMessage());
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"JSON inválido\"}")
+                    .build();
+            }
             producto.setId(Integer.parseInt(productId));
 
             boolean updated = updateProducto(producto, logger);
@@ -740,10 +755,17 @@ public class Function {
                     .build();
             }
 
-            Bodega bodega = objectMapper.readValue(
-                requestBody,
-                Bodega.class
-            );
+            Bodega bodega;
+            try {
+                bodega = objectMapper.readValue(requestBody, Bodega.class);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                logger.warning("JSON mal formado: " + e.getMessage());
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"JSON mal formado\", \"detalle\": \"" + e.getMessage() + "\"}")
+                    .build();
+            }
 
             // Validaciones básicas
             if (
@@ -832,10 +854,17 @@ public class Function {
                     .build();
             }
 
-            Bodega bodega = objectMapper.readValue(
-                requestBody,
-                Bodega.class
-            );
+            Bodega bodega;
+            try {
+                bodega = objectMapper.readValue(requestBody, Bodega.class);
+            } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                logger.warning("JSON mal formado: " + e.getMessage());
+                return request
+                    .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"JSON mal formado\", \"detalle\": \"" + e.getMessage() + "\"}")
+                    .build();
+            }
             bodega.setId(Integer.parseInt(bodegaId));
 
             boolean updated = updateBodega(bodega, logger);
