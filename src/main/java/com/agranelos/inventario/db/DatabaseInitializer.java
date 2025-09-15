@@ -52,7 +52,8 @@ public class DatabaseInitializer {
             "Nombre VARCHAR(255) NOT NULL, " +
             "Ubicacion VARCHAR(255) NOT NULL, " +
             "Capacidad INTEGER NOT NULL DEFAULT 1000, " +
-            "FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+            "FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP, " +
+            "FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
             ")";
 
         // Create INVENTARIO table
