@@ -70,7 +70,7 @@ print_test_result() {
 # Function to make GraphQL request
 make_graphql_request() {
     local query="$1"
-    curl -s -w "\n%{http_code}" -X POST "$GRAPHQL_URL" \
+    curl -s -w "\n%{http_code}" --connect-timeout 5 --max-time 30 -X POST "$GRAPHQL_URL" \
         -H "$CONTENT_TYPE" \
         -d "$query"
 }
@@ -178,7 +178,12 @@ response=$(make_graphql_request "$CREATE_PRODUCT")
 print_test_result "Create Product" "$response" "false"
 
 # Extract product ID from response for subsequent tests
-PRODUCT_ID=$(echo "$response" | head -n -1 | jq -r '.data.crearProducto.producto.id // "1"' 2>/dev/null)
+PRODUCT_ID=$(echo "$response" | head -n -1 | jq -r '.data.crearProducto.producto.id' 2>/dev/null)
+if [[ -z "$PRODUCT_ID" || "$PRODUCT_ID" == "null" ]]; then
+    echo -e "${RED}❌ ERROR: Failed to extract PRODUCT_ID from response${NC}"
+    echo -e "${RED}Full response: $response${NC}" >&2
+    exit 1
+fi
 echo "Using Product ID: $PRODUCT_ID for subsequent tests"
 
 # 2. Update product
@@ -235,7 +240,12 @@ response=$(make_graphql_request "$CREATE_BODEGA")
 print_test_result "Create Bodega" "$response" "false"
 
 # Extract bodega ID from response
-BODEGA_ID=$(echo "$response" | head -n -1 | jq -r '.data.crearBodega.bodega.id // "1"' 2>/dev/null)
+BODEGA_ID=$(echo "$response" | head -n -1 | jq -r '.data.crearBodega.bodega.id' 2>/dev/null)
+if [[ -z "$BODEGA_ID" || "$BODEGA_ID" == "null" || "$BODEGA_ID" == "1" ]]; then
+    echo -e "${RED}❌ ERROR: Failed to extract BODEGA_ID from response${NC}"
+    echo -e "${RED}Full response: $response${NC}" >&2
+    exit 1
+fi
 echo "Using Bodega ID: $BODEGA_ID for subsequent tests"
 
 # 2. Update bodega

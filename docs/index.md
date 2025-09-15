@@ -472,16 +472,19 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ```bash
 # Ejecutar todos los tests
-cd scripts/testing && ./test-all-endpoints.sh
+./scripts/testing/test-all-apis.sh
 
 # Test GraphQL solamente
-./test-graphql.sh
+./scripts/testing/test-graphql-api.sh
 
 # Test REST solamente
-./test-rest.sh
+./scripts/testing/test-rest-api.sh
+
+# Test de rendimiento
+./scripts/testing/test-performance.sh
 
 # Importar Postman collection
-# Archivo: postman/Agranelos-Inventario-API.postman_collection.json
+# Archivo: postman/Agranelos-Inventario-API-Collection.postman_collection.json
 ```
 
 ---

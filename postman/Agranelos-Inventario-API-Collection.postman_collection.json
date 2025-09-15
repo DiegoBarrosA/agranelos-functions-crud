@@ -42,9 +42,9 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/initdb",
+              "raw": "{{base_url}}/init",
               "host": ["{{base_url}}"],
-              "path": ["initdb"]
+              "path": ["init"]
             }
           },
           "response": []

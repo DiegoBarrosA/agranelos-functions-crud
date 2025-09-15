@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# Configuration with environment variable support
+REST_BASE_URL="${REST_API_URL:-http://localhost:7071/api}"
+GRAPHQL_URL="${GRAPHQL_API_URL:-http://localhost:7071/api/graphql}"
+
+# Production environment guard
+if [[ "$REST_BASE_URL" == *"agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net"* ]] || [[ "$GRAPHQL_URL" == *"agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net"* ]]; then
+    if [[ "$CONFIRM_PRODUCTION" != "true" ]] && [[ "$1" != "--confirm-production" ]]; then
+        echo "⚠️  WARNING: You are about to run tests against PRODUCTION environment!"
+        echo "   REST URL: $REST_BASE_URL"
+        echo "   GraphQL URL: $GRAPHQL_URL"
+        echo ""
+        echo "To proceed, either:"
+        echo "  1. Run with flag: $0 --confirm-production"
+        echo "  2. Set environment variable: CONFIRM_PRODUCTION=true $0"
+        echo ""
+        exit 1
+    fi
+fi
+
 # =============================================================================
 # Combined API Test Script - Agranelos Inventario System
 # Tests both REST and GraphQL endpoints
@@ -20,14 +39,22 @@ GRAPHQL_SCRIPT="$SCRIPT_DIR/test-graphql-api.sh"
 
 # Function to print main header
 print_main_header() {
+    # Determine environment name
+    local env_name="Local Development"
+    if [[ "$REST_BASE_URL" == *"staging"* ]] || [[ "$GRAPHQL_URL" == *"staging"* ]]; then
+        env_name="Staging"
+    elif [[ "$REST_BASE_URL" == *"agranelos-fybpb6duaadaaxfm"* ]] || [[ "$GRAPHQL_URL" == *"agranelos-fybpb6duaadaaxfm"* ]]; then
+        env_name="Production"
+    fi
+    
     echo -e "${CYAN}=============================================================================${NC}"
     echo -e "${CYAN}                    AGRANELOS INVENTARIO API TEST SUITE${NC}"
     echo -e "${CYAN}                      REST + GraphQL Comprehensive Testing${NC}"
     echo -e "${CYAN}=============================================================================${NC}"
     echo -e "Timestamp: $(date)"
-    echo -e "Testing Environment: Production"
-    echo -e "REST Base URL: https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api"
-    echo -e "GraphQL URL: https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql"
+    echo -e "Testing Environment: $env_name"
+    echo -e "REST Base URL: $REST_BASE_URL"
+    echo -e "GraphQL URL: $GRAPHQL_URL"
     echo ""
 }
 

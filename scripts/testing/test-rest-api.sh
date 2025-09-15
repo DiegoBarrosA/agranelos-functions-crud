@@ -5,7 +5,7 @@
 # =============================================================================
 
 # Configuration
-BASE_URL="https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api"
+BASE_URL="${REST_API_URL:-http://localhost:7071/api}"
 CONTENT_TYPE="Content-Type: application/json"
 
 # Colors for output
@@ -54,7 +54,7 @@ print_test_result() {
 
 # Function to make HTTP request with status code
 make_request() {
-    curl -s -w "\n%{http_code}" "$@"
+    curl -s -w "\n%{http_code}" --connect-timeout 5 --max-time 30 "$@"
 }
 
 # Start testing
@@ -99,13 +99,11 @@ response=$(make_request -X POST "$BASE_URL/productos" -H "$CONTENT_TYPE" -d "$CR
 print_test_result "Create Product" "$response" "201"
 
 # Extract product ID from response for subsequent tests
-PRODUCT_ID=$(echo "$response" | head -n -1 | jq -r '.id // empty' 2>/dev/null)
-if [ -z "$PRODUCT_ID" ]; then
-    # Try to extract from message if ID is in the response message
-    PRODUCT_ID=$(echo "$response" | head -n -1 | jq -r '.id // empty' 2>/dev/null)
-    if [ -z "$PRODUCT_ID" ]; then
-        PRODUCT_ID="1" # Fallback to 1
-    fi
+PRODUCT_ID=$(echo "$response" | head -n -1 | jq -r '.id' 2>/dev/null)
+if [ -z "$PRODUCT_ID" ] || [ "$PRODUCT_ID" == "null" ]; then
+    echo -e "${RED}❌ ERROR: Failed to extract PRODUCT_ID from response${NC}"
+    echo -e "${RED}Full response: $response${NC}" >&2
+    exit 1
 fi
 
 echo "Using Product ID: $PRODUCT_ID for subsequent tests"
@@ -142,6 +140,17 @@ CREATE_PRODUCT_DATA_2='{
 }'
 
 response=$(make_request -X POST "$BASE_URL/productos" -H "$CONTENT_TYPE" -d "$CREATE_PRODUCT_DATA_2")
+print_test_result "Create Second Product" "$response" "201"
+
+# Extract second product ID for cleanup
+PRODUCT2_ID=$(echo "$response" | head -n -1 | jq -r '.id' 2>/dev/null)
+if [ -z "$PRODUCT2_ID" ] || [ "$PRODUCT2_ID" == "null" ]; then
+    echo -e "${RED}❌ ERROR: Failed to extract PRODUCT2_ID from response${NC}"
+    echo -e "${RED}Full response: $response${NC}" >&2
+    exit 1
+fi
+
+echo "Using Second Product ID: $PRODUCT2_ID for cleanup"
 print_test_result "Create Second Product" "$response" "201"
 
 # =============================================================================
@@ -223,7 +232,11 @@ print_test_header "CLEANUP - DELETE OPERATIONS"
 response=$(make_request -X DELETE "$BASE_URL/productos/$PRODUCT_ID" -H "$CONTENT_TYPE")
 print_test_result "Delete First Product" "$response" "200"
 
-# Try to delete the same product again (should fail)
+# Delete the second product
+response=$(make_request -X DELETE "$BASE_URL/productos/$PRODUCT2_ID" -H "$CONTENT_TYPE")
+print_test_result "Delete Second Product" "$response" "200"
+
+# Try to delete the first product again (should fail)
 response=$(make_request -X DELETE "$BASE_URL/productos/$PRODUCT_ID" -H "$CONTENT_TYPE")
 print_test_result "Delete Already Deleted Product" "$response" "404"
 

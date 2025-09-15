@@ -34,9 +34,26 @@ scripts/testing/
 
 ## ⚙️ Configuración
 
-Los scripts están configurados para usar el entorno de producción de Azure:
-- **REST API**: `https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api`
-- **GraphQL API**: `https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql`
+Los scripts están configurados para usar localhost por defecto, pero pueden ser sobrescritos con variables de entorno:
+
+### URLs por Defecto
+- **REST API**: `http://localhost:7071/api`
+- **GraphQL API**: `http://localhost:7071/api/graphql`
+
+### Sobrescribir con Variables de Entorno
+
+```bash
+# Para cambiar a staging
+export REST_API_URL="https://agranelos-staging.azurewebsites.net/api"
+export GRAPHQL_API_URL="https://agranelos-staging.azurewebsites.net/api/graphql"
+
+# Para cambiar a producción
+export REST_API_URL="https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api"
+export GRAPHQL_API_URL="https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql"
+
+# Ejecutar tests con URLs personalizadas
+./test-all-apis.sh
+```
 
 ## 📊 Resultados
 

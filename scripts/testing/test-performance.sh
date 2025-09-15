@@ -29,30 +29,33 @@ print_test_header() {
     echo -e "${BLUE}===================================================${NC}"
 }
 
-# Function to measure response time
+# Function to measure response time and capture body separately
 measure_response_time() {
     local url="$1"
     local method="$2"
     local data="$3"
     local headers="$4"
     
+    local temp_file=$(mktemp)
     local start_time=$(date +%s%N)
     
     if [ "$method" = "POST" ] && [ -n "$data" ]; then
-        local response=$(curl -s -w "%{http_code}" -X POST "$url" -H "$headers" -d "$data")
+        local status_code=$(curl -s -w "%{http_code}" --connect-timeout 5 --max-time 30 -X POST "$url" -H "$headers" -d "$data" -o "$temp_file")
     elif [ "$method" = "GET" ]; then
-        local response=$(curl -s -w "%{http_code}" -X GET "$url" -H "$headers")
+        local status_code=$(curl -s -w "%{http_code}" --connect-timeout 5 --max-time 30 -X GET "$url" -H "$headers" -o "$temp_file")
     else
-        local response=$(curl -s -w "%{http_code}" -X "$method" "$url" -H "$headers" -d "$data")
+        local status_code=$(curl -s -w "%{http_code}" --connect-timeout 5 --max-time 30 -X "$method" "$url" -H "$headers" -d "$data" -o "$temp_file")
     fi
     
     local end_time=$(date +%s%N)
     local duration=$(( (end_time - start_time) / 1000000 )) # Convert to milliseconds
     
-    local status_code="${response: -3}"
-    local response_body="${response%???}"
+    local response_size=$(wc -c < "$temp_file")
+    local response_body=$(cat "$temp_file")
     
-    echo "$duration $status_code $response_body"
+    rm -f "$temp_file"
+    
+    echo "$duration $status_code $response_size $response_body"
 }
 
 # Function to calculate statistics
@@ -193,33 +196,34 @@ echo "Testing data transfer efficiency..."
 echo -n "REST - Full product data: "
 result=$(measure_response_time "$BASE_URL/productos" "GET" "" "$CONTENT_TYPE")
 rest_full_time=$(echo $result | cut -d' ' -f1)
-rest_full_response=$(echo $result | cut -d' ' -f3-)
-rest_full_size=$(echo "$rest_full_response" | wc -c)
-echo "${rest_full_time}ms (${rest_full_size} characters)"
+rest_full_size=$(echo $result | cut -d' ' -f3)
+echo "${rest_full_time}ms (${rest_full_size} bytes)"
 
 # GraphQL: Only required fields
 echo -n "GraphQL - Minimal fields: "
 minimal_query='{"query": "query { productos { nombre precio } }"}'
 result=$(measure_response_time "$GRAPHQL_URL" "POST" "$minimal_query" "$CONTENT_TYPE")
 graphql_minimal_time=$(echo $result | cut -d' ' -f1)
-graphql_minimal_response=$(echo $result | cut -d' ' -f3-)
-graphql_minimal_size=$(echo "$graphql_minimal_response" | wc -c)
-echo "${graphql_minimal_time}ms (${graphql_minimal_size} characters)"
+graphql_minimal_size=$(echo $result | cut -d' ' -f3)
+echo "${graphql_minimal_time}ms (${graphql_minimal_size} bytes)"
 
 # GraphQL: All fields
 echo -n "GraphQL - Full product data: "
 full_query='{"query": "query { productos { id nombre descripcion precio cantidad fechaCreacion fechaActualizacion } }"}'
 result=$(measure_response_time "$GRAPHQL_URL" "POST" "$full_query" "$CONTENT_TYPE")
 graphql_full_time=$(echo $result | cut -d' ' -f1)
-graphql_full_response=$(echo $result | cut -d' ' -f3-)
-graphql_full_size=$(echo "$graphql_full_response" | wc -c)
-echo "${graphql_full_time}ms (${graphql_full_size} characters)"
+graphql_full_size=$(echo $result | cut -d' ' -f3)
+echo "${graphql_full_time}ms (${graphql_full_size} bytes)"
 
 echo ""
 echo -e "${YELLOW}Data Efficiency Analysis:${NC}"
-data_reduction=$(( (rest_full_size - graphql_minimal_size) * 100 / rest_full_size ))
-echo "• REST full data: ${rest_full_size} characters"
-echo "• GraphQL minimal: ${graphql_minimal_size} characters"
+if [ $rest_full_size -gt 0 ]; then
+    data_reduction=$(( (rest_full_size - graphql_minimal_size) * 100 / rest_full_size ))
+else
+    data_reduction=0
+fi
+echo "• REST full data: ${rest_full_size} bytes"
+echo "• GraphQL minimal: ${graphql_minimal_size} bytes"
 echo "• Data reduction: ${data_reduction}% less data with GraphQL selective queries"
 
 # =============================================================================
@@ -265,6 +269,20 @@ echo ""
 echo -e "${YELLOW}Response Times (Average over $ITERATIONS requests):${NC}"
 echo "• REST API Average: ${rest_avg}ms"
 echo "• GraphQL API Average: ${graphql_avg}ms"
+
+# Calculate performance difference percentage
+if [ $rest_avg -ne 0 ] && [ $graphql_avg -ne 0 ]; then
+    if [ $rest_avg -lt $graphql_avg ]; then
+        slower_avg=$graphql_avg
+        faster_avg=$rest_avg
+    else
+        slower_avg=$rest_avg
+        faster_avg=$graphql_avg
+    fi
+    percent_diff=$(( (slower_avg - faster_avg) * 100 / slower_avg ))
+else
+    percent_diff=0
+fi
 
 if [ $rest_avg -lt $graphql_avg ]; then
     echo -e "• ${GREEN}REST is ${percent_diff}% faster on average${NC}"
