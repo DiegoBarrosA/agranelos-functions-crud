@@ -33,27 +33,28 @@ public class BodegaDataFetcher {
             List<Bodega> bodegas = new ArrayList<>();
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA ORDER BY ID";
+                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion FROM BODEGA ORDER BY ID";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql);
                      ResultSet resultSet = statement.executeQuery()) {
                     
                     while (resultSet.next()) {
                         Bodega bodega = new Bodega();
-                        bodega.setId(resultSet.getInt("id"));
-                        bodega.setNombre(resultSet.getString("nombre"));
-                        bodega.setUbicacion(resultSet.getString("ubicacion"));
-                        bodega.setCapacidad(resultSet.getInt("capacidad"));
+                        bodega.setId(resultSet.getInt("ID"));
+                        bodega.setNombre(resultSet.getString("Nombre"));
+                        bodega.setUbicacion(resultSet.getString("Ubicacion"));
+                        bodega.setCapacidad(resultSet.getInt("Capacidad"));
                         
-                        Timestamp fechaCreacion = resultSet.getTimestamp("fechacreacion");
+                        Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                         if (fechaCreacion != null) {
                             bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                         }
                         
-                        Timestamp fechaActualizacion = resultSet.getTimestamp("fechaactualizacion");
-                        if (fechaActualizacion != null) {
-                            bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
-                        }
+                        // TODO: Re-enable FechaActualizacion once column is confirmed to exist
+                        // Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                        // if (fechaActualizacion != null) {
+                        //     bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
+                        // }
                         
                         bodegas.add(bodega);
                     }
@@ -76,7 +77,7 @@ public class BodegaDataFetcher {
             int id = Integer.parseInt(idString);
             
             try (Connection connection = DatabaseManager.getConnection()) {
-                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion, FechaActualizacion FROM BODEGA WHERE ID = ?";
+                String sql = "SELECT ID, Nombre, Ubicacion, Capacidad, FechaCreacion FROM BODEGA WHERE ID = ?";
                 
                 try (PreparedStatement statement = connection.prepareStatement(sql)) {
                     statement.setInt(1, id);
@@ -84,20 +85,21 @@ public class BodegaDataFetcher {
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
                             Bodega bodega = new Bodega();
-                            bodega.setId(resultSet.getInt("id"));
-                            bodega.setNombre(resultSet.getString("nombre"));
-                            bodega.setUbicacion(resultSet.getString("ubicacion"));
-                            bodega.setCapacidad(resultSet.getInt("capacidad"));
+                            bodega.setId(resultSet.getInt("ID"));
+                            bodega.setNombre(resultSet.getString("Nombre"));
+                            bodega.setUbicacion(resultSet.getString("Ubicacion"));
+                            bodega.setCapacidad(resultSet.getInt("Capacidad"));
                             
-                            Timestamp fechaCreacion = resultSet.getTimestamp("fechacreacion");
+                            Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
                             if (fechaCreacion != null) {
                                 bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                             }
                             
-                            Timestamp fechaActualizacion = resultSet.getTimestamp("fechaactualizacion");
-                            if (fechaActualizacion != null) {
-                                bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
-                            }
+                            // TODO: Re-enable FechaActualizacion once column is confirmed to exist
+                            // Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                            // if (fechaActualizacion != null) {
+                            //     bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
+                            // }
                             
                             return bodega;
                         }
