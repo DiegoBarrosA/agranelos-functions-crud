@@ -40,17 +40,17 @@ public class BodegaDataFetcher {
                     
                     while (resultSet.next()) {
                         Bodega bodega = new Bodega();
-                        bodega.setId(resultSet.getInt("ID"));
-                        bodega.setNombre(resultSet.getString("Nombre"));
-                        bodega.setUbicacion(resultSet.getString("Ubicacion"));
-                        bodega.setCapacidad(resultSet.getInt("Capacidad"));
+                        bodega.setId(resultSet.getInt("id"));
+                        bodega.setNombre(resultSet.getString("nombre"));
+                        bodega.setUbicacion(resultSet.getString("ubicacion"));
+                        bodega.setCapacidad(resultSet.getInt("capacidad"));
                         
-                        Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
+                        Timestamp fechaCreacion = resultSet.getTimestamp("fechacreacion");
                         if (fechaCreacion != null) {
                             bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                         }
                         
-                        Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                        Timestamp fechaActualizacion = resultSet.getTimestamp("fechaactualizacion");
                         if (fechaActualizacion != null) {
                             bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
                         }
@@ -84,17 +84,17 @@ public class BodegaDataFetcher {
                     try (ResultSet resultSet = statement.executeQuery()) {
                         if (resultSet.next()) {
                             Bodega bodega = new Bodega();
-                            bodega.setId(resultSet.getInt("ID"));
-                            bodega.setNombre(resultSet.getString("Nombre"));
-                            bodega.setUbicacion(resultSet.getString("Ubicacion"));
-                            bodega.setCapacidad(resultSet.getInt("Capacidad"));
+                            bodega.setId(resultSet.getInt("id"));
+                            bodega.setNombre(resultSet.getString("nombre"));
+                            bodega.setUbicacion(resultSet.getString("ubicacion"));
+                            bodega.setCapacidad(resultSet.getInt("capacidad"));
                             
-                            Timestamp fechaCreacion = resultSet.getTimestamp("FechaCreacion");
+                            Timestamp fechaCreacion = resultSet.getTimestamp("fechacreacion");
                             if (fechaCreacion != null) {
                                 bodega.setFechaCreacion(fechaCreacion.toLocalDateTime());
                             }
                             
-                            Timestamp fechaActualizacion = resultSet.getTimestamp("FechaActualizacion");
+                            Timestamp fechaActualizacion = resultSet.getTimestamp("fechaactualizacion");
                             if (fechaActualizacion != null) {
                                 bodega.setFechaActualizacion(fechaActualizacion.toLocalDateTime());
                             }
