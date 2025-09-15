@@ -15,6 +15,9 @@ import graphql.scalars.ExtendedScalars;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
@@ -89,6 +92,28 @@ public class GraphQLSchemaBuilder {
                 .dataFetcher("cantidad", environment -> {
                     com.agranelos.inventario.model.Producto producto = environment.getSource();
                     return producto.getCantidadEnStock();
+                })
+                .dataFetcher("fechaCreacion", environment -> {
+                    com.agranelos.inventario.model.Producto producto = environment.getSource();
+                    LocalDateTime localDateTime = producto.getFechaCreacion();
+                    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
+                })
+                .dataFetcher("fechaActualizacion", environment -> {
+                    com.agranelos.inventario.model.Producto producto = environment.getSource();
+                    LocalDateTime localDateTime = producto.getFechaActualizacion();
+                    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
+                })
+            )
+            .type("Bodega", builder -> builder
+                .dataFetcher("fechaCreacion", environment -> {
+                    com.agranelos.inventario.model.Bodega bodega = environment.getSource();
+                    LocalDateTime localDateTime = bodega.getFechaCreacion();
+                    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
+                })
+                .dataFetcher("fechaActualizacion", environment -> {
+                    com.agranelos.inventario.model.Bodega bodega = environment.getSource();
+                    LocalDateTime localDateTime = bodega.getFechaActualizacion();
+                    return localDateTime != null ? localDateTime.atOffset(ZoneOffset.UTC) : null;
                 })
             )
             // Query resolvers
