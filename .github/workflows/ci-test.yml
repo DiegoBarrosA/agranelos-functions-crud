@@ -9,6 +9,12 @@ on:
 
 env:
   JAVA_VERSION: '11'
+  DB_HOST: '50.19.86.166'
+  DB_PORT: '5432'
+  DB_NAME: 'inventario_agranelos'
+  DB_USER: 'postgres'
+  DB_PASSWORD: 'test-password'
+  DB_SSL_MODE: 'disable'
 
 jobs:
   build:
