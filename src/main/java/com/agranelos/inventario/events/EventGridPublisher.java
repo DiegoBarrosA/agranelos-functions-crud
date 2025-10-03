@@ -1,6 +1,7 @@
 package com.agranelos.inventario.events;
 
 import com.azure.core.credential.AzureKeyCredential;
+import com.azure.core.util.BinaryData;
 import com.azure.messaging.eventgrid.EventGridEvent;
 import com.azure.messaging.eventgrid.EventGridPublisherClient;
 import com.azure.messaging.eventgrid.EventGridPublisherClientBuilder;
@@ -64,7 +65,7 @@ public class EventGridPublisher {
             EventGridEvent event = new EventGridEvent(
                 String.format("/productos/%d", eventData.getProductoId()),
                 eventType.getValue(),
-                objectMapper.writeValueAsString(eventData),
+                BinaryData.fromString(objectMapper.writeValueAsString(eventData)),
                 "1.0"
             );
             event.setEventTime(OffsetDateTime.now());
@@ -95,7 +96,7 @@ public class EventGridPublisher {
             EventGridEvent event = new EventGridEvent(
                 String.format("/bodegas/%d", eventData.getBodegaId()),
                 eventType.getValue(),
-                objectMapper.writeValueAsString(eventData),
+                BinaryData.fromString(objectMapper.writeValueAsString(eventData)),
                 "1.0"
             );
             event.setEventTime(OffsetDateTime.now());
