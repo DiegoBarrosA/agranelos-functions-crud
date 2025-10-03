@@ -1,49 +1,135 @@
 # 🏭 Sistema de Inventario Agranelos - Backend API
 
-> Sistema completo de gestión de inventario con APIs REST y GraphQL, desarrollado con Azure Functions y Java 11.
+> Sistema completo de gestión de inventario con **Arquitectura Orientada a Eventos** usando Azure Functions, Event Grid y Java 11.
 
-Backend serverless para sistema de inventario de bodegas implementado con **Azure Functions** y PostgreSQL.
+[![Deploy to Azure](https://img.shields.io/badge/Deploy%20to-Azure-0078D4?logo=microsoft-azure)](./docs/DEPLOY.md)
+[![Java](https://img.shields.io/badge/Java-11-orange?logo=java)](https://adoptium.net/)
+[![Azure Functions](https://img.shields.io/badge/Azure-Functions-blue?logo=azure-functions)](https://azure.microsoft.com/services/functions/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-13+-blue?logo=postgresql)](https://www.postgresql.org/)
+[![Event Grid](https://img.shields.io/badge/Azure-Event%20Grid-blue?logo=microsoft-azure)](https://azure.microsoft.com/services/event-grid/)
+
+Backend serverless para sistema de inventario de bodegas implementado con **Azure Functions**, **Azure Event Grid** y PostgreSQL.
 
 ![Arquitectura](assets/agranelos-arquitectura.png)
 
 ## 🎯 Descripción
 
-Sistema backend para gestión de inventario que proporciona APIs duales (REST y GraphQL) para operaciones CRUD sobre productos y bodegas. Implementado como Azure Functions con base de datos PostgreSQL.
+Sistema backend cloud-native para gestión de inventario que proporciona:
+- **APIs duales** (REST y GraphQL) para operaciones CRUD
+- **Arquitectura orientada a eventos** con Azure Event Grid
+- **Escalabilidad automática** con Azure Functions (Serverless)
+- **Procesamiento asíncrono** de eventos de negocio
 
-## Arquitectura del Sistema
+## 🌟 Características Principales
 
-```mermaid
-graph TB
-    Client[Cliente/Frontend] --> Functions[Azure Functions<br/>Serverless :7071]
-    Functions --> DB[(PostgreSQL<br/>Base de Datos)]
-    
-    subgraph "Funciones Serverless"
-        Functions --> F1[GetProductos]
-        Functions --> F2[CreateProducto]
-        Functions --> F3[GetBodegas]
-        Functions --> F4[CreateBodega]
-        Functions --> F5[UpdateBodega]
-        Functions --> F6[DeleteBodega]
-        Functions --> F7[InitializeDatabase]
-    end
-```
-
-### 🌟 Características Principales
-
-- **📡 API Dual**: REST y GraphQL en la misma infraestructura
-- **☁️ Cloud Native**: Desplegado en Azure Functions
-- **🗃️ Base de Datos**: PostgreSQL con manejo de caso sensitivo
-- **🔍 Field Mapping**: Mapeo automático de campos GraphQL-Java
-- **🧪 Testing Completo**: Scripts automatizados y colección Postman
-- **📖 Documentación**: Sitio de documentación con Jekyll/GitHub Pages
+- ✅ **📡 API Dual**: REST y GraphQL en la misma infraestructura
+- ✅ **☁️ Cloud Native**: Desplegado en Azure Functions (Serverless)
+- ✅ **🔔 Event-Driven**: Arquitectura orientada a eventos con Azure Event Grid
+- ✅ **🗃️ Base de Datos**: PostgreSQL con connection pooling (HikariCP)
+- ✅ **🔍 Field Mapping**: Mapeo automático de campos GraphQL-Java
+- ✅ **📊 Observabilidad**: Application Insights para monitoreo
+- ✅ **� CI/CD**: GitHub Actions para despliegue automático
+- ✅ **📖 Documentación**: Completa y detallada
+- ✅ **🧪 Testing**: Scripts automatizados y colección Postman
+- ✅ **🏗️ IaC**: ARM Templates para infraestructura como código
 
 ## 🏗️ Arquitectura del Sistema
 
-El sistema implementa:
+El sistema implementa una **arquitectura orientada a eventos** que incluye:
 
-- **Funciones Serverless**: Azure Functions para operaciones CRUD directas sobre la base de datos
-- **Base de Datos**: PostgreSQL con esquema normalizado para productos, bodegas, inventario y movimientos
-- **CI/CD Automático**: GitHub Actions para despliegue automático a Azure Functions
+- **Azure Functions**: Funciones serverless para operaciones CRUD
+- **Azure Event Grid**: Manejo de eventos asíncronos para comunicación desacoplada
+- **PostgreSQL**: Base de datos relacional con esquema normalizado
+- **Application Insights**: Monitoreo y observabilidad
+- **CI/CD**: GitHub Actions para despliegue automático
+
+### Componentes Principales
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    AZURE CLOUD                               │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │         Azure Functions (Java 11)                   │    │
+│  │  • REST API (/api/productos, /api/bodegas)         │    │
+│  │  • GraphQL API (/api/graphql)                       │    │
+│  │  • CRUD Operations                                  │    │
+│  └─────────────┬──────────────────────────────────────┘    │
+│                │                                             │
+│                │ Publica Eventos                             │
+│                ▼                                             │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │         Azure Event Grid Topic                      │    │
+│  │  • ProductoCreado / Actualizado / Eliminado        │    │
+│  │  • BodegaCreada / Actualizada / Eliminada          │    │
+│  └─────────────┬──────────────────────────────────────┘    │
+│                │                                             │
+│                │ Distribuye Eventos                          │
+│                ▼                                             │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │       Event Grid Trigger Functions                  │    │
+│  │  • Event Handlers para cada tipo de evento         │    │
+│  │  • Notificaciones, auditoría, sincronización       │    │
+│  └────────────────────────────────────────────────────┘    │
+│                                                              │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │       Application Insights                          │    │
+│  │  • Logs, métricas, alertas, monitoreo              │    │
+│  └────────────────────────────────────────────────────┘    │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+                       │ JDBC (Pooled)
+                       ▼
+┌─────────────────────────────────────────────────────────────┐
+│              PostgreSQL Database (AWS EC2)                   │
+│  Tablas: PRODUCTO, BODEGA, INVENTARIO, MOVIMIENTO          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Flujo de Eventos
+
+```mermaid
+sequenceDiagram
+    participant C as Cliente
+    participant AF as Azure Function
+    participant DB as PostgreSQL
+    participant EG as Event Grid
+    participant EH as Event Handler
+
+    C->>AF: POST /api/productos
+    AF->>DB: INSERT producto
+    DB-->>AF: ID creado
+    AF->>EG: Publicar ProductoCreado
+    AF-->>C: 201 Created
+    
+    EG->>EH: Distribuir evento
+    EH->>EH: Procesar (notificar, auditar)
+```
+
+## 🔔 Arquitectura Orientada a Eventos
+
+El sistema utiliza **Azure Event Grid** para implementar una arquitectura event-driven:
+
+### Tipos de Eventos
+
+| Categoría | Evento | Descripción |
+|-----------|--------|-------------|
+| **Productos** | `ProductoCreado` | Se dispara al crear un producto |
+|  | `ProductoActualizado` | Se dispara al actualizar un producto |
+|  | `ProductoEliminado` | Se dispara al eliminar un producto |
+| **Bodegas** | `BodegaCreada` | Se dispara al crear una bodega |
+|  | `BodegaActualizada` | Se dispara al actualizar una bodega |
+|  | `BodegaEliminada` | Se dispara al eliminar una bodega |
+
+### Beneficios de Event-Driven
+
+- ✅ **Desacoplamiento**: Componentes independientes que se comunican por eventos
+- ✅ **Escalabilidad**: Procesamiento asíncrono y paralelo de eventos
+- ✅ **Resiliencia**: Reintentos automáticos y dead-letter queues
+- ✅ **Extensibilidad**: Fácil agregar nuevos consumidores de eventos
+- ✅ **Auditoría**: Registro automático de todas las operaciones
+
+## 🏗️ Diagrama de Arquitectura Completo
 
 ```mermaid
 graph TB

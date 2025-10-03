@@ -5,6 +5,7 @@ import com.agranelos.inventario.db.DatabaseManager;
 import com.agranelos.inventario.model.Producto;
 import com.agranelos.inventario.model.Bodega;
 import com.agranelos.inventario.graphql.GraphQLSchemaBuilder;
+import com.agranelos.inventario.events.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -241,6 +242,11 @@ public class Function {
             }
 
             Integer productoId = insertProducto(producto, logger);
+            
+            // Publicar evento en Event Grid
+            producto.setId(productoId);
+            ProductoEventData eventData = new ProductoEventData(producto, "CREATE", "system");
+            EventGridPublisher.publishProductoEvent(EventType.PRODUCTO_CREADO, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.CREATED)
@@ -322,6 +328,10 @@ public class Function {
                     .body("{\"error\": \"Producto no encontrado\"}")
                     .build();
             }
+            
+            // Publicar evento en Event Grid
+            ProductoEventData eventData = new ProductoEventData(producto, "UPDATE", "system");
+            EventGridPublisher.publishProductoEvent(EventType.PRODUCTO_ACTUALIZADO, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.OK)
@@ -389,6 +399,13 @@ public class Function {
                     .body("{\"error\": \"Producto no encontrado\"}")
                     .build();
             }
+            
+            // Publicar evento en Event Grid
+            ProductoEventData eventData = new ProductoEventData();
+            eventData.setProductoId(Integer.parseInt(productId));
+            eventData.setOperation("DELETE");
+            eventData.setUsuario("system");
+            EventGridPublisher.publishProductoEvent(EventType.PRODUCTO_ELIMINADO, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.OK)
@@ -797,6 +814,11 @@ public class Function {
             }
 
             Integer bodegaId = insertBodega(bodega, logger);
+            
+            // Publicar evento en Event Grid
+            bodega.setId(bodegaId);
+            BodegaEventData eventData = new BodegaEventData(bodega, "CREATE", "system");
+            EventGridPublisher.publishBodegaEvent(EventType.BODEGA_CREADA, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.CREATED)
@@ -878,6 +900,10 @@ public class Function {
                     .body("{\"error\": \"Bodega no encontrada\"}")
                     .build();
             }
+            
+            // Publicar evento en Event Grid
+            BodegaEventData eventData = new BodegaEventData(bodega, "UPDATE", "system");
+            EventGridPublisher.publishBodegaEvent(EventType.BODEGA_ACTUALIZADA, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.OK)
@@ -945,6 +971,13 @@ public class Function {
                     .body("{\"error\": \"Bodega no encontrada\"}")
                     .build();
             }
+            
+            // Publicar evento en Event Grid
+            BodegaEventData eventData = new BodegaEventData();
+            eventData.setBodegaId(Integer.parseInt(bodegaId));
+            eventData.setOperation("DELETE");
+            eventData.setUsuario("system");
+            EventGridPublisher.publishBodegaEvent(EventType.BODEGA_ELIMINADA, eventData, logger);
 
             return request
                 .createResponseBuilder(HttpStatus.OK)
