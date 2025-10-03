@@ -1,0 +1,27 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "functionAppName": {
+      "value": "agranelos-inventario-functions"
+    },
+    "storageAccountName": {
+      "value": "agranelosinventario"
+    },
+    "eventGridTopicName": {
+      "value": "agranelos-eventgrid-topic"
+    },
+    "dbHost": {
+      "value": "50.19.86.166"
+    },
+    "dbName": {
+      "value": "inventario_agranelos"
+    },
+    "dbUser": {
+      "value": "postgres"
+    },
+    "dbPassword": {
+      "value": "YOUR_DB_PASSWORD_HERE"
+    }
+  }
+}

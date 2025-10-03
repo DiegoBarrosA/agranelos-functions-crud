@@ -1,0 +1,230 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "functionAppName": {
+      "type": "string",
+      "defaultValue": "agranelos-inventario-functions",
+      "metadata": {
+        "description": "Nombre de la Azure Function App"
+      }
+    },
+    "storageAccountName": {
+      "type": "string",
+      "defaultValue": "agranelosinventario",
+      "metadata": {
+        "description": "Nombre de la cuenta de almacenamiento"
+      }
+    },
+    "eventGridTopicName": {
+      "type": "string",
+      "defaultValue": "agranelos-eventgrid-topic",
+      "metadata": {
+        "description": "Nombre del Event Grid Topic"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Ubicación de los recursos"
+      }
+    },
+    "dbHost": {
+      "type": "string",
+      "metadata": {
+        "description": "Host de la base de datos PostgreSQL"
+      }
+    },
+    "dbName": {
+      "type": "string",
+      "defaultValue": "inventario_agranelos",
+      "metadata": {
+        "description": "Nombre de la base de datos"
+      }
+    },
+    "dbUser": {
+      "type": "string",
+      "metadata": {
+        "description": "Usuario de la base de datos"
+      }
+    },
+    "dbPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Contraseña de la base de datos"
+      }
+    }
+  },
+  "variables": {
+    "hostingPlanName": "[concat(parameters('functionAppName'), '-plan')]",
+    "applicationInsightsName": "[concat(parameters('functionAppName'), '-insights')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-09-01",
+      "name": "[parameters('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.EventGrid/topics",
+      "apiVersion": "2021-12-01",
+      "name": "[parameters('eventGridTopicName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "inputSchema": "EventGridSchema",
+        "publicNetworkAccess": "Enabled"
+      }
+    },
+    {
+      "type": "Microsoft.Insights/components",
+      "apiVersion": "2020-02-02",
+      "name": "[variables('applicationInsightsName')]",
+      "location": "[parameters('location')]",
+      "kind": "web",
+      "properties": {
+        "Application_Type": "web",
+        "Request_Source": "rest"
+      }
+    },
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2021-03-01",
+      "name": "[variables('hostingPlanName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "properties": {
+        "reserved": false
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[parameters('functionAppName')]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "[resourceId('Microsoft.Insights/components', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName'))]"
+      ],
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('hostingPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2021-09-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('storageAccountName'), ';EndpointSuffix=', environment().suffixes.storage, ';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2021-09-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(parameters('functionAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~4"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "java"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2020-02-02').InstrumentationKey]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('applicationInsightsName')), '2020-02-02').ConnectionString]"
+            },
+            {
+              "name": "EVENT_GRID_ENDPOINT",
+              "value": "[reference(resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName')), '2021-12-01').endpoint]"
+            },
+            {
+              "name": "EVENT_GRID_KEY",
+              "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName')), '2021-12-01').key1]"
+            },
+            {
+              "name": "DB_HOST",
+              "value": "[parameters('dbHost')]"
+            },
+            {
+              "name": "DB_PORT",
+              "value": "5432"
+            },
+            {
+              "name": "DB_NAME",
+              "value": "[parameters('dbName')]"
+            },
+            {
+              "name": "DB_USER",
+              "value": "[parameters('dbUser')]"
+            },
+            {
+              "name": "DB_PASSWORD",
+              "value": "[parameters('dbPassword')]"
+            },
+            {
+              "name": "DB_SSL_MODE",
+              "value": "disable"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "https://portal.azure.com"
+            ]
+          },
+          "use32BitWorkerProcess": false,
+          "javaVersion": "11"
+        },
+        "httpsOnly": true
+      }
+    }
+  ],
+  "outputs": {
+    "functionAppName": {
+      "type": "string",
+      "value": "[parameters('functionAppName')]"
+    },
+    "functionAppUrl": {
+      "type": "string",
+      "value": "[concat('https://', parameters('functionAppName'), '.azurewebsites.net')]"
+    },
+    "eventGridEndpoint": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName')), '2021-12-01').endpoint]"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+name: Deploy Azure Functions
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AZURE_FUNCTIONAPP_NAME: agranelos-inventario-functions
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'
+  JAVA_VERSION: '11'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 'Checkout GitHub Action'
+      uses: actions/checkout@v3
+
+    - name: Setup Java SDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: 'Restore Project Dependencies Using Maven'
+      shell: bash
+      run: |
+        pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+        mvn clean package
+        popd
+
+    - name: 'Run Azure Functions Action'
+      uses: Azure/functions-action@v1
+      with:
+        app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/target/azure-functions/${{ env.AZURE_FUNCTIONAPP_NAME }}'
+        publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+
+    - name: 'Notify Deployment Success'
+      if: success()
+      run: |
+        echo "✅ Deployment completed successfully!"
+        echo "Function App URL: https://${{ env.AZURE_FUNCTIONAPP_NAME }}.azurewebsites.net"
+
+    - name: 'Notify Deployment Failure'
+      if: failure()
+      run: |
+        echo "❌ Deployment failed. Check the logs for details."
