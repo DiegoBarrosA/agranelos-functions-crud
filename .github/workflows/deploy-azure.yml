@@ -45,7 +45,7 @@ jobs:
       uses: Azure/functions-action@v1
       with:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
-        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/target/azure-functions/${{ env.AZURE_FUNCTIONAPP_NAME }}'
+        package: '${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}/target/azure-functions/agranelos-inventario-functions'
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_233EB9B85DE548C18A928AC4CADA2CCE }}
 
     - name: 'Notify Deployment Success'
