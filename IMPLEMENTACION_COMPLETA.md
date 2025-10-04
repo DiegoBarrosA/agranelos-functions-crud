@@ -4,7 +4,7 @@
 
 **Fecha de finalización**: 3 de Octubre, 2025  
 **Branch**: sumativa-3-staging  
-**Commit**: f05ee23
+**Commit**: de916d1
 
 ---
 

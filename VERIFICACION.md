@@ -36,7 +36,8 @@ gh run view --repo DiegoBarrosA/agranelos-functions-crud
 ## 2. ✅ Verificar Estructura del Proyecto
 
 ```bash
-cd /media/diego/storage/Development/Repositories/agranelos-functions-crud-create
+# Desde la raíz del repositorio
+cd <repo-root>  # o usa: git clone https://github.com/DiegoBarrosA/agranelos-functions-crud.git && cd agranelos-functions-crud
 
 # Verificar archivos de eventos
 ls -la src/main/java/com/agranelos/inventario/events/
