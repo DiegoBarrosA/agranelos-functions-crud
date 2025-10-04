@@ -2,9 +2,9 @@ name: CI - Build and Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, sumativa-3-staging ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, sumativa-3-staging ]
   workflow_dispatch:
 
 env:
