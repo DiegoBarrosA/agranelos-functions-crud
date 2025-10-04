@@ -27,6 +27,12 @@ jobs:
     - name: 'Checkout GitHub Action'
       uses: actions/checkout@v3
 
+    - name: 'Azure Login'
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      continue-on-error: true
+
     - name: Setup Java SDK ${{ env.JAVA_VERSION }}
       uses: actions/setup-java@v3
       with:
