@@ -92,10 +92,13 @@ jobs:
       run: |
         echo "Verifying Azure Functions structure..."
         
-        FUNCTION_DIR="target/azure-functions/inventario-functions-create-20250830112014764"
+        FUNCTION_DIR="target/azure-functions/agranelos-inventario-functions"
         
         if [ ! -d "$FUNCTION_DIR" ]; then
           echo "❌ Azure Functions directory not found!"
+          echo "Expected: $FUNCTION_DIR"
+          echo "Contents of target/azure-functions/:"
+          ls -la target/azure-functions/ || echo "Directory doesn't exist"
           exit 1
         fi
         

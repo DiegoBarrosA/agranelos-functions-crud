@@ -14,7 +14,7 @@
         <java.version>11</java.version>
         <azure.functions.maven.plugin.version>1.24.0</azure.functions.maven.plugin.version>
         <azure.functions.java.library.version>2.2.0</azure.functions.java.library.version>
-        <functionAppName>inventario-functions-create-20250830112014764</functionAppName>
+        <functionAppName>agranelos-inventario-functions</functionAppName>
     </properties>
 
     <dependencies>
