@@ -68,20 +68,3 @@ jobs:
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_233EB9B85DE548C18A928AC4CADA2CCE }}
           slot-name: Production
           sku: flexconsumption
-
-      - name: Configure Azure Function App Settings
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az functionapp config appsettings set \
-              --name ${{ env.AZURE_FUNCTIONAPP_NAME }} \
-              --resource-group agranelos \
-              --settings \
-                "EVENT_GRID_ENDPOINT=${{ secrets.EVENT_GRID_ENDPOINT }}" \
-                "EVENT_GRID_KEY=${{ secrets.EVENT_GRID_KEY }}" \
-                "DB_HOST=${{ secrets.DB_HOST }}" \
-                "DB_PORT=${{ secrets.DB_PORT }}" \
-                "DB_NAME=${{ secrets.DB_NAME }}" \
-                "DB_USER=${{ secrets.DB_USER }}" \
-                "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" \
-                "DB_SSL_MODE=${{ secrets.DB_SSL_MODE }}"
