@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "java",
+    "DB_HOST": "<your-database-host>",
+    "DB_PORT": "5432",
+    "DB_NAME": "inventario_agranelos",
+    "DB_USER": "postgres",
+    "DB_PASSWORD": "<your-database-password>",
+    "DB_SSL_MODE": "disable",
+    "EVENT_GRID_ENDPOINT": "https://<your-eventgrid-topic>.eastus2-1.eventgrid.azure.net/api/events",
+    "EVENT_GRID_KEY": "<your-event-grid-access-key>"
+  }
+}
