@@ -162,11 +162,14 @@ public class EmailService {
             return;
         }
         
+        if (TO_EMAIL == null || TO_EMAIL.isEmpty()) {
+            logger.warning("Email destinatario (RECIPIENT_EMAIL) no configurado. Email no enviado.");
+            return;
+        }
+        
         try {
-            String recipient = TO_EMAIL != null && !TO_EMAIL.isEmpty() ? TO_EMAIL : "di.barros@duocuc.cl";
-            
             Email from = new Email(FROM_EMAIL);
-            Email to = new Email(recipient);
+            Email to = new Email(TO_EMAIL);
             Content content = new Content("text/html", htmlBody);
             Mail mail = new Mail(from, subject, to, content);
             
@@ -181,7 +184,7 @@ public class EmailService {
             
             if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
                 logger.info(String.format("Email enviado exitosamente a %s: %s (Status: %d)", 
-                    recipient, subject, response.getStatusCode()));
+                    TO_EMAIL, subject, response.getStatusCode()));
             } else {
                 logger.warning(String.format("Error al enviar email. Status: %d, Body: %s", 
                     response.getStatusCode(), response.getBody()));
