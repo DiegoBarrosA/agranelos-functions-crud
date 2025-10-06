@@ -96,6 +96,13 @@
             <artifactId>azure-core</artifactId>
             <version>1.45.0</version>
         </dependency>
+
+        <!-- SendGrid for Email notifications -->
+        <dependency>
+            <groupId>com.sendgrid</groupId>
+            <artifactId>sendgrid-java</artifactId>
+            <version>4.9.3</version>
+        </dependency>
     </dependencies>
 
     <build>

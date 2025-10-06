@@ -59,6 +59,12 @@ public class EventGridPublisher {
      * Publica un evento de producto en Event Grid
      */
     public static void publishProductoEvent(EventType eventType, ProductoEventData eventData, Logger logger) {
+        // Skip si no está configurado correctamente (evita errores en tests)
+        if (!isConfigured()) {
+            logger.warning("Event Grid no configurado, evento no publicado: " + eventType.getValue());
+            return;
+        }
+        
         try {
             initializeClient();
             
@@ -90,6 +96,12 @@ public class EventGridPublisher {
      * Publica un evento de bodega en Event Grid
      */
     public static void publishBodegaEvent(EventType eventType, BodegaEventData eventData, Logger logger) {
+        // Skip si no está configurado correctamente (evita errores en tests)
+        if (!isConfigured()) {
+            logger.warning("Event Grid no configurado, evento no publicado: " + eventType.getValue());
+            return;
+        }
+        
         try {
             initializeClient();
             

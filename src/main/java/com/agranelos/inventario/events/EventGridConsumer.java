@@ -5,8 +5,10 @@ import com.microsoft.azure.functions.annotation.EventGridTrigger;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.agranelos.inventario.services.EmailService;
 
 import java.util.logging.Logger;
+import java.util.Map;
 
 /**
  * Azure Functions que consumen eventos de Event Grid
@@ -37,8 +39,17 @@ public class EventGridConsumer {
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
             logger.info(String.format("Data: %s", eventSchema.getData()));
             
-            // Aquí puedes agregar lógica de negocio:
-            // - Enviar notificaciones por email/SMS
+            // Extraer información del producto
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long productoId = getLongFromData(data, "productoId");
+            String nombre = (String) data.get("nombre");
+            
+            // 📧 Enviar notificación por email
+            if (productoId != null && nombre != null) {
+                EmailService.sendProductoCreatedEmail(productoId, nombre, logger);
+            }
+            
+            // Aquí puedes agregar más lógica de negocio:
             // - Actualizar cachés
             // - Sincronizar con sistemas externos
             // - Registrar en sistemas de auditoría
@@ -67,6 +78,16 @@ public class EventGridConsumer {
             
             logger.info(String.format("Event Type: %s", eventSchema.getEventType()));
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
+            
+            // Extraer información del producto
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long productoId = getLongFromData(data, "productoId");
+            String nombre = (String) data.get("nombre");
+            
+            // 📧 Enviar notificación por email
+            if (productoId != null && nombre != null) {
+                EmailService.sendProductoUpdatedEmail(productoId, nombre, logger);
+            }
             
             // Lógica de negocio para actualizaciones
             // - Verificar cambios significativos de precio
@@ -97,6 +118,15 @@ public class EventGridConsumer {
             logger.info(String.format("Event Type: %s", eventSchema.getEventType()));
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
             
+            // Extraer información del producto
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long productoId = getLongFromData(data, "productoId");
+            
+            // 📧 Enviar notificación por email
+            if (productoId != null) {
+                EmailService.sendProductoDeletedEmail(productoId, logger);
+            }
+            
             // Lógica de negocio para eliminaciones
             // - Limpiar cachés
             // - Archivar información
@@ -125,6 +155,16 @@ public class EventGridConsumer {
             
             logger.info(String.format("Event Type: %s", eventSchema.getEventType()));
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
+            
+            // Extraer información de la bodega
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long bodegaId = getLongFromData(data, "bodegaId");
+            String nombre = (String) data.get("nombre");
+            
+            // 📧 Enviar notificación por email
+            if (bodegaId != null && nombre != null) {
+                EmailService.sendBodegaCreatedEmail(bodegaId, nombre, logger);
+            }
             
             // Lógica de negocio para nuevas bodegas
             // - Inicializar inventario
@@ -155,6 +195,16 @@ public class EventGridConsumer {
             logger.info(String.format("Event Type: %s", eventSchema.getEventType()));
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
             
+            // Extraer información de la bodega
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long bodegaId = getLongFromData(data, "bodegaId");
+            String nombre = (String) data.get("nombre");
+            
+            // 📧 Enviar notificación por email
+            if (bodegaId != null && nombre != null) {
+                EmailService.sendBodegaUpdatedEmail(bodegaId, nombre, logger);
+            }
+            
             logger.info("Evento procesado exitosamente");
             
         } catch (Exception e) {
@@ -179,11 +229,33 @@ public class EventGridConsumer {
             logger.info(String.format("Event Type: %s", eventSchema.getEventType()));
             logger.info(String.format("Subject: %s", eventSchema.getSubject()));
             
+            // Extraer información de la bodega
+            Map<String, Object> data = (Map<String, Object>) eventSchema.getData();
+            Long bodegaId = getLongFromData(data, "bodegaId");
+            
+            // 📧 Enviar notificación por email
+            if (bodegaId != null) {
+                EmailService.sendBodegaDeletedEmail(bodegaId, logger);
+            }
+            
             logger.info("Evento procesado exitosamente");
             
         } catch (Exception e) {
             logger.severe("Error procesando evento BodegaEliminada: " + e.getMessage());
         }
+    }
+    
+    /**
+     * Método auxiliar para extraer valores Long de forma segura
+     */
+    private Long getLongFromData(Map<String, Object> data, String key) {
+        Object value = data.get(key);
+        if (value instanceof Integer) {
+            return ((Integer) value).longValue();
+        } else if (value instanceof Long) {
+            return (Long) value;
+        }
+        return null;
     }
     
     /**
