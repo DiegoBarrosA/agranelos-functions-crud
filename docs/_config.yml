@@ -3,15 +3,6 @@ description: "GraphQL and REST API documentation for inventory management system
 baseurl: "/agranelos-functions-crud"
 url: "https://diegobarrosa.github.io"
 
-# Jekyll theme
-theme: minima
-
-# Plugins
-plugins:
-  - jekyll-feed
-  - jekyll-sitemap
-  - jekyll-seo-tag
-
 # Markdown processor
 markdown: kramdown
 highlighter: rouge

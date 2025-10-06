@@ -1,52 +1,56 @@
 ---
 layout: default
-title: Documentación API - Sistema Inventario Agranelos
-description: Documentación completa para las APIs REST y GraphQL del Sistema de Inventario Agranelos
+title: Documentacion API - Sistema Inventario Agranelos
+description: Documentacion completa para las APIs REST y GraphQL del Sistema de Inventario Agranelos
 ---
 
-# 📚 Documentación API - Sistema Inventario Agranelos
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.css">
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-footer.css">
+<script src="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.js"></script>
 
-> Sistema completo de gestión de inventario con APIs duales (REST y GraphQL)
+# Documentacion API - Sistema Inventario Agranelos
 
-## 🎯 Visión General
+> Sistema completo de gestion de inventario con APIs duales (REST y GraphQL)
 
-El Sistema de Inventario Agranelos proporciona APIs modernas para la gestión completa de productos y bodegas, implementado con tecnología cloud-native en Azure Functions.
+## Vision General
 
-### 🌟 Características Principales
+El Sistema de Inventario Agranelos proporciona APIs modernas para la gestion completa de productos y bodegas, implementado con tecnologia cloud-native en Azure Functions.
 
-- **🔗 API REST**: Endpoints tradicionales para operaciones CRUD
-- **🚀 API GraphQL**: Consultas flexibles y eficientes
-- **⚡ Field Mapping**: Mapeo automático de campos
-- **☁️ Cloud Native**: Desplegado en Azure Functions
-- **🧪 Testing Completo**: Scripts y Postman collection
+### Caracteristicas Principales
 
-### 📡 URLs Base
+- API REST: Endpoints tradicionales para operaciones CRUD
+- API GraphQL: Consultas flexibles y eficientes
+- Field Mapping: Mapeo automatico de campos
+- Cloud Native: Desplegado en Azure Functions
+- Testing Completo: Scripts y Postman collection
+
+### URLs Base
 
 ```
 REST API:    https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 GraphQL API: https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api/graphql
 ```
 
-### 🔧 Testing Tools
+### Testing Tools
 
-- **📋 Scripts Automatizados**: [`scripts/testing/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/scripts/testing)
-- **📦 Postman Collection**: [`postman/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman)
+- Scripts Automatizados: [`scripts/testing/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/scripts/testing)
+- Postman Collection: [`postman/`](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman)
 
 ---
 
-## 🎨 Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```mermaid
 graph TB
     %% Frontend Layer
-    subgraph "�️ Frontend Layer"
+    subgraph "Frontend Layer"
         WEB[Web Client]
         MOB[Mobile App]
         DESK[Desktop App]
     end
     
     %% BFF Layer (Repositorio Separado)
-    subgraph "🌉 BFF Layer (Backend for Frontend)"
+    subgraph "BFF Layer Backend for Frontend"
         BFF[BFF Service<br/>Repository Separado]
         CACHE[Cache Layer]
         AUTH[Authentication]
