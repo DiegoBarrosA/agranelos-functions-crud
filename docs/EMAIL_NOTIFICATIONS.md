@@ -1,38 +1,66 @@
-# 📧 Configuración de Notificaciones por Email
+# Configuracion de Notificaciones por Email
 
-## 📋 Resumen
-Este sistema envía notificaciones automáticas por email a `di.barros@duocuc.cl` cada vez que:
-- ✅ Se crea un producto o bodega
-- 🔄 Se actualiza un producto o bodega  
-- 🗑️ Se elimina un producto o bodega
+## Resumen
+Este sistema envia notificaciones automaticas por email a `di.barros@duocuc.cl` cada vez que:
+- Se crea un producto o bodega
+- Se actualiza un producto o bodega  
+- Se elimina un producto o bodega
 
-## 🔧 Configuración con Gmail (RECOMENDADO para proyecto universitario)
+## Configuracion con SendGrid
 
-### Paso 1: Crear una App Password de Gmail
+### Paso 1: Crear una Cuenta SendGrid
 
-Para usar Gmail SMTP desde Azure Functions, necesitas una **App Password** (no tu contraseña normal de Gmail).
+SendGrid ofrece un tier gratuito con 100 emails por dia, ideal para proyectos universitarios.
 
-#### 1.1 Habilitar la verificación en 2 pasos
+#### 1.1 Registrarse en SendGrid
 
-1. Ve a tu cuenta de Google: https://myaccount.google.com/
-2. En el menú izquierdo, selecciona **"Seguridad"**
-3. Busca **"Verificación en 2 pasos"** y haz clic en ella
-4. Sigue las instrucciones para habilitarla (si no la tienes activada)
+1. Ve a: https://signup.sendgrid.com/
+2. Completa el formulario de registro
+3. Verifica tu email haciendo clic en el enlace de confirmacion
+4. Completa el perfil de tu cuenta
 
-#### 1.2 Generar una App Password
+### Paso 2: Generar una API Key
 
-1. Una vez habilitada la verificación en 2 pasos, ve a: https://myaccount.google.com/apppasswords
-2. En "Selecciona la app", elige **"Correo"**
-3. En "Selecciona el dispositivo", elige **"Otro (nombre personalizado)"**
-4. Escribe un nombre como: `Azure Functions Agranelos`
-5. Haz clic en **"Generar"**
-6. **Copia la contraseña de 16 caracteres** que aparece (la necesitarás en el siguiente paso)
+#### 2.1 Crear la API Key
 
-⚠️ **IMPORTANTE**: Esta contraseña solo se muestra una vez. Guárdala en un lugar seguro.
+1. Inicia sesion en: https://app.sendgrid.com/
+2. En el menu lateral izquierdo, ve a **Settings** → **API Keys**
+3. Haz clic en **Create API Key**
+4. Configura la key:
+   - **API Key Name**: `AgranelosInventario`
+   - **API Key Permissions**: Selecciona **Full Access**
+5. Haz clic en **Create & View**
+6. **Copia la API Key completa** (comienza con `SG.`)
 
-### Paso 2: Configurar las Variables de Entorno
+⚠️ **IMPORTANTE**: Esta API Key solo se muestra una vez. Guardala en un lugar seguro.
 
-#### Opción A: Para Desarrollo Local
+### Paso 3: Verificar un Sender Email
+
+SendGrid requiere que verifiques el email desde el cual enviaras mensajes.
+
+#### 3.1 Single Sender Verification
+
+1. En SendGrid, ve a **Settings** → **Sender Authentication**
+2. En la seccion **Single Sender Verification**, haz clic en **Get Started** o **Verify a Single Sender**
+3. Completa el formulario:
+   - **From Name**: `Sistema Inventario Agranelos`
+   - **From Email Address**: Tu email personal (puede ser Gmail, Outlook, etc.)
+   - **Reply To**: El mismo email
+   - **Company Address**: Direccion de DuocUC o tu direccion personal
+   - **City**: Santiago
+   - **State**: Metropolitana
+   - **Zip Code**: Codigo postal
+   - **Country**: Chile
+4. Haz clic en **Create**
+5. **Revisa tu bandeja de entrada** del email que proporcionaste
+6. Abre el email de SendGrid y haz clic en **Verify Single Sender**
+7. Confirma la verificacion en la pagina web
+
+✅ Una vez verificado, este email estara autorizado para enviar mensajes.
+
+### Paso 4: Configurar las Variables de Entorno
+
+#### Opcion A: Para Desarrollo Local
 
 Edita el archivo `local.settings.json`:
 
@@ -50,159 +78,226 @@ Edita el archivo `local.settings.json`:
     "DB_SSL_MODE": "disable",
     "EVENT_GRID_ENDPOINT": "https://tu-eventgrid.eventgrid.azure.net/api/events",
     "EVENT_GRID_KEY": "tu-event-grid-key",
-    "GMAIL_SENDER_EMAIL": "tu-email@gmail.com",
-    "GMAIL_APP_PASSWORD": "xxxx xxxx xxxx xxxx"
+    "SENDGRID_API_KEY": "SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "SENDER_EMAIL": "tu-email-verificado@example.com",
+    "RECIPIENT_EMAIL": "di.barros@duocuc.cl"
   }
 }
 ```
 
 Reemplaza:
-- `tu-email@gmail.com` con tu cuenta de Gmail
-- `xxxx xxxx xxxx xxxx` con la App Password que generaste en el Paso 1.2
+- `SG.xxxx` con la API Key que generaste en el Paso 2
+- `tu-email-verificado@example.com` con el email que verificaste en el Paso 3
+- `di.barros@duocuc.cl` es el destinatario de las notificaciones
 
-#### Opción B: Para Azure (Producción)
+#### Opcion B: Para Azure (Produccion)
 
 Configura las variables en Azure Portal o con Azure CLI:
 
 ```bash
-# Configurar Gmail Sender Email
+# Configurar SendGrid API Key
 az functionapp config appsettings set \
   --name agranelos-inventario-functions \
   --resource-group agranelos-inventario-rg \
-  --settings GMAIL_SENDER_EMAIL="tu-email@gmail.com"
+  --settings SENDGRID_API_KEY="SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
-# Configurar Gmail App Password
+# Configurar Sender Email (email verificado en SendGrid)
 az functionapp config appsettings set \
   --name agranelos-inventario-functions \
   --resource-group agranelos-inventario-rg \
-  --settings GMAIL_APP_PASSWORD="xxxx xxxx xxxx xxxx"
+  --settings SENDER_EMAIL="tu-email-verificado@example.com"
+
+# Configurar Recipient Email (destinatario de notificaciones)
+az functionapp config appsettings set \
+  --name agranelos-inventario-functions \
+  --resource-group agranelos-inventario-rg \
+  --settings RECIPIENT_EMAIL="di.barros@duocuc.cl"
 ```
 
-### Paso 3: Verificar la Configuración
+O desde Azure Portal:
+1. Ve a tu Function App
+2. **Configuration** → **Application settings**
+3. Agrega las 3 variables: `SENDGRID_API_KEY`, `SENDER_EMAIL`, `RECIPIENT_EMAIL`
 
-#### 3.1 Compilar el proyecto
+### Paso 5: Verificar la Configuracion
+
+#### 5.1 Compilar el proyecto
 
 ```bash
 mvn clean package
 ```
 
-#### 3.2 Iniciar Azure Functions localmente
+#### 5.2 Iniciar Azure Functions localmente
 
 ```bash
 mvn azure-functions:run
 ```
 
-#### 3.3 Crear un producto de prueba
+#### 5.3 Crear un producto de prueba
 
 ```bash
 curl -X POST http://localhost:7071/api/productos \
   -H "Content-Type: application/json" \
   -d '{
     "nombre": "Producto de Prueba Email",
-    "descripcion": "Prueba de notificación",
+    "descripcion": "Prueba de notificacion",
     "precio": 1000,
     "stock": 10,
     "bodegaId": 1
   }'
 ```
 
-#### 3.4 Verificar logs
+#### 5.4 Verificar logs
 
 Busca en los logs del terminal:
 
 ```
 [INFO] === Evento ProductoCreado Recibido ===
 [INFO] Event Type: Agranelos.Inventario.ProductoCreado
-[INFO] ✉️ Email enviado exitosamente a di.barros@duocuc.cl
+[INFO] Email enviado exitosamente a di.barros@duocuc.cl: Nuevo Producto Creado - Inventario Agranelos (Status: 202)
 ```
 
-#### 3.5 Revisar tu email
+#### 5.5 Revisar tu email
 
-Revisa la bandeja de entrada de `di.barros@duocuc.cl`. Deberías ver un email como:
+Revisa la bandeja de entrada de `di.barros@duocuc.cl`. Deberias ver un email HTML como:
 
 ```
-Asunto: ✅ Nuevo Producto Creado - Inventario Agranelos
+Asunto: Nuevo Producto Creado - Inventario Agranelos
 
-Hola,
+Nuevo Producto Creado
 
 Se ha creado un nuevo producto en el sistema de inventario:
 
-📦 ID del Producto: 123
-📝 Nombre: Producto de Prueba Email
-⏰ Fecha: 2025-10-05T14:30:00
+• ID: 123
+• Nombre: Producto de Prueba Email
+• Fecha: 2025-10-05T14:30:00
 
-Este es un mensaje automático del sistema de gestión de inventario Agranelos.
-
-Saludos,
 Sistema de Inventario Agranelos
 ```
 
-## 🎯 Tipos de Notificaciones
+## Tipos de Notificaciones
 
-El sistema envía 6 tipos de emails:
+El sistema envia 6 tipos de emails:
 
 ### Para Productos:
-1. **✅ ProductoCreado** - Cuando se crea un nuevo producto
-2. **🔄 ProductoActualizado** - Cuando se actualiza un producto existente
-3. **🗑️ ProductoEliminado** - Cuando se elimina un producto
+1. **ProductoCreado** - Cuando se crea un nuevo producto
+2. **ProductoActualizado** - Cuando se actualiza un producto existente
+3. **ProductoEliminado** - Cuando se elimina un producto
 
 ### Para Bodegas:
-4. **✅ BodegaCreada** - Cuando se crea una nueva bodega
-5. **🔄 BodegaActualizada** - Cuando se actualiza una bodega existente
-6. **🗑️ BodegaEliminada** - Cuando se elimina una bodega
+4. **BodegaCreada** - Cuando se crea una nueva bodega
+5. **BodegaActualizada** - Cuando se actualiza una bodega existente
+6. **BodegaEliminada** - Cuando se elimina una bodega
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
-### Error: "GMAIL_SENDER_EMAIL no configurado"
+### Error: "SendGrid API Key no configurada"
 
-**Solución**: Verifica que hayas agregado las variables `GMAIL_SENDER_EMAIL` y `GMAIL_APP_PASSWORD` en `local.settings.json`.
+**Solucion**: Verifica que hayas agregado la variable `SENDGRID_API_KEY` en `local.settings.json` o en las configuraciones de Azure Function App.
 
-### Error: "Authentication failed"
+### Error: "Email remitente no configurado"
+
+**Solucion**: Verifica que hayas agregado la variable `SENDER_EMAIL` con el email que verificaste en SendGrid.
+
+### Error: "401 Unauthorized"
 
 **Causas posibles**:
-1. La App Password es incorrecta
-2. No has habilitado la verificación en 2 pasos
-3. Estás usando tu contraseña normal en vez de la App Password
+1. La API Key es incorrecta
+2. La API Key ha sido eliminada o revocada
+3. La API Key no tiene los permisos necesarios
 
-**Solución**: 
-- Genera una nueva App Password siguiendo el Paso 1
-- Asegúrate de copiar la App Password completa (16 caracteres con espacios)
+**Solucion**: 
+- Genera una nueva API Key en SendGrid con **Full Access**
+- Verifica que copiaste la key completa (comienza con `SG.`)
 
-### Error: "Could not connect to SMTP host"
+### Error: "403 Forbidden"
 
-**Solución**: Verifica tu conexión a Internet. Gmail SMTP usa el puerto 587.
+**Causa**: El sender email no esta verificado en SendGrid.
+
+**Solucion**: 
+1. Ve a SendGrid → Settings → Sender Authentication
+2. Verifica el sender email siguiendo el proceso del Paso 3
+3. Asegurate de hacer clic en el enlace de verificacion del email
+
+### Error: Status Code 400 o superior
+
+**Solucion**: Revisa los logs detallados. SendGrid devuelve el error en el body del response. Busca en los logs:
+
+```
+[WARNING] Error al enviar email. Status: 400, Body: {"errors":[...]}
+```
 
 ### Los emails no llegan
 
-**Solución**:
+**Soluciones**:
 1. Revisa la carpeta de SPAM de `di.barros@duocuc.cl`
-2. Verifica que el email del remitente esté bien escrito
+2. Verifica en el SendGrid Dashboard:
+   - Ve a https://app.sendgrid.com/
+   - Click en **Activity**
+   - Busca tus emails enviados y su estado
 3. Revisa los logs de Azure Functions para errores
+4. Verifica que `RECIPIENT_EMAIL` este correctamente configurado
 
-## 🔐 Seguridad
+### Limite de envios alcanzado
 
-✅ **Buenas prácticas implementadas**:
-- Usa App Password en lugar de la contraseña real
-- No incluye credenciales en el código fuente
+**Causa**: El plan gratuito de SendGrid permite 100 emails por dia.
+
+**Solucion**: 
+- Monitorea tu uso en el SendGrid Dashboard
+- Para proyectos de produccion, considera actualizar a un plan pago
+- Durante desarrollo, evita crear loops de eventos que generen multiples emails
+
+## Monitoreo con SendGrid Dashboard
+
+SendGrid proporciona un dashboard completo para monitorear tus emails:
+
+1. Ve a https://app.sendgrid.com/
+2. Click en **Activity**
+3. Aqui puedes ver:
+   - Emails enviados
+   - Emails entregados
+   - Emails rebotados (bounced)
+   - Emails marcados como spam
+   - Tasa de apertura (si tienes tracking habilitado)
+
+## Seguridad
+
+Buenas practicas implementadas:
+- API Key en lugar de credenciales SMTP
+- No incluye credenciales en el codigo fuente
 - Las credenciales se configuran mediante variables de entorno
-- El archivo `local.settings.json` está en `.gitignore`
+- El archivo `local.settings.json` esta en `.gitignore`
+- Sender email verificado por SendGrid
 
 ⚠️ **NUNCA HAGAS COMMIT DE**:
 - `local.settings.json` con tus credenciales reales
-- Tu App Password de Gmail
+- Tu API Key de SendGrid
 - Cualquier dato sensible
 
-## 📚 Referencias
+## Limites del Plan Gratuito
 
-- [Configurar App Passwords de Google](https://support.google.com/accounts/answer/185833)
-- [Gmail SMTP Settings](https://support.google.com/mail/answer/7126229)
-- [JavaMail API Documentation](https://javaee.github.io/javamail/)
+SendGrid Free Tier incluye:
+- 100 emails por dia
+- Sin limite de validez
+- No requiere tarjeta de credito
+- Retencion de logs por 3 dias
+- Acceso completo al dashboard de actividad
 
-## 💡 Próximas Mejoras
+## Referencias
+
+- [SendGrid Documentation](https://docs.sendgrid.com/)
+- [SendGrid Java Library](https://github.com/sendgrid/sendgrid-java)
+- [Single Sender Verification Guide](https://docs.sendgrid.com/ui/sending-email/sender-verification)
+- [SendGrid API Reference](https://docs.sendgrid.com/api-reference/mail-send/mail-send)
+
+## Proximas Mejoras
 
 Para un proyecto profesional, considera:
-- Usar **Azure Communication Services** para emails
-- Usar **SendGrid** para mayor escalabilidad
-- Implementar templates HTML para emails más bonitos
-- Agregar lógica de retry en caso de fallo
+- Implementar templates HTML personalizados con branding
+- Agregar logica de retry en caso de fallo temporal
+- Implementar rate limiting para evitar exceder cuota diaria
+- Agregar notificaciones agrupadas (digest diario)
+- Configurar webhooks de SendGrid para tracking avanzado
+- Implementar diferentes destinatarios segun tipo de evento
+
 - Implementar rate limiting para evitar spam
