@@ -32,14 +32,14 @@ else
     echo -e "${YELLOW}   Configura tu API key de SendGrid para recibir emails${NC}"
 fi
 
-if grep -q "FROM_EMAIL" local.settings.json 2>/dev/null; then
-    FROM_EMAIL=$(grep "FROM_EMAIL" local.settings.json | cut -d'"' -f4)
-    echo -e "${GREEN}✅ FROM_EMAIL: ${FROM_EMAIL}${NC}"
+if grep -q "SENDER_EMAIL" local.settings.json 2>/dev/null; then
+    SENDER_EMAIL=$(grep "SENDER_EMAIL" local.settings.json | cut -d'"' -f4)
+    echo -e "${GREEN}✅ SENDER_EMAIL: ${SENDER_EMAIL}${NC}"
 fi
 
-if grep -q "NOTIFICATION_EMAIL" local.settings.json 2>/dev/null; then
-    NOTIFICATION_EMAIL=$(grep "NOTIFICATION_EMAIL" local.settings.json | cut -d'"' -f4)
-    echo -e "${GREEN}✅ NOTIFICATION_EMAIL: ${NOTIFICATION_EMAIL}${NC}"
+if grep -q "RECIPIENT_EMAIL" local.settings.json 2>/dev/null; then
+    RECIPIENT_EMAIL=$(grep "RECIPIENT_EMAIL" local.settings.json | cut -d'"' -f4)
+    echo -e "${GREEN}✅ RECIPIENT_EMAIL: ${RECIPIENT_EMAIL}${NC}"
 fi
 
 echo ""
@@ -146,7 +146,7 @@ echo ""
 echo -e "${GREEN}✅ Tests completados${NC}"
 echo ""
 echo -e "${YELLOW}📬 Revisa tu bandeja de entrada:${NC}"
-echo -e "   Email configurado: ${NOTIFICATION_EMAIL}"
+echo -e "   Email configurado: ${RECIPIENT_EMAIL}"
 echo ""
 echo -e "${YELLOW}📧 Deberías haber recibido 6 emails:${NC}"
 echo -e "   1. ✅ Nuevo Producto Creado"
