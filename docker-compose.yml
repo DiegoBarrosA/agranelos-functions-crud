@@ -1,23 +1,71 @@
 version: '3.8'
 
 services:
-  bff-microservice:
-    build:
-      context: ./bff-microservice
-      dockerfile: Dockerfile
+  # Azure Functions runtime for local development
+  azure-functions:
+    image: mcr.microsoft.com/azure-functions/java:4-java17-appservice
+    container_name: agranelos-functions
     ports:
-      - "8080:8080"
+      - "7071:80"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - AZURE_FUNCTIONS_BASE_URL=${AZURE_FUNCTIONS_BASE_URL}
+      - AzureWebJobsScriptRoot=/home/site/wwwroot
+      - AzureFunctionsJobHost__Logging__Console__IsEnabled=true
+      - FUNCTIONS_WORKER_RUNTIME=java
+      - WEBSITE_HOSTNAME=localhost
     volumes:
-      - ./bff-microservice/logs:/app/logs
+      - ./target/azure-functions/agranelos-inventario-functions:/home/site/wwwroot:ro
+    networks:
+      - agranelos-network
+    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:80/api/GetProductos"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      - postgres
+
+  # PostgreSQL database for Azure Functions
+  postgres:
+    image: postgres:15-alpine
+    container_name: agranelos-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-agranelos_inventario}
+      - POSTGRES_USER=${POSTGRES_USER:-agranelos}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-myStrongPassword123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    networks:
+      - agranelos-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-agranelos} -d ${POSTGRES_DB:-agranelos_inventario}"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 40s
+      start_period: 30s
+
+  # BFF service (references external compose in agranelos-bff)
+  bff:
+    profiles:
+      - full-stack
+    build:
+      context: ../agranelos-bff
+      dockerfile: Dockerfile
+    container_name: agranelos-bff-integrated
+    ports:
+      - "8080:8080"
+    environment:
+      - AZURE_FUNCTIONS_BASE_URL=http://azure-functions:80/api
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - agranelos-network
+    depends_on:
+      - azure-functions
     restart: unless-stopped
 
   # Para desarrollo local con Azure Functions corriendo localmente
@@ -64,6 +112,12 @@ services:
     networks:
       - testing-network
 
+volumes:
+  postgres_data:
+    driver: local
+
 networks:
+  agranelos-network:
+    driver: bridge
   testing-network:
     driver: bridge
