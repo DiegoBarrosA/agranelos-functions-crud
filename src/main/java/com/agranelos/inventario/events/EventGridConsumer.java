@@ -6,7 +6,12 @@ import com.microsoft.azure.functions.annotation.FunctionName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.agranelos.inventario.services.EmailService;
+import com.agranelos.inventario.db.DatabaseManager;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 import java.util.Map;
 
@@ -49,11 +54,15 @@ public class EventGridConsumer {
                 EmailService.sendProductoCreatedEmail(productoId, nombre, logger);
             }
             
-            // Aquí puedes agregar más lógica de negocio:
-            // - Actualizar cachés
-            // - Sincronizar con sistemas externos
-            // - Registrar en sistemas de auditoría
-            // - Activar workflows de aprobación
+            // 🏭 FUNCIONALIDAD REQUERIDA: Asignar bodega por defecto automáticamente
+            if (productoId != null) {
+                try {
+                    asignarBodegaPorDefecto(productoId, logger);
+                    logger.info("Bodega por defecto asignada al producto ID: " + productoId);
+                } catch (Exception e) {
+                    logger.severe("Error asignando bodega por defecto al producto " + productoId + ": " + e.getMessage());
+                }
+            }
             
             logger.info("Evento procesado exitosamente");
             
@@ -238,6 +247,16 @@ public class EventGridConsumer {
                 EmailService.sendBodegaDeletedEmail(bodegaId, logger);
             }
             
+            // 🏭 FUNCIONALIDAD REQUERIDA: Reasignar productos de bodega eliminada
+            if (bodegaId != null) {
+                try {
+                    reasignarProductosDeBodegaEliminada(bodegaId, logger);
+                    logger.info("Productos reasignados exitosamente de bodega eliminada ID: " + bodegaId);
+                } catch (Exception e) {
+                    logger.severe("Error reasignando productos de bodega eliminada " + bodegaId + ": " + e.getMessage());
+                }
+            }
+            
             logger.info("Evento procesado exitosamente");
             
         } catch (Exception e) {
@@ -334,6 +353,232 @@ public class EventGridConsumer {
         
         public void setTopic(String topic) {
             this.topic = topic;
+        }
+    }
+    
+    /**
+     * FUNCIONALIDAD REQUERIDA: Asignar bodega por defecto cuando se crea un producto
+     * Requisito: "Cuando se cree un producto, automáticamente se le deberá asignar una bodega por defecto"
+     */
+    private void asignarBodegaPorDefecto(Long productoId, Logger logger) throws SQLException {
+        logger.info("Iniciando asignación de bodega por defecto para producto ID: " + productoId);
+        
+        try (Connection connection = DatabaseManager.getConnection()) {
+            // 1. Buscar bodega por defecto (primera bodega disponible o la de mayor capacidad)
+            Long bodegaDefecto = obtenerBodegaPorDefecto(connection, logger);
+            
+            if (bodegaDefecto == null) {
+                logger.warning("No se encontró ninguna bodega disponible para asignar al producto " + productoId);
+                return;
+            }
+            
+            // 2. Verificar si ya existe entrada en INVENTARIO para este producto
+            if (existeEnInventario(connection, productoId, bodegaDefecto)) {
+                logger.info("El producto " + productoId + " ya tiene asignada la bodega " + bodegaDefecto);
+                return;
+            }
+            
+            // 3. Crear entrada en tabla INVENTARIO con cantidad inicial 0
+            String insertSql = "INSERT INTO INVENTARIO (IDProducto, IDBodega, Cantidad, FechaActualizacion) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+            
+            try (PreparedStatement stmt = connection.prepareStatement(insertSql)) {
+                stmt.setLong(1, productoId);
+                stmt.setLong(2, bodegaDefecto);
+                stmt.setInt(3, 0); // Cantidad inicial en 0
+                
+                int rowsAffected = stmt.executeUpdate();
+                
+                if (rowsAffected > 0) {
+                    logger.info(String.format(
+                        "✅ Producto ID %d asignado exitosamente a bodega por defecto ID %d", 
+                        productoId, bodegaDefecto
+                    ));
+                } else {
+                    logger.warning("No se pudo insertar en INVENTARIO para producto " + productoId);
+                }
+            }
+            
+        } catch (SQLException e) {
+            logger.severe("Error en base de datos al asignar bodega por defecto: " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    /**
+     * Obtiene la bodega por defecto (primera disponible o criterio de negocio)
+     */
+    private Long obtenerBodegaPorDefecto(Connection connection, Logger logger) throws SQLException {
+        // Estrategia: Buscar la bodega con mayor capacidad disponible
+        String selectSql = "SELECT ID FROM BODEGA ORDER BY Capacidad DESC, ID ASC LIMIT 1";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(selectSql);
+             ResultSet rs = stmt.executeQuery()) {
+            
+            if (rs.next()) {
+                Long bodegaId = rs.getLong("ID");
+                logger.info("Bodega por defecto seleccionada: ID " + bodegaId);
+                return bodegaId;
+            }
+        }
+        
+        logger.warning("No se encontraron bodegas disponibles");
+        return null;
+    }
+    
+    /**
+     * Verifica si ya existe una entrada en INVENTARIO para el producto y bodega dados
+     */
+    private boolean existeEnInventario(Connection connection, Long productoId, Long bodegaId) throws SQLException {
+        String selectSql = "SELECT COUNT(*) as count FROM INVENTARIO WHERE IDProducto = ? AND IDBodega = ?";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(selectSql)) {
+            stmt.setLong(1, productoId);
+            stmt.setLong(2, bodegaId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("count") > 0;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * FUNCIONALIDAD REQUERIDA: Reasignar productos cuando se elimina una bodega
+     * Requisito: "Cuando se elimine una bodega automáticamente se deberá actualizar los productos pertenecientes a esa bodega y se les deberá quitar"
+     */
+    private void reasignarProductosDeBodegaEliminada(Long bodegaEliminadaId, Logger logger) throws SQLException {
+        logger.info("Iniciando reasignación de productos de bodega eliminada ID: " + bodegaEliminadaId);
+        
+        try (Connection connection = DatabaseManager.getConnection()) {
+            // 1. Buscar productos que estaban en la bodega eliminada
+            String selectProductosSql = "SELECT IDProducto, Cantidad FROM INVENTARIO WHERE IDBodega = ?";
+            
+            try (PreparedStatement selectStmt = connection.prepareStatement(selectProductosSql)) {
+                selectStmt.setLong(1, bodegaEliminadaId);
+                
+                try (ResultSet rs = selectStmt.executeQuery()) {
+                    int productosReasignados = 0;
+                    
+                    while (rs.next()) {
+                        Long productoId = rs.getLong("IDProducto");
+                        int cantidad = rs.getInt("Cantidad");
+                        
+                        // 2. Buscar bodega alternativa (excluyendo la eliminada)
+                        Long bodegaAlternativa = obtenerBodegaAlternativa(connection, bodegaEliminadaId, logger);
+                        
+                        if (bodegaAlternativa != null) {
+                            // 3. Reasignar producto a nueva bodega
+                            reasignarProducto(connection, productoId, bodegaEliminadaId, bodegaAlternativa, cantidad, logger);
+                            productosReasignados++;
+                            
+                            logger.info(String.format(
+                                "Producto ID %d reasignado de bodega %d a bodega %d (cantidad: %d)", 
+                                productoId, bodegaEliminadaId, bodegaAlternativa, cantidad
+                            ));
+                        } else {
+                            // 4. Si no hay bodega alternativa, eliminar del inventario
+                            eliminarDeInventario(connection, productoId, bodegaEliminadaId, logger);
+                            
+                            logger.info(String.format(
+                                "Producto ID %d eliminado del inventario (no hay bodegas alternativas)", 
+                                productoId
+                            ));
+                        }
+                    }
+                    
+                    logger.info(String.format(
+                        "✅ Reasignación completada: %d productos procesados de bodega eliminada ID %d", 
+                        productosReasignados, bodegaEliminadaId
+                    ));
+                }
+            }
+            
+        } catch (SQLException e) {
+            logger.severe("Error en base de datos al reasignar productos: " + e.getMessage());
+            throw e;
+        }
+    }
+    
+    /**
+     * Obtiene una bodega alternativa (excluyendo la bodega eliminada)
+     */
+    private Long obtenerBodegaAlternativa(Connection connection, Long bodegaEliminadaId, Logger logger) throws SQLException {
+        String selectSql = "SELECT ID FROM BODEGA WHERE ID != ? ORDER BY Capacidad DESC, ID ASC LIMIT 1";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(selectSql)) {
+            stmt.setLong(1, bodegaEliminadaId);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getLong("ID");
+                }
+            }
+        }
+        
+        return null; // No hay bodegas alternativas disponibles
+    }
+    
+    /**
+     * Reasigna un producto de una bodega a otra
+     */
+    private void reasignarProducto(Connection connection, Long productoId, Long bodegaOrigen, 
+                                 Long bodegaDestino, int cantidad, Logger logger) throws SQLException {
+        
+        // Estrategia: UPDATE si ya existe entrada en bodega destino, INSERT si no existe
+        String checkExistsSql = "SELECT Cantidad FROM INVENTARIO WHERE IDProducto = ? AND IDBodega = ?";
+        
+        try (PreparedStatement checkStmt = connection.prepareStatement(checkExistsSql)) {
+            checkStmt.setLong(1, productoId);
+            checkStmt.setLong(2, bodegaDestino);
+            
+            try (ResultSet rs = checkStmt.executeQuery()) {
+                if (rs.next()) {
+                    // Ya existe, sumar las cantidades
+                    int cantidadExistente = rs.getInt("Cantidad");
+                    String updateSql = "UPDATE INVENTARIO SET Cantidad = ?, FechaActualizacion = CURRENT_TIMESTAMP WHERE IDProducto = ? AND IDBodega = ?";
+                    
+                    try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                        updateStmt.setInt(1, cantidadExistente + cantidad);
+                        updateStmt.setLong(2, productoId);
+                        updateStmt.setLong(3, bodegaDestino);
+                        updateStmt.executeUpdate();
+                    }
+                } else {
+                    // No existe, crear nueva entrada
+                    String insertSql = "INSERT INTO INVENTARIO (IDProducto, IDBodega, Cantidad, FechaActualizacion) VALUES (?, ?, ?, CURRENT_TIMESTAMP)";
+                    
+                    try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                        insertStmt.setLong(1, productoId);
+                        insertStmt.setLong(2, bodegaDestino);
+                        insertStmt.setInt(3, cantidad);
+                        insertStmt.executeUpdate();
+                    }
+                }
+            }
+        }
+        
+        // Eliminar entrada de bodega origen
+        eliminarDeInventario(connection, productoId, bodegaOrigen, logger);
+    }
+    
+    /**
+     * Elimina un producto del inventario de una bodega específica
+     */
+    private void eliminarDeInventario(Connection connection, Long productoId, Long bodegaId, Logger logger) throws SQLException {
+        String deleteSql = "DELETE FROM INVENTARIO WHERE IDProducto = ? AND IDBodega = ?";
+        
+        try (PreparedStatement deleteStmt = connection.prepareStatement(deleteSql)) {
+            deleteStmt.setLong(1, productoId);
+            deleteStmt.setLong(2, bodegaId);
+            
+            int rowsDeleted = deleteStmt.executeUpdate();
+            
+            if (rowsDeleted > 0) {
+                logger.info(String.format("Entrada eliminada del inventario: Producto %d, Bodega %d", productoId, bodegaId));
+            }
         }
     }
 }
