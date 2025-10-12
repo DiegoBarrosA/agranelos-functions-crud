@@ -166,11 +166,14 @@ cd scripts/testing
 
 ### Testing con Docker Compose
 ```bash
-# Para testing automatizado
+# Para testing automatizado (incluye BFF microservice)
 docker-compose --profile testing up api-tests
 
-# Para desarrollo local
+# Para desarrollo local solamente
 docker-compose --profile local up bff-microservice-local
+
+# Ver logs del testing
+docker-compose --profile testing logs -f api-tests
 ```
 
 ### Coleccion Postman

@@ -36,8 +36,8 @@ El archivo `Containerfile` define un entorno de testing estándar con:
 ### Docker Compose
 El archivo `docker-compose.yml` incluye:
 - **bff-microservice**: Servicio principal de producción
-- **bff-microservice-local**: Servicio para desarrollo local
-- **api-tests**: Contenedor de testing con perfil específico
+- **bff-microservice-local**: Servicio para desarrollo local y testing (perfiles: local, testing)
+- **api-tests**: Contenedor de testing que depende del BFF microservice
 
 ## Uso Básico
 
@@ -52,11 +52,14 @@ El archivo `docker-compose.yml` incluye:
 
 ### 2. Testing con Docker Compose
 ```bash
-# Activar perfil de testing
+# Activar perfil de testing (inicia BFF microservice y api-tests)
 docker-compose --profile testing up api-tests
 
 # Ver logs del testing
-docker-compose --profile testing logs api-tests
+docker-compose --profile testing logs -f api-tests
+
+# Ver logs del BFF microservice
+docker-compose --profile testing logs -f bff-microservice-local
 ```
 
 ### 3. Build Manual del Contenedor

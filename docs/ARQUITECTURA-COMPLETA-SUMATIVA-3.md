@@ -275,6 +275,7 @@ GET    /actuator/health
 
 **Queries Disponibles**:
 ```graphql
+# Query básica para obtener todos los productos
 query {
   productos {
     id
@@ -285,23 +286,43 @@ query {
     fechaCreacion
     fechaActualizacion
   }
-  
-  producto(id: Int!) {
+}
+
+# Query para obtener un producto específico
+query {
+  producto(id: 1) {
     id
     nombre
     descripcion
     precio
     cantidadEnStock
   }
-  
+}
+
+# Query con variables
+query GetProducto($id: Int!) {
+  producto(id: $id) {
+    id
+    nombre
+    descripcion
+    precio
+    cantidadEnStock
+  }
+}
+
+# Query para obtener todas las bodegas
+query {
   bodegas {
     id
     nombre
     ubicacion
     capacidad
   }
-  
-  bodega(id: Int!) {
+}
+
+# Query para obtener una bodega específica
+query {
+  bodega(id: 1) {
     id
     nombre
     ubicacion
@@ -312,37 +333,101 @@ query {
 
 **Mutations Disponibles**:
 ```graphql
+# Crear un nuevo producto
 mutation {
   crearProducto(input: {
-    nombre: "Producto"
-    descripcion: "Descripción"
-    precio: 99.99
-    cantidadEnStock: 10
+    nombre: "Laptop Dell"
+    descripcion: "Laptop para desarrollo"
+    precio: 899.99
+    cantidadEnStock: 5
   }) {
     id
     nombre
     precio
   }
-  
-  actualizarProducto(id: Int!, input: ProductoInput!) {
+}
+
+# Actualizar un producto con valores literales
+mutation {
+  actualizarProducto(id: 1, input: {
+    nombre: "Laptop Dell Actualizada"
+    descripcion: "Laptop para desarrollo y gaming"
+    precio: 999.99
+    cantidadEnStock: 3
+  }) {
     id
     nombre
     precio
   }
-  
-  eliminarProducto(id: Int!)
-  
-  crearBodega(input: BodegaInput!) {
+}
+
+# Actualizar un producto con variables
+mutation UpdateProducto($id: Int!, $input: ProductoInput!) {
+  actualizarProducto(id: $id, input: $input) {
     id
     nombre
+    precio
+    cantidadEnStock
   }
-  
-  actualizarBodega(id: Int!, input: BodegaInput!) {
+}
+
+# Eliminar un producto
+mutation {
+  eliminarProducto(id: 1)
+}
+
+# Crear una nueva bodega
+mutation {
+  crearBodega(input: {
+    nombre: "Almacén Central"
+    ubicacion: "Santiago, Chile"
+    capacidad: 1000
+  }) {
     id
     nombre
+    ubicacion
   }
-  
-  eliminarBodega(id: Int!)
+}
+
+# Actualizar una bodega
+mutation {
+  actualizarBodega(id: 1, input: {
+    nombre: "Almacén Central Renovado"
+    ubicacion: "Santiago Centro, Chile"
+    capacidad: 1500
+  }) {
+    id
+    nombre
+    ubicacion
+    capacidad
+  }
+}
+
+# Eliminar una bodega
+mutation {
+  eliminarBodega(id: 2)
+}
+```
+
+**Ejemplos de Variables para GraphQL**:
+
+Para usar las queries y mutations con variables, se deben incluir las variables por separado:
+
+```json
+// Variables para query GetProducto
+{
+  "id": 1
+}
+
+// Variables para mutation UpdateProducto
+{
+  "id": 1,
+  "input": {
+    "nombre": "Producto Actualizado",
+    "descripcion": "Nueva descripción",
+    "precio": 149.99,
+    "cantidadEnStock": 25
+  }
 }
 ```
 
