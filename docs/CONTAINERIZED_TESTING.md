@@ -35,9 +35,15 @@ El archivo `Containerfile` define un entorno de testing estándar con:
 
 ### Docker Compose
 El archivo `docker-compose.yml` incluye:
-- **bff-microservice**: Servicio principal de producción
-- **bff-microservice-local**: Servicio para desarrollo local y testing (perfiles: local, testing)
-- **api-tests**: Contenedor de testing que depende del BFF microservice
+- **bff-microservice**: Servicio principal de producción (sin perfil específico)
+- **bff-microservice-local**: Servicio para desarrollo local y testing
+  - Perfiles: `local`, `testing`  
+  - Puerto: 8081
+  - Dependencia requerida para api-tests
+- **api-tests**: Contenedor de testing 
+  - Perfil: `testing`
+  - Depende de: `bff-microservice-local` (con health check)
+  - Red: `testing-network`
 
 ## Uso Básico
 
@@ -52,14 +58,20 @@ El archivo `docker-compose.yml` incluye:
 
 ### 2. Testing con Docker Compose
 ```bash
-# Activar perfil de testing (inicia BFF microservice y api-tests)
+# Opción 1: Solo perfil testing (recomendado - bff-microservice-local está en ambos perfiles)
 docker-compose --profile testing up api-tests
+
+# Opción 2: Múltiples perfiles (alternativo si hay problemas de dependencias)
+docker-compose --profile local --profile testing up api-tests
 
 # Ver logs del testing
 docker-compose --profile testing logs -f api-tests
 
 # Ver logs del BFF microservice
 docker-compose --profile testing logs -f bff-microservice-local
+
+# Verificar qué servicios están disponibles en el perfil testing
+docker-compose --profile testing config --services
 ```
 
 ### 3. Build Manual del Contenedor
@@ -177,7 +189,20 @@ jobs:
 
 ### Problemas Comunes
 
-#### 1. Error de Red
+#### 1. Error de Perfiles Docker Compose
+```bash
+# Si api-tests no puede iniciar por dependencias
+# Verificar qué servicios están en el perfil testing
+docker-compose --profile testing config --services
+
+# Si bff-microservice-local no aparece, usar múltiples perfiles
+docker-compose --profile local --profile testing up api-tests
+
+# Verificar configuración de perfiles en docker-compose.yml
+grep -A 5 -B 5 "profiles:" docker-compose.yml
+```
+
+#### 2. Error de Red
 ```bash
 # Verificar conectividad
 curl -f http://localhost:7071/api/health
