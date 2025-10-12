@@ -32,7 +32,7 @@ SendGrid ofrece un tier gratuito con 100 emails por dia, ideal para proyectos un
 5. Haz clic en **Create & View**
 6. **Copia la API Key completa** (comienza con `SG.`)
 
-⚠️ **IMPORTANTE**: Esta API Key solo se muestra una vez. Guardala en un lugar seguro.
+**IMPORTANTE**: Esta API Key solo se muestra una vez. Guardala en un lugar seguro.
 
 ### Paso 3: Verificar un Sender Email
 
@@ -56,7 +56,7 @@ SendGrid requiere que verifiques el email desde el cual enviaras mensajes.
 6. Abre el email de SendGrid y haz clic en **Verify Single Sender**
 7. Confirma la verificacion en la pagina web
 
-✅ Una vez verificado, este email estara autorizado para enviar mensajes.
+Una vez verificado, este email estara autorizado para enviar mensajes.
 
 ### Paso 4: Configurar las Variables de Entorno
 
@@ -269,7 +269,7 @@ Buenas practicas implementadas:
 - El archivo `local.settings.json` esta en `.gitignore`
 - Sender email verificado por SendGrid
 
-⚠️ **NUNCA HAGAS COMMIT DE**:
+**NUNCA HAGAS COMMIT DE**:
 - `local.settings.json` con tus credenciales reales
 - Tu API Key de SendGrid
 - Cualquier dato sensible

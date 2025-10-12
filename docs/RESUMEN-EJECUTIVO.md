@@ -1,6 +1,6 @@
-# 📊 Sistema de Inventario Agranelos - Resumen Ejecutivo
+# Sistema de Inventario Agranelos - Resumen Ejecutivo
 
-## 🎯 Visión General del Proyecto
+## Visión General del Proyecto
 
 El **Sistema de Inventario Agranelos** es una solución cloud-native moderna que implementa una arquitectura serverless orientada a eventos para la gestión integral de inventarios de productos y bodegas.
 
@@ -8,23 +8,23 @@ El **Sistema de Inventario Agranelos** es una solución cloud-native moderna que
 
 ## ✨ Características Implementadas
 
-### ✅ 1. Operaciones CRUD Completas
+### 1. Operaciones CRUD Completas
 
 **Productos:**
-- ✅ Crear producto (`POST /api/productos`)
-- ✅ Listar productos (`GET /api/productos`)
-- ✅ Obtener producto por ID (`GET /api/productos/{id}`)
-- ✅ Actualizar producto (`PUT /api/productos/{id}`)
-- ✅ Eliminar producto (`DELETE /api/productos/{id}`)
+- Crear producto (`POST /api/productos`)
+- Listar productos (`GET /api/productos`)
+- Obtener producto por ID (`GET /api/productos/{id}`)
+- Actualizar producto (`PUT /api/productos/{id}`)
+- Eliminar producto (`DELETE /api/productos/{id}`)
 
 **Bodegas:**
-- ✅ Crear bodega (`POST /api/bodegas`)
-- ✅ Listar bodegas (`GET /api/bodegas`)
-- ✅ Obtener bodega por ID (`GET /api/bodegas/{id}`)
-- ✅ Actualizar bodega (`PUT /api/bodegas/{id}`)
-- ✅ Eliminar bodega (`DELETE /api/bodegas/{id}`)
+- Crear bodega (`POST /api/bodegas`)
+- Listar bodegas (`GET /api/bodegas`)
+- Obtener bodega por ID (`GET /api/bodegas/{id}`)
+- Actualizar bodega (`PUT /api/bodegas/{id}`)
+- Eliminar bodega (`DELETE /api/bodegas/{id}`)
 
-### ✅ 2. APIs Duales
+### 2. APIs Duales
 
 **REST API:**
 - Endpoints RESTful tradicionales
@@ -38,7 +38,7 @@ El **Sistema de Inventario Agranelos** es una solución cloud-native moderna que
 - Field mapping automático
 - Consultas flexibles y eficientes
 
-### ✅ 3. Arquitectura Orientada a Eventos (Azure Event Grid)
+### 3. Arquitectura Orientada a Eventos (Azure Event Grid)
 
 **Publicación de Eventos:**
 Cada operación CRUD publica automáticamente un evento:
@@ -60,12 +60,12 @@ Cada operación CRUD publica automáticamente un evento:
 
 **Casos de Uso de Eventos:**
 - 📧 Notificaciones automáticas (Email/SMS)
-- 📝 Auditoría y logging centralizado
-- 🔄 Sincronización con sistemas externos
-- 📊 Generación de reportes en tiempo real
-- 🔍 Detección de patrones y anomalías
+- Auditoría y logging centralizado
+- Sincronización con sistemas externos
+- Generación de reportes en tiempo real
+- Detección de patrones y anomalías
 
-### ✅ 4. Base de Datos PostgreSQL
+### 4. Base de Datos PostgreSQL
 
 **Esquema Normalizado:**
 ```sql
@@ -82,7 +82,7 @@ MOVIMIENTO (ID, IDProducto, IDBodega, Tipo, Cantidad, Fecha, Comentario, Usuario
 
 ---
 
-## 🚀 Despliegue en Azure Cloud
+## Despliegue en Azure Cloud
 
 ### Componentes Desplegados
 
@@ -96,38 +96,38 @@ MOVIMIENTO (ID, IDProducto, IDBodega, Tipo, Cantidad, Fecha, Comentario, Usuario
 
 ### Opciones de Despliegue
 
-#### 1️⃣ Despliegue Automático con Script
+#### 1. Despliegue Automático con Script
 ```bash
 ./scripts/deploy-azure.sh
 ```
 - ⏱️ Tiempo: 15-20 minutos
 - 🔧 Configura toda la infraestructura automáticamente
-- ✅ Listo para producción
+- Listo para producción
 
-#### 2️⃣ Despliegue con ARM Template (IaC)
+#### 2. Despliegue con ARM Template (IaC)
 ```bash
 az deployment group create \
   --resource-group agranelos-inventario-rg \
   --template-file azure-deploy.json \
   --parameters azure-deploy.parameters.json
 ```
-- 📋 Infraestructura como código
-- 🔄 Reproducible y versionable
-- 🎯 Control total sobre recursos
+- Infraestructura como código
+- Reproducible y versionable
+- Control total sobre recursos
 
-#### 3️⃣ CI/CD con GitHub Actions
+#### 3. CI/CD con GitHub Actions
 ```yaml
 # .github/workflows/deploy-azure.yml
 on: push
   branches: [main]
 ```
 - 🤖 Despliegue automático en cada push
-- ✅ Testing integrado
-- 📊 Notificaciones de estado
+- Testing integrado
+- Notificaciones de estado
 
 ---
 
-## 🏗️ Arquitectura Técnica
+## Arquitectura Técnica
 
 ### Stack Tecnológico
 
@@ -154,15 +154,15 @@ on: push
 
 ### Principios de Diseño
 
-- ✅ **SOLID Principles**: Código mantenible y extensible
-- ✅ **DRY (Don't Repeat Yourself)**: Reutilización de código
-- ✅ **Separation of Concerns**: Capas bien definidas
-- ✅ **Cloud-Native**: Diseñado para la nube desde el inicio
-- ✅ **12-Factor App**: Mejores prácticas para aplicaciones cloud
+- **SOLID Principles**: Código mantenible y extensible
+- **DRY (Don't Repeat Yourself)**: Reutilización de código
+- **Separation of Concerns**: Capas bien definidas
+- **Cloud-Native**: Diseñado para la nube desde el inicio
+- **12-Factor App**: Mejores prácticas para aplicaciones cloud
 
 ---
 
-## 📊 Integración de Componentes
+## Integración de Componentes
 
 ### Flujo de Datos Completo
 
@@ -240,35 +240,35 @@ graph LR
 
 ---
 
-## 🔐 Seguridad Implementada
+## Seguridad Implementada
 
 ### Medidas de Seguridad
 
 - 🔒 **HTTPS Only**: Todo el tráfico encriptado con TLS
 - 🔑 **Function Keys**: Protección de endpoints con claves
-- 🔐 **Secrets Management**: Variables de entorno para credenciales
+- **Secrets Management**: Variables de entorno para credenciales
 - 🛡️ **Input Validation**: Validación exhaustiva de datos de entrada
-- 📝 **Audit Logging**: Registro de todas las operaciones
+- **Audit Logging**: Registro de todas las operaciones
 - 🚫 **CORS Configuration**: Control de orígenes permitidos
 
 ### Mejores Prácticas
 
-- ✅ Credenciales nunca en código fuente
-- ✅ Uso de Azure Key Vault para secrets (recomendado para producción)
-- ✅ Conexiones SSL/TLS a base de datos
-- ✅ Principio de mínimo privilegio en permisos de BD
-- ✅ Logs sanitizados (sin información sensible)
+- Credenciales nunca en código fuente
+- Uso de Azure Key Vault para secrets (recomendado para producción)
+- Conexiones SSL/TLS a base de datos
+- Principio de mínimo privilegio en permisos de BD
+- Logs sanitizados (sin información sensible)
 
 ---
 
-## 📈 Observabilidad y Monitoreo
+## Observabilidad y Monitoreo
 
 ### Application Insights Integrado
 
 **Métricas Recolectadas:**
 - ⏱️ Tiempo de ejecución de funciones
-- 📊 Número de invocaciones
-- ❌ Tasa de errores
+- Número de invocaciones
+- Tasa de errores
 - 🔌 Estado de conexiones de BD
 - 📨 Eventos publicados/consumidos
 
@@ -285,7 +285,7 @@ graph LR
 
 ---
 
-## 🎯 Casos de Uso Implementados
+## Casos de Uso Implementados
 
 ### 1. Gestión de Productos
 - Crear productos con validación de datos
@@ -341,29 +341,29 @@ graph LR
 
 ---
 
-## ✅ Estado del Proyecto
+## Estado del Proyecto
 
 ### Componentes Completados
 
 | Componente | Estado | Descripción |
 |------------|--------|-------------|
-| CRUD Productos | ✅ 100% | Todas las operaciones implementadas |
-| CRUD Bodegas | ✅ 100% | Todas las operaciones implementadas |
-| REST API | ✅ 100% | Endpoints funcionales y documentados |
-| GraphQL API | ✅ 100% | Queries y mutations implementadas |
-| Event Grid Integration | ✅ 100% | Publicación y consumo de eventos |
-| Event Handlers | ✅ 100% | 6 handlers implementados |
-| Base de Datos | ✅ 100% | Esquema creado y poblado |
-| Despliegue Azure | ✅ 100% | Scripts y ARM templates listos |
-| Documentación | ✅ 100% | Completa y detallada |
-| CI/CD | ✅ 100% | GitHub Actions configurado |
+| CRUD Productos | 100% | Todas las operaciones implementadas |
+| CRUD Bodegas | 100% | Todas las operaciones implementadas |
+| REST API | 100% | Endpoints funcionales y documentados |
+| GraphQL API | 100% | Queries y mutations implementadas |
+| Event Grid Integration | 100% | Publicación y consumo de eventos |
+| Event Handlers | 100% | 6 handlers implementados |
+| Base de Datos | 100% | Esquema creado y poblado |
+| Despliegue Azure | 100% | Scripts y ARM templates listos |
+| Documentación | 100% | Completa y detallada |
+| CI/CD | 100% | GitHub Actions configurado |
 
 ### Testing
 
-- ✅ Scripts de testing automatizados
-- ✅ Colección Postman con casos de prueba
-- ✅ Testing de integración con base de datos
-- ✅ Testing de eventos
+- Scripts de testing automatizados
+- Colección Postman con casos de prueba
+- Testing de integración con base de datos
+- Testing de eventos
 
 ---
 
@@ -380,16 +380,16 @@ graph LR
 
 ### Mejores Prácticas Aplicadas
 
-- ✅ Código limpio y mantenible
-- ✅ Documentación exhaustiva
-- ✅ Arquitectura escalable
-- ✅ Seguridad desde el diseño
-- ✅ Observabilidad integrada
-- ✅ Automatización de despliegue
+- Código limpio y mantenible
+- Documentación exhaustiva
+- Arquitectura escalable
+- Seguridad desde el diseño
+- Observabilidad integrada
+- Automatización de despliegue
 
 ---
 
-## 🚀 Próximos Pasos (Roadmap)
+## Próximos Pasos (Roadmap)
 
 ### Fase 2 - Mejoras Potenciales
 
@@ -430,18 +430,18 @@ graph LR
 
 ---
 
-## 🏆 Conclusión
+## Conclusión
 
 El **Sistema de Inventario Agranelos** es una solución completa, moderna y lista para producción que demuestra:
 
-✅ **Excelencia Técnica**: Uso de tecnologías cloud modernas  
-✅ **Arquitectura Sólida**: Event-driven y serverless  
-✅ **Escalabilidad**: Preparado para crecer según demanda  
-✅ **Calidad**: Código limpio, documentado y testeado  
-✅ **Cloud-Native**: Diseñado para Azure desde el inicio  
+**Excelencia Técnica**: Uso de tecnologías cloud modernas  
+**Arquitectura Sólida**: Event-driven y serverless  
+**Escalabilidad**: Preparado para crecer según demanda  
+**Calidad**: Código limpio, documentado y testeado  
+**Cloud-Native**: Diseñado para Azure desde el inicio  
 
 El sistema está **completamente funcional** y listo para ser desplegado en producción en Azure Cloud.
 
 ---
 
-**🎉 Proyecto Completado con Éxito**
+**Proyecto Completado con Éxito**

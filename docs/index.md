@@ -58,12 +58,12 @@ graph TB
     
     %% API Layer (Este Repositorio)
     subgraph "🔌 API Layer - Este Repositorio"
-        subgraph "☁️ Azure Functions"
+        subgraph "Azure Functions"
             REST[REST API<br/>CRUD Operations]
             GRAPHQL[GraphQL API<br/>Flexible Queries]
         end
         
-        subgraph "📊 Data Processing"
+        subgraph "Data Processing"
             MAPPER[Field Mapping<br/>cantidad ↔ cantidadEnStock]
             VALIDATOR[Data Validation]
             TRANSFORMER[Data Transformation]
@@ -71,20 +71,20 @@ graph TB
     end
     
     %% Infrastructure Layer
-    subgraph "🏗️ Infrastructure Layer"
-        subgraph "☁️ AWS EC2"
+    subgraph "Infrastructure Layer"
+        subgraph "AWS EC2"
             DOCKER[🐳 Docker PostgreSQL]
             BACKUP[Backup Service]
         end
         
-        AZURE[☁️ Azure Functions<br/>Hosting]
+        AZURE[Azure Functions<br/>Hosting]
     end
     
     %% Development & Testing
-    subgraph "🧪 Development & Testing"
-        SCRIPTS[📋 Test Scripts<br/>scripts/testing/]
-        POSTMAN[📦 Postman Collection<br/>postman/]
-        DOCS[📚 Documentation<br/>docs/]
+    subgraph "Development & Testing"
+        SCRIPTS[Test Scripts<br/>scripts/testing/]
+        POSTMAN[Postman Collection<br/>postman/]
+        DOCS[Documentation<br/>docs/]
     end
     
     %% Connections
@@ -124,7 +124,7 @@ graph TB
 
 ---
 
-## 🔍 QUERIES GraphQL (Consultas)
+## QUERIES GraphQL (Consultas)
 
 ### 1. Obtener todos los productos
 ```bash
@@ -295,7 +295,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 📋 ESQUEMA DE DATOS
+## ESQUEMA DE DATOS
 
 ### Tipo Producto
 ```graphql
@@ -366,7 +366,7 @@ input BodegaUpdateInput {
 
 ---
 
-## 🎯 EJEMPLOS DE CONSULTAS COMPLEJAS
+## EJEMPLOS DE CONSULTAS COMPLEJAS
 
 ### Consulta múltiple (productos y bodegas)
 ```bash
@@ -399,7 +399,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## ⚠️ MANEJO DE ERRORES
+## MANEJO DE ERRORES
 
 ### Error de validación
 ```json
@@ -455,7 +455,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 📝 NOTAS TÉCNICAS
+## NOTAS TÉCNICAS
 
 1. **Campo `cantidad`**: En el esquema GraphQL se llama `cantidad`, pero internamente mapea al campo Java `cantidadEnStock`
 2. **Fechas**: Se manejan como scalar `DateTime` en formato ISO 8601
@@ -465,14 +465,14 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 🚀 Enlaces Rápidos
+## Enlaces Rápidos
 
 - **🔧 Testing Scripts**: [scripts/testing/](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/scripts/testing) - Scripts automatizados para probar todas las APIs
-- **📦 Postman Collection**: [postman/](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman) - Colección completa para testing manual
-- **📊 REST API**: Endpoints tradicionales para operaciones CRUD
-- **🎯 GraphQL API**: Consultas flexibles y eficientes
+- **Postman Collection**: [postman/](https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/main/postman) - Colección completa para testing manual
+- **REST API**: Endpoints tradicionales para operaciones CRUD
+- **GraphQL API**: Consultas flexibles y eficientes
 
-### 📋 Quick Commands
+### Quick Commands
 
 ```bash
 # Ejecutar todos los tests
@@ -494,6 +494,6 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 ---
 
 <div align="center">
-  <i>📚 Documentación completa del Sistema de Inventario Agranelos</i><br>
+  <i>Documentación completa del Sistema de Inventario Agranelos</i><br>
   <small>Última actualización: 2025</small>
 </div>

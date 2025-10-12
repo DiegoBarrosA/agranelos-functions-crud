@@ -1,6 +1,6 @@
-# 🔍 Cómo Verificar Eventos en Azure Portal
+# Cómo Verificar Eventos en Azure Portal
 
-## 📊 Opción 1: Metrics del Event Grid Topic (Recomendado)
+## Opción 1: Metrics del Event Grid Topic (Recomendado)
 
 Esta es la forma más rápida de ver si los eventos están llegando.
 
@@ -68,7 +68,7 @@ Para ver si los eventos están siendo entregados a las funciones consumidoras:
 
 ---
 
-## 🔔 Opción 3: Ver Logs en la Function App Consumidora
+## Opción 3: Ver Logs en la Function App Consumidora
 
 Para ver los logs de las funciones que consumen los eventos:
 
@@ -93,7 +93,7 @@ Para ver los logs de las funciones que consumen los eventos:
 
 ---
 
-## 📝 Opción 4: Application Insights (Análisis Detallado)
+## Opción 4: Application Insights (Análisis Detallado)
 
 Si tienes Application Insights configurado:
 
@@ -127,7 +127,7 @@ Si tienes Application Insights configurado:
 
 ---
 
-## 🧪 Opción 5: Test Manual con Event Grid Viewer (Desarrollo)
+## Opción 5: Test Manual con Event Grid Viewer (Desarrollo)
 
 Para testing en desarrollo, puedes usar el Event Grid Viewer:
 
@@ -154,9 +154,9 @@ Para testing en desarrollo, puedes usar el Event Grid Viewer:
 
 ---
 
-## 🔍 Verificación Paso a Paso
+## Verificación Paso a Paso
 
-### ✅ Checklist de Verificación:
+### Checklist de Verificación:
 
 #### 1. ¿Los eventos están siendo PUBLICADOS?
 - [ ] Ve a Event Grid Topic → Metrics → "Published Events"
@@ -178,7 +178,7 @@ Para testing en desarrollo, puedes usar el Event Grid Viewer:
 
 ---
 
-## 🎯 Ejemplo Práctico: Flujo Completo
+## Ejemplo Práctico: Flujo Completo
 
 ### Paso 1: Genera un evento
 ```bash
@@ -197,12 +197,12 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 #### En Event Grid Topic (agranelosEventGrid):
 1. Metrics → "Published Events" → Debería incrementar en 1
-2. Si no incrementa: ❌ El problema está en la publicación (revisar EVENT_GRID_KEY)
+2. Si no incrementa: El problema está en la publicación (revisar EVENT_GRID_KEY)
 
 #### En Event Subscriptions:
 1. Click en "functionAgranelosHub" → Metrics → "Delivery Succeeded"
 2. Debería incrementar en 1
-3. Si Published Events = 1 pero Delivery = 0: ❌ El problema está en la subscription o la función consumidora
+3. Si Published Events = 1 pero Delivery = 0: El problema está en la subscription o la función consumidora
 
 #### En Function App:
 1. Log stream → Deberías ver:
@@ -210,19 +210,19 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
    === Evento ProductoCreado Recibido ===
    Event Type: Agranelos.Inventario.ProductoCreado
    ```
-2. Si no ves nada: ❌ La función consumidora no está activa o tiene errores
+2. Si no ves nada: La función consumidora no está activa o tiene errores
 
 ---
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
 ### No veo eventos en "Published Events"
 
 **Causas posibles**:
-- ✅ EVENT_GRID_KEY incorrecta en local.settings.json
-- ✅ EVENT_GRID_ENDPOINT incorrecto
-- ✅ Azure Functions no están corriendo
-- ✅ El código no está llamando a EventGridPublisher
+- EVENT_GRID_KEY incorrecta en local.settings.json
+- EVENT_GRID_ENDPOINT incorrecto
+- Azure Functions no están corriendo
+- El código no está llamando a EventGridPublisher
 
 **Solución**:
 1. Verifica local.settings.json
@@ -232,9 +232,9 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 ### Veo eventos en "Published Events" pero no en "Delivery Succeeded"
 
 **Causas posibles**:
-- ✅ Event Subscription mal configurada
-- ✅ Función consumidora no existe o está detenida
-- ✅ Filtros en la subscription no coinciden con el evento
+- Event Subscription mal configurada
+- Función consumidora no existe o está detenida
+- Filtros en la subscription no coinciden con el evento
 
 **Solución**:
 1. Verifica que la Function App consumidora esté corriendo
@@ -244,9 +244,9 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 ### Veo "Dead Lettered Events" > 0
 
 **Causas posibles**:
-- ✅ La función consumidora está fallando
-- ✅ Timeout en el procesamiento
-- ✅ Endpoint de la función no está disponible
+- La función consumidora está fallando
+- Timeout en el procesamiento
+- Endpoint de la función no está disponible
 
 **Solución**:
 1. Ve a Function App → Logs
@@ -276,7 +276,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 📊 Dashboard Recomendado
+## Dashboard Recomendado
 
 Puedes crear un Dashboard personalizado con estas métricas:
 
@@ -307,7 +307,7 @@ https://portal.azure.com/#@<tenant>/resource/subscriptions/<sub-id>/resourceGrou
 
 ---
 
-## 📚 Resumen Visual
+## Resumen Visual
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -328,4 +328,4 @@ https://portal.azure.com/#@<tenant>/resource/subscriptions/<sub-id>/resourceGrou
 
 ---
 
-**🎯 Recomendación**: Empieza con la **Opción 1 (Metrics)** ya que es la más rápida para confirmar si los eventos están llegando o no.
+**Recomendación**: Empieza con la **Opción 1 (Metrics)** ya que es la más rápida para confirmar si los eventos están llegando o no.

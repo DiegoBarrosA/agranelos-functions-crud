@@ -32,6 +32,7 @@ services:
       - AZURE_FUNCTIONS_BASE_URL=http://host.docker.internal:7071
     profiles:
       - local
+      - testing
     volumes:
       - ./bff-microservice/logs:/app/logs
     healthcheck:
@@ -41,3 +42,28 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    networks:
+      - testing-network
+
+  # Testing container for API validation
+  api-tests:
+    build:
+      context: .
+      dockerfile: Containerfile
+    environment:
+      - REST_API_URL=http://host.docker.internal:7071/api
+      - GRAPHQL_API_URL=http://host.docker.internal:7071/api/graphql
+      - BFF_URL=http://bff-microservice-local:8080
+    profiles:
+      - testing
+    volumes:
+      - ./test-results:/workspace/results:Z
+    depends_on:
+      bff-microservice-local:
+        condition: service_healthy
+    networks:
+      - testing-network
+
+networks:
+  testing-network:
+    driver: bridge

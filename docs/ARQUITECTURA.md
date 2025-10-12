@@ -1,4 +1,4 @@
-# 🏗️ Arquitectura del Sistema de Inventario Agranelos
+# Arquitectura del Sistema de Inventario Agranelos
 
 ## Índice
 1. [Visión General](#visión-general)
@@ -18,13 +18,13 @@ El Sistema de Inventario Agranelos es una solución cloud-native basada en **Azu
 
 ### Características Principales
 
-- ✅ **Serverless**: Azure Functions con escalado automático
-- ✅ **Event-Driven**: Azure Event Grid para comunicación asíncrona
-- ✅ **APIs Duales**: REST y GraphQL en la misma infraestructura
-- ✅ **Base de Datos**: PostgreSQL con conexiones pooling (HikariCP)
-- ✅ **CI/CD**: Despliegue automatizado con GitHub Actions
-- ✅ **Observabilidad**: Application Insights para monitoreo
-- ✅ **Infraestructura como Código**: ARM Templates
+- **Serverless**: Azure Functions con escalado automático
+- **Event-Driven**: Azure Event Grid para comunicación asíncrona
+- **APIs Duales**: REST y GraphQL en la misma infraestructura
+- **Base de Datos**: PostgreSQL con conexiones pooling (HikariCP)
+- **CI/CD**: Despliegue automatizado con GitHub Actions
+- **Observabilidad**: Application Insights para monitoreo
+- **Infraestructura como Código**: ARM Templates
 
 ---
 
@@ -499,11 +499,11 @@ mvn azure-functions:deploy
 
 Esta arquitectura proporciona:
 
-✅ **Escalabilidad**: Serverless con auto-scaling  
-✅ **Resiliencia**: Event-driven con retry automático  
-✅ **Flexibilidad**: APIs duales (REST + GraphQL)  
-✅ **Observabilidad**: Monitoreo completo con App Insights  
-✅ **Costo-eficiencia**: Pay-per-use con Consumption Plan  
-✅ **Mantenibilidad**: Infraestructura como código  
+**Escalabilidad**: Serverless con auto-scaling  
+**Resiliencia**: Event-driven con retry automático  
+**Flexibilidad**: APIs duales (REST + GraphQL)  
+**Observabilidad**: Monitoreo completo con App Insights  
+**Costo-eficiencia**: Pay-per-use con Consumption Plan  
+**Mantenibilidad**: Infraestructura como código  
 
 El sistema está listo para producción y puede escalar según las necesidades del negocio.
