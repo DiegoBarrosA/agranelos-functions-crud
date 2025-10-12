@@ -1,4 +1,4 @@
-# 🏭 Sistema de Inventario Agranelos - Backend API
+# Sistema de Inventario Agranelos - Backend API
 
 > Sistema completo de gestión de inventario con **Arquitectura Orientada a Eventos** usando Azure Functions, Event Grid y Java 11.
 
@@ -12,7 +12,7 @@ Backend serverless para sistema de inventario de bodegas implementado con **Azur
 
 ![Arquitectura](assets/agranelos-arquitectura.png)
 
-## 🎯 Descripción
+## Descripción
 
 Sistema backend cloud-native para gestión de inventario que proporciona:
 - **APIs duales** (REST y GraphQL) para operaciones CRUD
@@ -20,20 +20,20 @@ Sistema backend cloud-native para gestión de inventario que proporciona:
 - **Escalabilidad automática** con Azure Functions (Serverless)
 - **Procesamiento asíncrono** de eventos de negocio
 
-## 🌟 Características Principales
+## Características Principales
 
-- ✅ **📡 API Dual**: REST y GraphQL en la misma infraestructura
-- ✅ **☁️ Cloud Native**: Desplegado en Azure Functions (Serverless)
-- ✅ **🔔 Event-Driven**: Arquitectura orientada a eventos con Azure Event Grid
-- ✅ **🗃️ Base de Datos**: PostgreSQL con connection pooling (HikariCP)
-- ✅ **🔍 Field Mapping**: Mapeo automático de campos GraphQL-Java
-- ✅ **📊 Observabilidad**: Application Insights para monitoreo
-- ✅ **� CI/CD**: GitHub Actions para despliegue automático
-- ✅ **📖 Documentación**: Completa y detallada
-- ✅ **🧪 Testing**: Scripts automatizados y colección Postman
-- ✅ **🏗️ IaC**: ARM Templates para infraestructura como código
+- **📡 API Dual**: REST y GraphQL en la misma infraestructura
+- **Cloud Native**: Desplegado en Azure Functions (Serverless)
+- **Event-Driven**: Arquitectura orientada a eventos con Azure Event Grid
+- **🗃️ Base de Datos**: PostgreSQL con connection pooling (HikariCP)
+- **Field Mapping**: Mapeo automático de campos GraphQL-Java
+- **Observabilidad**: Application Insights para monitoreo
+- **� CI/CD**: GitHub Actions para despliegue automático
+- **📖 Documentación**: Completa y detallada
+- **Testing**: Scripts automatizados y colección Postman
+- **IaC**: ARM Templates para infraestructura como código
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El sistema implementa una **arquitectura orientada a eventos** que incluye:
 
@@ -106,7 +106,7 @@ sequenceDiagram
     EH->>EH: Procesar (notificar, auditar)
 ```
 
-## 🔔 Arquitectura Orientada a Eventos
+## Arquitectura Orientada a Eventos
 
 El sistema utiliza **Azure Event Grid** para implementar una arquitectura event-driven:
 
@@ -123,13 +123,13 @@ El sistema utiliza **Azure Event Grid** para implementar una arquitectura event-
 
 ### Beneficios de Event-Driven
 
-- ✅ **Desacoplamiento**: Componentes independientes que se comunican por eventos
-- ✅ **Escalabilidad**: Procesamiento asíncrono y paralelo de eventos
-- ✅ **Resiliencia**: Reintentos automáticos y dead-letter queues
-- ✅ **Extensibilidad**: Fácil agregar nuevos consumidores de eventos
-- ✅ **Auditoría**: Registro automático de todas las operaciones
+- **Desacoplamiento**: Componentes independientes que se comunican por eventos
+- **Escalabilidad**: Procesamiento asíncrono y paralelo de eventos
+- **Resiliencia**: Reintentos automáticos y dead-letter queues
+- **Extensibilidad**: Fácil agregar nuevos consumidores de eventos
+- **Auditoría**: Registro automático de todas las operaciones
 
-## 🏗️ Diagrama de Arquitectura Completo
+## Diagrama de Arquitectura Completo
 
 ```mermaid
 graph TB
@@ -281,7 +281,7 @@ El sistema expone los siguientes endpoints a través de las funciones serverless
 
 | Verbo  | Ruta          | Descripción                        | Seguridad |
 | :----- | :------------ | :--------------------------------- | :-------- |
-| `POST` | `/api/init`   | Inicializa la base de datos con esquemas y datos de prueba. | ⚠️ **Sólo desarrollo** - Requiere `ENABLE_INIT=true` y clave de función |
+| `POST` | `/api/init`   | Inicializa la base de datos con esquemas y datos de prueba. | **Sólo desarrollo** - Requiere `ENABLE_INIT=true` y clave de función |
 
 ### 🔧 Componentes Técnicos
 
@@ -320,7 +320,7 @@ Además de los endpoints REST tradicionales, el sistema incluye soporte completo
 
 
 
-## 🚀 Inicio Rápido**Query - Obtener todos los productos:**
+## Inicio Rápido**Query - Obtener todos los productos:**
 
 ```graphql
 
@@ -458,7 +458,7 @@ GET    /bodegas/{id}        # Obtener bodega por ID}
 | :----- | :------------ | :--------------------------------- |
 | `POST` | `/api/graphql`| Endpoint único GraphQL para todas las operaciones |
 
-### 🚀 GraphQL API  
+### GraphQL API  
 
 **Endpoint**: `${GRAPHQL_URL}`
 
@@ -522,7 +522,7 @@ query {
 
     precio- **Real-time**: Soporte para subscripciones (futuro)
 
-    cantidad          # ⚡ Campo mapeado automáticamente
+    cantidad          # Campo mapeado automáticamente
 
     fechaCreacion#### Ejemplo de Petición HTTP a GraphQL
 
@@ -544,11 +544,11 @@ query {
 
 }
 
-```> **💡 Tip**: Puedes usar tanto REST como GraphQL según tus necesidades. REST para operaciones simples, GraphQL para consultas complejas y flexibilidad.
+```> **Tip**: Puedes usar tanto REST como GraphQL según tus necesidades. REST para operaciones simples, GraphQL para consultas complejas y flexibilidad.
 
 
 
-#### Ejemplo de Mutation> **⚠️ Importante**: El endpoint `/api/init` debe estar **deshabilitado en producción**. Configure `ENABLE_INIT=false` y use autenticación con clave de función cuando esté habilitado.
+#### Ejemplo de Mutation> **Importante**: El endpoint `/api/init` debe estar **deshabilitado en producción**. Configure `ENABLE_INIT=false` y use autenticación con clave de función cuando esté habilitado.
 
 ```graphql
 
@@ -590,7 +590,7 @@ mutation {## Despliegue y Ejecución
 
    docker run --name postgres-agranelos --env-file .env -p 5432:5432 -d postgres:13
 
-## 🧪 Testing   ```
+## Testing   ```
 
 
 
@@ -614,7 +614,7 @@ mutation {## Despliegue y Ejecución
 
 Ver documentación completa: [`postman/README.md`](postman/README.md)
 
-## 🚀 Inicio Rápido
+## Inicio Rápido
 
 ### Prerrequisitos
 
@@ -646,7 +646,7 @@ docker run --name postgres-agranelos -e POSTGRES_PASSWORD=inventario_pass -e POS
 El esquema se crea automáticamente usando el archivo `schema.sql`. También puedes usar la función de inicialización:
 
 ```bash
-# ⚠️ SOLO EN DESARROLLO - Configurar variables de entorno primero
+# SOLO EN DESARROLLO - Configurar variables de entorno primero
 export ENABLE_INIT=true
 export FUNCTION_KEY="your-dev-function-key"
 
@@ -656,7 +656,7 @@ curl -X POST "http://localhost:7071/api/init" \
      -H "Content-Type: application/json"
 ```
 
-**⚠️ Configuración de seguridad para `/api/init`:**
+**Configuración de seguridad para `/api/init`:**
 - **Desarrollo**: `ENABLE_INIT=true` en `local.settings.json`
 - **Producción**: `ENABLE_INIT=false` (por defecto)
 - **Autenticación**: Siempre requiere clave de función Azure
@@ -740,7 +740,7 @@ func host startfunc azure functionapp publish agranelos --java
 
 
 
-## 🚀 Despliegue
+## Despliegue
 
 ### Variables de Entorno
 
@@ -803,10 +803,10 @@ agranelos-functions-crud-create/
 
 ## 📖 Documentación Adicional
 
-- **📚 Documentación Completa**: [GitHub Pages Site](https://diegobarrosa.github.io/agranelos-functions-crud/)
-- **🔍 GraphQL Schema**: Usar introspección en `/api/graphql`
-- **📋 API Testing**: Ver `scripts/testing/README.md`
-- **📦 Postman**: Ver `postman/README.md`
+- **Documentación Completa**: [GitHub Pages Site](https://diegobarrosa.github.io/agranelos-functions-crud/)
+- **GraphQL Schema**: Usar introspección en `/api/graphql`
+- **API Testing**: Ver `scripts/testing/README.md`
+- **Postman**: Ver `postman/README.md`
 
 │   └── test/                              # Pruebas unitarias
 
@@ -814,7 +814,7 @@ agranelos-functions-crud-create/
 
 ├── schema.sql                            # Esquema de base de datos PostgreSQL
 
-### ⚡ Field Mapping Automático├── flake.nix                            # Entorno de desarrollo Nix
+### Field Mapping Automático├── flake.nix                            # Entorno de desarrollo Nix
 
 El sistema incluye mapeo automático de campos entre GraphQL y Java:├── pom.xml                              # Build principal (Azure Functions)
 
@@ -888,7 +888,7 @@ Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para detalles.  
 
 <p align="center">**Secretos necesarios en GitHub:**
 
-  <strong>🏭 Sistema de Inventario Agranelos</strong><br>1. Ve a **Settings > Secrets and variables > Actions**
+  <strong>Sistema de Inventario Agranelos</strong><br>1. Ve a **Settings > Secrets and variables > Actions**
 
   Backend API con Azure Functions + PostgreSQL + GraphQL2. Agrega los siguientes secretos:
 
@@ -901,11 +901,11 @@ Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para detalles.  
    - `AZUREAPPSERVICE_PUBLISHPROFILE_233EB9B85DE548C18A928AC4CADA2CCE`: Perfil de publicación de Azure Function App
 
 **Despliegue Automático:**
-- ✅ **Trigger automático**: Push a rama `main` o Pull Request
-- ✅ **Pipeline CI/CD**: Build → Test → Deploy
-- ✅ **Java 11**: Configurado para usar Microsoft OpenJDK
-- ✅ **Cache Maven**: Optimizado para builds rápidos
-- ✅ **Despliegue a Azure**: Usa Azure Functions Action v1
+- **Trigger automático**: Push a rama `main` o Pull Request
+- **Pipeline CI/CD**: Build → Test → Deploy
+- **Java 11**: Configurado para usar Microsoft OpenJDK
+- **Cache Maven**: Optimizado para builds rápidos
+- **Despliegue a Azure**: Usa Azure Functions Action v1
 
 #### Azure Function App Configuration
 1. Portal de Azure > Function App > Configuration
@@ -917,7 +917,7 @@ Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para detalles.  
 
 ### Métodos de Despliegue
 
-#### 🚀 Opción 1: Despliegue Automático con GitHub Actions (Recomendado)
+#### Opción 1: Despliegue Automático con GitHub Actions (Recomendado)
 El proyecto incluye un workflow automatizado que se ejecuta en cada push a `main`:
 
 ```yaml
@@ -1055,7 +1055,7 @@ Este diseño permite escalabilidad automática, costos optimizados y mantenimien
 
 El proyecto incluye un pipeline de integración y despliegue continuo configurado en `.github/workflows/main.yml`:
 
-### 🔄 Workflow Automático
+### Workflow Automático
 ```yaml
 Trigger: Push a main, Pull Request, o Manual
 Pipeline: Build → Test → Package → Deploy
@@ -1063,7 +1063,7 @@ Runtime: Java 11 con Maven
 Target: Azure Function App "agranelos"
 ```
 
-### 📋 Proceso Completo
+### Proceso Completo
 1. **Checkout**: Descarga el código fuente
 2. **Setup Java**: Configura JDK 11 Microsoft
 3. **Cache Maven**: Optimiza builds con cache de dependencias
@@ -1072,7 +1072,7 @@ Target: Azure Function App "agranelos"
 6. **Package**: `mvn clean package` - Genera JAR
 7. **Deploy**: Despliega a Azure Function App usando publish profile
 
-### 🔐 Secretos Requeridos
+### Secretos Requeridos
 Para que el workflow funcione correctamente, configura estos secretos en GitHub:
 
 | Secreto | Descripción | Ejemplo |
@@ -1085,13 +1085,13 @@ Para que el workflow funcione correctamente, configura estos secretos en GitHub:
 | `DB_SSL_MODE` | Modo SSL | `require` |
 | `AZUREAPPSERVICE_PUBLISHPROFILE_*` | Perfil de publicación de Azure | XML desde Azure Portal |
 
-### 📊 Monitoreo del Pipeline
+### Monitoreo del Pipeline
 - **Estado**: Ve al tab **Actions** en GitHub
 - **Logs**: Cada step tiene logs detallados
 - **Notificaciones**: GitHub envía notificaciones por email en fallos
 - **Badge**: Puedes agregar badge de estado al README
 
-### 🚀 Uso del Pipeline
+### Uso del Pipeline
 ```bash
 # Desarrollo normal - trigger automático
 git add .

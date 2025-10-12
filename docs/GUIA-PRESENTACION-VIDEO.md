@@ -1,4 +1,4 @@
-# 🎬 GUÍA PARA PRESENTACIÓN EN VIDEO - SUMATIVA 3
+# GUÍA PARA PRESENTACIÓN EN VIDEO - SUMATIVA 3
 ## Sistema de Inventario Agranelos
 
 **Duración Recomendada**: 12-15 minutos  
@@ -7,7 +7,7 @@
 
 ---
 
-## 📋 PREPARACIÓN ANTES DE GRABAR
+## PREPARACIÓN ANTES DE GRABAR
 
 ### Checklist de Prerequisitos
 
@@ -36,7 +36,7 @@
 
 ---
 
-## 🎯 ESTRUCTURA DE LA PRESENTACIÓN
+## ESTRUCTURA DE LA PRESENTACIÓN
 
 ### **PARTE 1: INTRODUCCIÓN (2 minutos)**
 
@@ -369,15 +369,15 @@ toda la funcionalidad."
    Mostrar output del script:
    
    ========================================
-   🧪 AGRANELOS - TEST SUITE COMPLETO
+   AGRANELOS - TEST SUITE COMPLETO
    ========================================
    
-   ✅ REST API - Productos: PASS (5/5)
-   ✅ REST API - Bodegas: PASS (5/5)
-   ✅ GraphQL API - Queries: PASS (4/4)
-   ✅ GraphQL API - Mutations: PASS (6/6)
-   ✅ Event Grid - Eventos: PASS (6/6)
-   ✅ Performance Tests: PASS (3/3)
+   REST API - Productos: PASS (5/5)
+   REST API - Bodegas: PASS (5/5)
+   GraphQL API - Queries: PASS (4/4)
+   GraphQL API - Mutations: PASS (6/6)
+   Event Grid - Eventos: PASS (6/6)
+   Performance Tests: PASS (3/3)
    
    ========================================
    RESULTADO FINAL: 29/29 tests PASSED ✅
@@ -495,15 +495,15 @@ toda la funcionalidad."
    ```
    Resumir en pantalla:
    
-   ✅ Microservicios Spring Boot: BFF implementado
-   ✅ Funciones Serverless Java: 18 Azure Functions
-   ✅ APIs REST: 10 endpoints (requisito: 2)
-   ✅ APIs GraphQL: Completo con queries y mutations
-   ✅ Event Grid: 6 tipos de eventos + handlers
-   ✅ Docker: Configurado y funcional
-   ✅ GIT: 2 repositorios con código organizado
-   ✅ Documentación: 10+ documentos técnicos
-   ✅ Testing: 7 scripts + Colección Postman
+   Microservicios Spring Boot: BFF implementado
+   Funciones Serverless Java: 18 Azure Functions
+   APIs REST: 10 endpoints (requisito: 2)
+   APIs GraphQL: Completo con queries y mutations
+   Event Grid: 6 tipos de eventos + handlers
+   Docker: Configurado y funcional
+   GIT: 2 repositorios con código organizado
+   Documentación: 10+ documentos técnicos
+   Testing: 7 scripts + Colección Postman
    
    EXTRAS:
    - Application Insights
@@ -514,30 +514,30 @@ toda la funcionalidad."
 
 ---
 
-## 🎬 TIPS PARA UNA BUENA GRABACIÓN
+## TIPS PARA UNA BUENA GRABACIÓN
 
 ### Técnicos:
-- ✅ Resolución mínima: 1920x1080 (Full HD)
-- ✅ Audio claro sin ruido de fondo
-- ✅ Velocidad de habla: Normal, no muy rápido
-- ✅ Pausas de 2-3 segundos entre secciones
+- Resolución mínima: 1920x1080 (Full HD)
+- Audio claro sin ruido de fondo
+- Velocidad de habla: Normal, no muy rápido
+- Pausas de 2-3 segundos entre secciones
 
 ### De Contenido:
-- ✅ Hablar con confianza y claridad
-- ✅ Explicar "qué" y "por qué", no solo "cómo"
-- ✅ Conectar cada componente con los requisitos
-- ✅ Mostrar código, no solo herramientas
-- ✅ Demostrar funcionamiento real, no screenshots
+- Hablar con confianza y claridad
+- Explicar "qué" y "por qué", no solo "cómo"
+- Conectar cada componente con los requisitos
+- Mostrar código, no solo herramientas
+- Demostrar funcionamiento real, no screenshots
 
 ### De Presentación:
-- ✅ Empezar con un overview claro
-- ✅ Seguir un flujo lógico (arquitectura → componentes → demo)
-- ✅ Usar transiciones suaves entre secciones
-- ✅ Terminar con un resumen contundente
+- Empezar con un overview claro
+- Seguir un flujo lógico (arquitectura → componentes → demo)
+- Usar transiciones suaves entre secciones
+- Terminar con un resumen contundente
 
 ---
 
-## 📝 SCRIPT COMPLETO (Para Leer)
+## SCRIPT COMPLETO (Para Leer)
 
 ### Apertura:
 ```
@@ -627,7 +627,7 @@ Gracias por su atención."
 
 ---
 
-## ✅ CHECKLIST POST-GRABACIÓN
+## CHECKLIST POST-GRABACIÓN
 
 Antes de subir el video, verificar:
 
@@ -653,13 +653,13 @@ Antes de subir el video, verificar:
 https://github.com/DiegoBarrosA/agranelos-functions-crud
 Branch: sumativa-3-staging
 
-📚 Documentación:
+Documentación:
 https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/sumativa-3-staging/docs
 
-✅ Checklist de Requisitos:
+Checklist de Requisitos:
 https://github.com/DiegoBarrosA/agranelos-functions-crud/blob/sumativa-3-staging/docs/SUMATIVA-3-CHECKLIST.md
 
-🧪 Scripts de Testing:
+Scripts de Testing:
 https://github.com/DiegoBarrosA/agranelos-functions-crud/tree/sumativa-3-staging/scripts/testing
 
 📮 Colección Postman:

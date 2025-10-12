@@ -1,22 +1,22 @@
-# 🔔 Azure Event Grid - Guía de Pruebas y Verificación
+# Azure Event Grid - Guía de Pruebas y Verificación
 
-## 📋 Resumen
+## Resumen
 
 Azure Event Grid está **completamente implementado** en el código y se activa automáticamente con cada operación CRUD. Esta guía explica cómo verificar su funcionamiento.
 
 ---
 
-## ✅ Estado de Implementación
+## Estado de Implementación
 
 ### Componentes Implementados
 
 | Componente | Estado | Archivo |
 |------------|--------|---------|
-| **Event Publisher** | ✅ Implementado | `EventGridPublisher.java` |
-| **Event Consumers** | ✅ Implementado | `EventGridConsumer.java` |
-| **Event Data Models** | ✅ Implementado | `ProductoEventData.java`, `BodegaEventData.java` |
-| **Event Types Enum** | ✅ Implementado | `EventType.java` |
-| **Integración CRUD** | ✅ Implementado | Todas las funciones CRUD |
+| **Event Publisher** | Implementado | `EventGridPublisher.java` |
+| **Event Consumers** | Implementado | `EventGridConsumer.java` |
+| **Event Data Models** | Implementado | `ProductoEventData.java`, `BodegaEventData.java` |
+| **Event Types Enum** | Implementado | `EventType.java` |
+| **Integración CRUD** | Implementado | Todas las funciones CRUD |
 
 ### Tipos de Eventos Disponibles
 
@@ -31,7 +31,7 @@ Azure Event Grid está **completamente implementado** en el código y se activa 
 
 ---
 
-## 🧪 Cómo Probar Event Grid
+## Cómo Probar Event Grid
 
 ### Opción 1: Verificar mediante Logs de Azure (Recomendado)
 
@@ -51,7 +51,7 @@ curl -X POST "https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/ap
 
 **Paso 2**: Ver logs en Azure Portal
 
-> ⚠️ **Importante**: Si ves "Configure Application Insights to capture invocation logs", necesitas configurar Application Insights primero.  
+> **Importante**: Si ves "Configure Application Insights to capture invocation logs", necesitas configurar Application Insights primero.  
 > Ver guía completa: [`docs/CONFIGURE_APP_INSIGHTS.md`](./CONFIGURE_APP_INSIGHTS.md)
 
 1. Ir a: https://portal.azure.com
@@ -78,10 +78,10 @@ Buscar: "ProductoCreado" o "BodegaCreada"
 ```
 
 Verás:
-- ✅ Timestamp del evento
-- ✅ Datos del payload
-- ✅ Subject del evento
-- ✅ Resultado (success/error)
+- Timestamp del evento
+- Datos del payload
+- Subject del evento
+- Resultado (success/error)
 
 ---
 
@@ -135,14 +135,14 @@ Verás algo como:
 
 ---
 
-## 🔍 Verificar que Event Grid Está Funcionando
+## Verificar que Event Grid Está Funcionando
 
 ### Test Completo de Ciclo de Vida
 
 ```bash
 BASE_URL="https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api"
 
-echo "1️⃣ Creando producto (dispara ProductoCreado)..."
+echo "1. Creando producto (dispara ProductoCreado)..."
 RESPONSE=$(curl -s -X POST "$BASE_URL/productos" \
   -H "Content-Type: application/json" \
   -d '{
@@ -155,7 +155,7 @@ echo $RESPONSE | jq '.'
 PRODUCTO_ID=$(echo $RESPONSE | jq -r '.id')
 
 echo ""
-echo "2️⃣ Actualizando producto (dispara ProductoActualizado)..."
+echo "2. Actualizando producto (dispara ProductoActualizado)..."
 curl -s -X PUT "$BASE_URL/productos/$PRODUCTO_ID" \
   -H "Content-Type: application/json" \
   -d '{
@@ -166,11 +166,11 @@ curl -s -X PUT "$BASE_URL/productos/$PRODUCTO_ID" \
   }' | jq '.'
 
 echo ""
-echo "3️⃣ Eliminando producto (dispara ProductoEliminado)..."
+echo "3. Eliminando producto (dispara ProductoEliminado)..."
 curl -s -X DELETE "$BASE_URL/productos/$PRODUCTO_ID" | jq '.'
 
 echo ""
-echo "✅ Se dispararon 3 eventos:"
+echo "Se dispararon 3 eventos:"
 echo "   - Agranelos.Inventario.ProductoCreado"
 echo "   - Agranelos.Inventario.ProductoActualizado"
 echo "   - Agranelos.Inventario.ProductoEliminado"
@@ -178,7 +178,7 @@ echo "   - Agranelos.Inventario.ProductoEliminado"
 
 ---
 
-## 📊 Estructura del Evento Publicado
+## Estructura del Evento Publicado
 
 Cada operación CRUD publica un evento con esta estructura:
 
@@ -204,7 +204,7 @@ Cada operación CRUD publica un evento con esta estructura:
 
 ---
 
-## 🎯 Casos de Uso de Event Grid
+## Casos de Uso de Event Grid
 
 ### 1. **Auditoría y Compliance**
 Los Event Handlers pueden:
@@ -297,7 +297,7 @@ az eventgrid event-subscription create \
 
 ---
 
-## ⚠️ Troubleshooting
+## Troubleshooting
 
 ### Los eventos no se publican
 
@@ -344,7 +344,7 @@ az eventgrid event-subscription list \
 
 ---
 
-## 📈 Métricas y Monitoreo
+## Métricas y Monitoreo
 
 ### En Azure Portal
 
@@ -366,7 +366,7 @@ customEvents
 
 ---
 
-## ✅ Checklist de Verificación
+## Checklist de Verificación
 
 - [ ] Código de Event Grid implementado en el repositorio
 - [ ] Variables de entorno configuradas en Azure
@@ -389,4 +389,4 @@ customEvents
 ---
 
 **Última actualización**: 3 de Octubre, 2025  
-**Estado**: ✅ Event Grid completamente implementado y funcional
+**Estado**: Event Grid completamente implementado y funcional

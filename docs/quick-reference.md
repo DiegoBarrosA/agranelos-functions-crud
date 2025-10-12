@@ -11,7 +11,7 @@ description: Quick reference guide for GraphQL API calls
 
 ---
 
-## 🔍 CONSULTAS BÁSICAS
+## CONSULTAS BÁSICAS
 
 ### Todos los productos
 ```bash
@@ -68,7 +68,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 🎯 CONSULTAS ÚTILES
+## CONSULTAS ÚTILES
 
 ### Health Check
 ```bash
@@ -93,7 +93,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## 📋 CAMPOS DISPONIBLES
+## CAMPOS DISPONIBLES
 
 **Producto:** `id`, `nombre`, `descripcion`, `precio`, `cantidad`, `fechaCreacion`, `fechaActualizacion`
 
@@ -101,7 +101,7 @@ curl -X POST https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api
 
 ---
 
-## ⚠️ NOTAS IMPORTANTES
+## NOTAS IMPORTANTES
 
 1. **Campo cantidad**: Usa `cantidad` en GraphQL (mapea a `cantidadEnStock` internamente)
 2. **IDs**: Siempre como strings en GraphQL: `"1"`, `"2"`, etc.

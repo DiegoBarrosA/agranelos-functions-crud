@@ -141,11 +141,36 @@ El sistema publica eventos en Azure Event Grid:
 
 ## Testing
 
-### Scripts Automatizados
+### Testing Containerizado con Podman (Recomendado)
 ```bash
+# Ejecutar todas las pruebas en contenedor
+./test-podman.sh
+
+# Reconstruir imagen y ejecutar
+./test-podman.sh --rebuild
+
+# Testing contra produccion (con confirmacion)
+./test-podman.sh --confirm-production
+```
+
+### Scripts Nativos (Alternativo)
+```bash
+# Si Podman no esta disponible
+./test-podman.sh --native
+
+# O directamente
 cd scripts/testing
 ./test-all-apis.sh
 ./test-eventgrid.sh
+```
+
+### Testing con Docker Compose
+```bash
+# Para testing automatizado
+docker-compose --profile testing up api-tests
+
+# Para desarrollo local
+docker-compose --profile local up bff-microservice-local
 ```
 
 ### Coleccion Postman

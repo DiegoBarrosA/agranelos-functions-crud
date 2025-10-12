@@ -41,3 +41,24 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+
+  # Testing container for API validation
+  api-tests:
+    build:
+      context: .
+      dockerfile: Containerfile
+    environment:
+      - REST_API_URL=http://host.docker.internal:7071/api
+      - GRAPHQL_API_URL=http://host.docker.internal:7071/api/graphql
+    profiles:
+      - testing
+    volumes:
+      - ./test-results:/workspace/results:Z
+    depends_on:
+      - bff-microservice-local
+    networks:
+      - testing-network
+
+networks:
+  testing-network:
+    driver: bridge

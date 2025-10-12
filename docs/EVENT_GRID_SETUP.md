@@ -64,7 +64,7 @@ az eventgrid topic key list \
 }
 ```
 
-**⚠️ IMPORTANTE**: Reemplaza `<PEGA_AQUI_LA_KEY_REAL>` con la key real obtenida en el paso 2.
+**IMPORTANTE**: Reemplaza `<PEGA_AQUI_LA_KEY_REAL>` con la key real obtenida en el paso 2.
 
 ### 4. Para Azure (Producción)
 
@@ -138,10 +138,10 @@ Error publicando evento de producto: Agranelos.Inventario.ProductoCreado - <erro
 ```
 
 Entonces revisa:
-- ✅ El endpoint es correcto
-- ✅ La key es válida
-- ✅ El Event Grid Topic existe y está activo
-- ✅ No hay reglas de firewall bloqueando
+- El endpoint es correcto
+- La key es válida
+- El Event Grid Topic existe y está activo
+- No hay reglas de firewall bloqueando
 
 ## Tipos de Eventos Implementados
 
@@ -216,24 +216,24 @@ func host start --verbose
 
 ### Error "Unauthorized"
 
-- ✅ Verifica que la `EVENT_GRID_KEY` sea correcta
-- ✅ Asegúrate de no tener espacios extras en la key
-- ✅ Prueba con ambas keys (Key 1 y Key 2)
+- Verifica que la `EVENT_GRID_KEY` sea correcta
+- Asegúrate de no tener espacios extras en la key
+- Prueba con ambas keys (Key 1 y Key 2)
 
 ### Error "Bad Request" o "Invalid endpoint"
 
-- ✅ Verifica que el endpoint termine en `/api/events`
-- ✅ Asegúrate de usar `https://` no `http://`
-- ✅ Verifica que el nombre del topic sea correcto
+- Verifica que el endpoint termine en `/api/events`
+- Asegúrate de usar `https://` no `http://`
+- Verifica que el nombre del topic sea correcto
 
 ## Próximos Pasos
 
-1. ✅ Obtener la Event Grid Access Key
-2. ✅ Actualizar `local.settings.json` con valores correctos
-3. ✅ Reiniciar Azure Functions
-4. ✅ Crear/actualizar/eliminar un producto o bodega
-5. ✅ Verificar eventos en Azure Portal Metrics
-6. ✅ Verificar logs de funciones consumidoras
+1. Obtener la Event Grid Access Key
+2. Actualizar `local.settings.json` con valores correctos
+3. Reiniciar Azure Functions
+4. Crear/actualizar/eliminar un producto o bodega
+5. Verificar eventos en Azure Portal Metrics
+6. Verificar logs de funciones consumidoras
 
 ## Referencias
 

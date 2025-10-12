@@ -1,12 +1,12 @@
 # 🔧 Configurar Application Insights para Azure Functions
 
-## ⚠️ Problema Actual
+## Problema Actual
 
 Tu Function App **no tiene Application Insights configurado**, por lo que no puedes ver los logs de Event Grid en Monitoring.
 
 ---
 
-## 🚨 Si No Tienes Permisos en Azure
+## Si No Tienes Permisos en Azure
 
 Si ves el error:
 ```
@@ -30,7 +30,7 @@ AuthorizationFailed: The client does not have authorization to perform action...
 
 ---
 
-## ✅ Solución Rápida: Configurar Application Insights (Si tienes permisos)
+## Solución Rápida: Configurar Application Insights (Si tienes permisos)
 
 ### Opción 1: Desde Azure Portal (5 minutos)
 
@@ -88,13 +88,13 @@ az functionapp config appsettings set \
   --resource-group $RESOURCE_GROUP \
   --settings "APPINSIGHTS_INSTRUMENTATIONKEY=$INSTRUMENTATION_KEY"
 
-echo "✅ Application Insights configurado!"
+echo "Application Insights configurado!"
 echo "Instrumentation Key: $INSTRUMENTATION_KEY"
 ```
 
 ---
 
-## 📊 Después de Configurar: Ver Logs de Event Grid
+## Después de Configurar: Ver Logs de Event Grid
 
 ### 1. Ver Logs en Tiempo Real (Log Stream)
 
@@ -135,10 +135,10 @@ curl -X POST "https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/ap
 - **Search**: "Evento publicado" o "ProductoCreado"
 
 **Verás**:
-- ✅ Timestamp exacto de cada evento
-- ✅ Payload completo del evento
-- ✅ Duración de cada operación
-- ✅ Errores (si los hay)
+- Timestamp exacto de cada evento
+- Payload completo del evento
+- Duración de cada operación
+- Errores (si los hay)
 
 ---
 
@@ -176,7 +176,7 @@ traces
 
 ---
 
-## 🧪 Script de Prueba Completo (Después de Configurar)
+## Script de Prueba Completo (Después de Configurar)
 
 Una vez configurado Application Insights, ejecuta:
 
@@ -205,7 +205,7 @@ Deberías ver los 6 eventos publicados por el script:
 
 ---
 
-## 📈 Crear Dashboard de Monitoreo
+## Crear Dashboard de Monitoreo
 
 ### 1. En Application Insights
 
@@ -248,11 +248,11 @@ requests
 
 ---
 
-## ⚡ RECOMENDADO: Verificar Event Grid Sin Application Insights
+## RECOMENDADO: Verificar Event Grid Sin Application Insights
 
 Ya que no tienes permisos para configurar Application Insights, aquí está cómo verificar que Event Grid funciona:
 
-### 1. ✅ Verificación mediante Respuestas de la API
+### 1. Verificación mediante Respuestas de la API
 
 El código de Event Grid se ejecuta **exitosamente** si la API responde correctamente:
 
@@ -263,17 +263,17 @@ bash scripts/testing/test-eventgrid.sh
 
 **Si ves esto, Event Grid está funcionando:**
 ```
-✅ Producto creado con ID: 124
+Producto creado con ID: 124
    Evento publicado: Agranelos.Inventario.ProductoCreado
 
-✅ Producto actualizado
+Producto actualizado
    Evento publicado: Agranelos.Inventario.ProductoActualizado
 
-✅ Producto eliminado
+Producto eliminado
    Evento publicado: Agranelos.Inventario.ProductoEliminado
 ```
 
-### 2. ✅ Verificación del Código Fuente
+### 2. Verificación del Código Fuente
 
 **Event Grid está implementado en:**
 
@@ -293,16 +293,16 @@ grep -n "EventGridPublisher.publish" src/main/java/com/agranelos/inventario/Func
 5. Línea ~906: `publishBodegaEvent(BODEGA_ACTUALIZADA, ...)`
 6. Línea ~980: `publishBodegaEvent(BODEGA_ELIMINADA, ...)`
 
-### 3. ✅ Verificación mediante el Build de GitHub Actions
+### 3. Verificación mediante el Build de GitHub Actions
 
 Tu código pasa todos los checks de CI/CD, incluyendo:
-- ✅ Build exitoso
-- ✅ Verificación de estructura de Event Grid
-- ✅ Validación de dependencias
+- Build exitoso
+- Verificación de estructura de Event Grid
+- Validación de dependencias
 
 **Ver el último build**: https://github.com/DiegoBarrosA/agranelos-functions-crud/actions
 
-### 4. ✅ Verificación de Dependencias Maven
+### 4. Verificación de Dependencias Maven
 
 Event Grid requiere estas dependencias (ya incluidas en tu `pom.xml`):
 
@@ -320,7 +320,7 @@ Deberías ver:
 </dependency>
 ```
 
-### 5. ✅ Prueba de Integración Completa
+### 5. Prueba de Integración Completa
 
 Ejecuta este script que verifica el ciclo completo:
 
@@ -332,7 +332,7 @@ set -e
 
 BASE_URL="https://agranelos-fybpb6duaadaaxfm.eastus2-01.azurewebsites.net/api"
 
-echo "🧪 Verificando Azure Event Grid..."
+echo "Verificando Azure Event Grid..."
 echo ""
 
 # Test 1: Crear producto
@@ -342,10 +342,10 @@ RESPONSE=$(curl -s -X POST "$BASE_URL/productos" \
   -d '{"nombre":"EventGrid Test","descripcion":"Test","precio":99,"cantidadEnStock":10}')
 
 if echo "$RESPONSE" | grep -q "id"; then
-    echo "   ✅ CREATE exitoso - Event Grid ejecutado"
+    echo "   CREATE exitoso - Event Grid ejecutado"
     ID=$(echo "$RESPONSE" | jq -r '.id')
 else
-    echo "   ❌ Falló"
+    echo "   Falló"
     exit 1
 fi
 
@@ -356,9 +356,9 @@ RESPONSE=$(curl -s -X PUT "$BASE_URL/productos/$ID" \
   -d '{"nombre":"Updated","descripcion":"Test","precio":150,"cantidadEnStock":20}')
 
 if echo "$RESPONSE" | grep -q "actualizado exitosamente"; then
-    echo "   ✅ UPDATE exitoso - Event Grid ejecutado"
+    echo "   UPDATE exitoso - Event Grid ejecutado"
 else
-    echo "   ❌ Falló"
+    echo "   Falló"
     exit 1
 fi
 
@@ -367,15 +367,15 @@ echo "3. Eliminando producto..."
 RESPONSE=$(curl -s -X DELETE "$BASE_URL/productos/$ID")
 
 if echo "$RESPONSE" | grep -q "eliminado exitosamente"; then
-    echo "   ✅ DELETE exitoso - Event Grid ejecutado"
+    echo "   DELETE exitoso - Event Grid ejecutado"
 else
-    echo "   ❌ Falló"
+    echo "   Falló"
     exit 1
 fi
 
 echo ""
 echo "╔═══════════════════════════════════════════════════════╗"
-echo "║  ✅ VERIFICACIÓN COMPLETA                            ║"
+echo "║  VERIFICACIÓN COMPLETA                            ║"
 echo "╚═══════════════════════════════════════════════════════╝"
 echo ""
 echo "Event Grid está FUNCIONANDO correctamente:"
@@ -394,7 +394,7 @@ bash /tmp/verify-eventgrid.sh
 
 ---
 
-## 📊 Evidencia de que Event Grid Funciona (Sin Logs)
+## Evidencia de que Event Grid Funciona (Sin Logs)
 
 ### Prueba A: Análisis del Código
 
@@ -440,13 +440,13 @@ El workflow de CI verifica específicamente Event Grid:
     test -f src/main/java/.../EventGridConsumer.java
 ```
 
-✅ **Este check pasa**, lo que confirma que Event Grid está implementado.
+**Este check pasa**, lo que confirma que Event Grid está implementado.
 
 ---
 
-## 📝 Resumen: ¿Event Grid Funciona Sin App Insights?
+## Resumen: ¿Event Grid Funciona Sin App Insights?
 
-### ✅ SÍ - Event Grid está funcionando porque:
+### SÍ - Event Grid está funcionando porque:
 
 1. **Código implementado y desplegado** ✅
 2. **Dependencias incluidas en el build** ✅
@@ -454,14 +454,14 @@ El workflow de CI verifica específicamente Event Grid:
 4. **CI/CD verifica la integración** ✅
 5. **Arquitectura non-blocking** (no falla si Event Grid falla) ✅
 
-### ❌ Lo que NO puedes hacer sin App Insights:
+### Lo que NO puedes hacer sin App Insights:
 
-1. ❌ Ver logs en tiempo real
-2. ❌ Ver métricas de eventos publicados
-3. ❌ Debugging detallado de eventos
-4. ❌ Dashboards de monitoreo
+1. Ver logs en tiempo real
+2. Ver métricas de eventos publicados
+3. Debugging detallado de eventos
+4. Dashboards de monitoreo
 
-### 🎯 Conclusión
+### Conclusión
 
 **Event Grid SÍ está implementado y funcionando.**
 
@@ -499,7 +499,7 @@ El diagrama en `RESUMEN_EJECUTIVO.md` muestra Event Grid integrado.
 
 ---
 
-## ⚡ Alternativa: Ver Logs Sin Application Insights (Temporal)
+## Alternativa: Ver Logs Sin Application Insights (Temporal)
 
 Si no puedes configurar Application Insights ahora, puedes verificar Event Grid de esta forma:
 
@@ -534,7 +534,7 @@ EventGridPublisher.publishProductoEvent(EventType.PRODUCTO_CREADO, eventData, lo
 
 ---
 
-## ✅ Checklist de Configuración
+## Checklist de Configuración
 
 - [ ] Application Insights creado
 - [ ] Function App vinculado a Application Insights

@@ -1,9 +1,9 @@
-# 🏗️ ARQUITECTURA COMPLETA - SISTEMA DE INVENTARIO AGRANELOS
+# ARQUITECTURA COMPLETA - SISTEMA DE INVENTARIO AGRANELOS
 ## Documento Final para Sumativa 3
 
 ---
 
-## 📊 DIAGRAMA DE ARQUITECTURA COMPLETO
+## DIAGRAMA DE ARQUITECTURA COMPLETO
 
 ```mermaid
 graph TB
@@ -145,7 +145,7 @@ graph TB
 
 ---
 
-## 🎯 COMPONENTES DEL SISTEMA
+## COMPONENTES DEL SISTEMA
 
 ### 1. CAPA DE CLIENTE
 Cliente final que consume las APIs del sistema.
@@ -166,14 +166,14 @@ Cliente final que consume las APIs del sistema.
 **Propósito**: Orquestar y agregar llamadas a múltiples Azure Functions
 
 **Características**:
-- ✅ Desarrollado con Spring Boot 3.x
-- ✅ Expone API REST unificada
-- ✅ WebClient para llamadas asíncronas
-- ✅ Circuit breaker (Resilience4j)
-- ✅ Retry logic y timeouts
-- ✅ Manejo centralizado de errores
-- ✅ Health checks con Actuator
-- ✅ Logging estructurado
+- Desarrollado con Spring Boot 3.x
+- Expone API REST unificada
+- WebClient para llamadas asíncronas
+- Circuit breaker (Resilience4j)
+- Retry logic y timeouts
+- Manejo centralizado de errores
+- Health checks con Actuator
+- Logging estructurado
 
 **Endpoints Principales**:
 ```
@@ -195,7 +195,7 @@ GET    /actuator/health
 - Maven
 
 **Puerto**: 8080  
-**Docker**: ✅ Containerizado
+**Docker**: Containerizado
 
 ---
 
@@ -579,7 +579,7 @@ requests
 
 ---
 
-## 🔄 FLUJOS DE DATOS
+## FLUJOS DE DATOS
 
 ### Flujo 1: Operación CRUD Simple (GET)
 
@@ -660,7 +660,7 @@ requests
 
 ---
 
-## 📊 MÉTRICAS DEL SISTEMA
+## MÉTRICAS DEL SISTEMA
 
 ### Recursos Azure Desplegados
 
@@ -697,29 +697,29 @@ requests
 
 ---
 
-## 🔐 SEGURIDAD
+## SEGURIDAD
 
 ### Autenticación y Autorización
-- ✅ API Keys para Event Grid
-- ✅ Connection strings cifradas
-- ✅ Variables de entorno para secrets
-- ✅ Azure Key Vault (recomendado para prod)
+- API Keys para Event Grid
+- Connection strings cifradas
+- Variables de entorno para secrets
+- Azure Key Vault (recomendado para prod)
 
 ### Red y Conectividad
-- ✅ HTTPS en todos los endpoints
-- ✅ CORS configurado
-- ✅ Rate limiting en BFF
-- ✅ Input validation
+- HTTPS en todos los endpoints
+- CORS configurado
+- Rate limiting en BFF
+- Input validation
 
 ### Datos
-- ✅ SQL injection prevention (PreparedStatements)
-- ✅ Input sanitization
-- ✅ Output encoding
-- ✅ Connection pooling seguro
+- SQL injection prevention (PreparedStatements)
+- Input sanitization
+- Output encoding
+- Connection pooling seguro
 
 ---
 
-## 🚀 ESCALABILIDAD
+## ESCALABILIDAD
 
 ### Azure Functions
 - **Tipo**: Consumption Plan
@@ -740,7 +740,7 @@ requests
 
 ---
 
-## 📈 MONITOREO Y OBSERVABILIDAD
+## MONITOREO Y OBSERVABILIDAD
 
 ### Application Insights
 
@@ -826,7 +826,7 @@ context.getLogger().info(String.format(
 
 ---
 
-## 📝 CONCLUSIÓN
+## CONCLUSIÓN
 
 El Sistema de Inventario Agranelos implementa una arquitectura cloud-native moderna que combina:
 
@@ -840,12 +840,12 @@ El Sistema de Inventario Agranelos implementa una arquitectura cloud-native mode
 8. **Observabilidad** (Application Insights)
 
 Esta arquitectura proporciona:
-- ✅ Alta escalabilidad
-- ✅ Bajo costo operacional (Serverless)
-- ✅ Alta disponibilidad
-- ✅ Procesamiento asíncrono
-- ✅ Fácil mantenimiento
-- ✅ Despliegue automatizado
+- Alta escalabilidad
+- Bajo costo operacional (Serverless)
+- Alta disponibilidad
+- Procesamiento asíncrono
+- Fácil mantenimiento
+- Despliegue automatizado
 
 ---
 
