@@ -1007,6 +1007,186 @@ public class Function {
         }
     }
 
+    // ======================== FUNCIONES DE INVENTARIO ========================
+
+    @FunctionName("GetBodegaProductos")
+    public HttpResponseMessage getBodegaProductos(
+        @HttpTrigger(
+            name = "req",
+            methods = { HttpMethod.GET },
+            authLevel = AuthorizationLevel.ANONYMOUS,
+            route = "bodegas/{bodegaId}/productos"
+        ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("bodegaId") String bodegaId,
+        final ExecutionContext context
+    ) {
+        Logger logger = context.getLogger();
+        logger.info("Obteniendo productos de bodega ID: " + bodegaId);
+
+        try {
+            int id = Integer.parseInt(bodegaId);
+            List<Map<String, Object>> productosEnBodega = getProductosEnBodega(id, logger);
+
+            String jsonResponse = objectMapper.writeValueAsString(productosEnBodega);
+            return request
+                .createResponseBuilder(HttpStatus.OK)
+                .header("Content-Type", "application/json")
+                .body(jsonResponse)
+                .build();
+        } catch (NumberFormatException e) {
+            logger.warning("ID de bodega inválido: " + bodegaId);
+            return request
+                .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                .header("Content-Type", "application/json")
+                .body("{\"error\": \"ID de bodega debe ser un número válido\"}")
+                .build();
+        } catch (Exception e) {
+            logger.severe("Error obteniendo productos de bodega: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header("Content-Type", "application/json")
+                .body(
+                    "{\"error\": \"Error obteniendo productos de bodega\", \"detalle\": \"" +
+                    e.getMessage() + "\"}"
+                )
+                .build();
+        }
+    }
+
+    @FunctionName("AsignarProductoABodega")
+    public HttpResponseMessage asignarProductoABodega(
+        @HttpTrigger(
+            name = "req",
+            methods = { HttpMethod.POST },
+            authLevel = AuthorizationLevel.ANONYMOUS,
+            route = "bodegas/{bodegaId}/productos"
+        ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("bodegaId") String bodegaId,
+        final ExecutionContext context
+    ) {
+        Logger logger = context.getLogger();
+        logger.info("Asignando producto a bodega ID: " + bodegaId);
+
+        try {
+            int bId = Integer.parseInt(bodegaId);
+            String requestBody = request.getBody().orElse("{}");
+            
+            @SuppressWarnings("unchecked")
+            Map<String, Object> asignacionData = objectMapper.readValue(requestBody, Map.class);
+            
+            int productoId = ((Number) asignacionData.get("productoId")).intValue();
+            int cantidad = ((Number) asignacionData.get("cantidad")).intValue();
+
+            // Verificar que el producto y bodega existen
+            if (!existeProducto(productoId, logger)) {
+                return request
+                    .createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"Producto no encontrado\"}")
+                    .build();
+            }
+
+            if (!existeBodega(bId, logger)) {
+                return request
+                    .createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"Bodega no encontrada\"}")
+                    .build();
+            }
+
+            // Asignar o actualizar inventario
+            asignarProductoBodega(productoId, bId, cantidad, logger);
+
+            return request
+                .createResponseBuilder(HttpStatus.OK)
+                .header("Content-Type", "application/json")
+                .body(
+                    "{\"mensaje\": \"Producto asignado a bodega exitosamente\", " +
+                    "\"productoId\": " + productoId + ", " +
+                    "\"bodegaId\": " + bId + ", " +
+                    "\"cantidad\": " + cantidad + "}"
+                )
+                .build();
+
+        } catch (NumberFormatException e) {
+            logger.warning("ID inválido: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                .header("Content-Type", "application/json")
+                .body("{\"error\": \"IDs deben ser números válidos\"}")
+                .build();
+        } catch (Exception e) {
+            logger.severe("Error asignando producto a bodega: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header("Content-Type", "application/json")
+                .body(
+                    "{\"error\": \"Error asignando producto a bodega\", \"detalle\": \"" +
+                    e.getMessage() + "\"}"
+                )
+                .build();
+        }
+    }
+
+    @FunctionName("RemoverProductoDeBodega")
+    public HttpResponseMessage removerProductoDeBodega(
+        @HttpTrigger(
+            name = "req",
+            methods = { HttpMethod.DELETE },
+            authLevel = AuthorizationLevel.ANONYMOUS,
+            route = "bodegas/{bodegaId}/productos/{productoId}"
+        ) HttpRequestMessage<Optional<String>> request,
+        @BindingName("bodegaId") String bodegaId,
+        @BindingName("productoId") String productoId,
+        final ExecutionContext context
+    ) {
+        Logger logger = context.getLogger();
+        logger.info("Removiendo producto " + productoId + " de bodega " + bodegaId);
+
+        try {
+            int bId = Integer.parseInt(bodegaId);
+            int pId = Integer.parseInt(productoId);
+
+            boolean removido = removerProductoBodega(pId, bId, logger);
+
+            if (removido) {
+                return request
+                    .createResponseBuilder(HttpStatus.OK)
+                    .header("Content-Type", "application/json")
+                    .body(
+                        "{\"mensaje\": \"Producto removido de bodega exitosamente\", " +
+                        "\"productoId\": " + pId + ", " +
+                        "\"bodegaId\": " + bId + "}"
+                    )
+                    .build();
+            } else {
+                return request
+                    .createResponseBuilder(HttpStatus.NOT_FOUND)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\": \"Producto no encontrado en esta bodega\"}")
+                    .build();
+            }
+
+        } catch (NumberFormatException e) {
+            logger.warning("ID inválido: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.BAD_REQUEST)
+                .header("Content-Type", "application/json")
+                .body("{\"error\": \"IDs deben ser números válidos\"}")
+                .build();
+        } catch (Exception e) {
+            logger.severe("Error removiendo producto de bodega: " + e.getMessage());
+            return request
+                .createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                .header("Content-Type", "application/json")
+                .body(
+                    "{\"error\": \"Error removiendo producto de bodega\", \"detalle\": \"" +
+                    e.getMessage() + "\"}"
+                )
+                .build();
+        }
+    }
+
     // ======================== MÉTODOS AUXILIARES PARA BODEGAS ========================
 
     private List<Bodega> getAllBodegas(Logger logger) throws SQLException {
@@ -1290,6 +1470,123 @@ public class Function {
 
         public void setOperationName(String operationName) {
             this.operationName = operationName;
+        }
+    }
+
+    // ======================== MÉTODOS AUXILIARES PARA INVENTARIO ========================
+
+    private List<Map<String, Object>> getProductosEnBodega(int bodegaId, Logger logger) throws SQLException {
+        String sql = """
+            SELECT p.ID as ProductoId, p.Nombre, p.Descripcion, p.Precio, 
+                   i.Cantidad, p.FechaCreacion, p.FechaActualizacion
+            FROM INVENTARIO i
+            INNER JOIN PRODUCTO p ON i.IDProducto = p.ID
+            WHERE i.IDBodega = ?
+            ORDER BY p.Nombre
+            """;
+        
+        List<Map<String, Object>> productos = new ArrayList<>();
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, bodegaId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> producto = new HashMap<>();
+                    producto.put("id", rs.getInt("ProductoId"));
+                    producto.put("nombre", rs.getString("Nombre"));
+                    producto.put("descripcion", rs.getString("Descripcion"));
+                    producto.put("precio", rs.getBigDecimal("Precio"));
+                    producto.put("cantidadEnBodega", rs.getInt("Cantidad"));
+                    producto.put("fechaCreacion", rs.getTimestamp("FechaCreacion"));
+                    producto.put("fechaActualizacion", rs.getTimestamp("FechaActualizacion"));
+                    productos.add(producto);
+                }
+            }
+        }
+        
+        return productos;
+    }
+
+    private boolean existeProducto(int productoId, Logger logger) throws SQLException {
+        String sql = "SELECT 1 FROM PRODUCTO WHERE ID = ?";
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, productoId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private boolean existeBodega(int bodegaId, Logger logger) throws SQLException {
+        String sql = "SELECT 1 FROM BODEGA WHERE ID = ?";
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, bodegaId);
+            
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    private void asignarProductoBodega(int productoId, int bodegaId, int cantidad, Logger logger) throws SQLException {
+        String checkSql = "SELECT Cantidad FROM INVENTARIO WHERE IDProducto = ? AND IDBodega = ?";
+        String updateSql = "UPDATE INVENTARIO SET Cantidad = ?, FechaActualizacion = CURRENT_TIMESTAMP WHERE IDProducto = ? AND IDBodega = ?";
+        String insertSql = "INSERT INTO INVENTARIO (IDProducto, IDBodega, Cantidad) VALUES (?, ?, ?)";
+        
+        try (Connection conn = DatabaseManager.getConnection()) {
+            // Verificar si ya existe el registro
+            try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
+                checkStmt.setInt(1, productoId);
+                checkStmt.setInt(2, bodegaId);
+                
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    if (rs.next()) {
+                        // Actualizar cantidad existente
+                        try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                            updateStmt.setInt(1, cantidad);
+                            updateStmt.setInt(2, productoId);
+                            updateStmt.setInt(3, bodegaId);
+                            updateStmt.executeUpdate();
+                            logger.info("Actualizada cantidad de producto " + productoId + " en bodega " + bodegaId);
+                        }
+                    } else {
+                        // Insertar nuevo registro
+                        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                            insertStmt.setInt(1, productoId);
+                            insertStmt.setInt(2, bodegaId);
+                            insertStmt.setInt(3, cantidad);
+                            insertStmt.executeUpdate();
+                            logger.info("Asignado producto " + productoId + " a bodega " + bodegaId);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean removerProductoBodega(int productoId, int bodegaId, Logger logger) throws SQLException {
+        String sql = "DELETE FROM INVENTARIO WHERE IDProducto = ? AND IDBodega = ?";
+        
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setInt(1, productoId);
+            pstmt.setInt(2, bodegaId);
+            
+            int rowsAffected = pstmt.executeUpdate();
+            logger.info("Removido producto " + productoId + " de bodega " + bodegaId + ". Filas afectadas: " + rowsAffected);
+            
+            return rowsAffected > 0;
         }
     }
 }
