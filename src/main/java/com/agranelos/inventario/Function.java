@@ -1472,18 +1472,15 @@ public class Function {
             this.operationName = operationName;
         }
     }
-
     // ======================== MÉTODOS AUXILIARES PARA INVENTARIO ========================
 
     private List<Map<String, Object>> getProductosEnBodega(int bodegaId, Logger logger) throws SQLException {
-        String sql = """
-            SELECT p.ID as ProductoId, p.Nombre, p.Descripcion, p.Precio, 
-                   i.Cantidad, p.FechaCreacion, p.FechaActualizacion
-            FROM INVENTARIO i
-            INNER JOIN PRODUCTO p ON i.IDProducto = p.ID
-            WHERE i.IDBodega = ?
-            ORDER BY p.Nombre
-            """;
+        String sql = "SELECT p.ID as ProductoId, p.Nombre, p.Descripcion, p.Precio, " +
+                     "i.Cantidad, p.FechaCreacion, p.FechaActualizacion " +
+                     "FROM INVENTARIO i " +
+                     "INNER JOIN PRODUCTO p ON i.IDProducto = p.ID " +
+                     "WHERE i.IDBodega = ? " +
+                     "ORDER BY p.Nombre";
         
         List<Map<String, Object>> productos = new ArrayList<>();
         
@@ -1544,14 +1541,12 @@ public class Function {
         String insertSql = "INSERT INTO INVENTARIO (IDProducto, IDBodega, Cantidad) VALUES (?, ?, ?)";
         
         try (Connection conn = DatabaseManager.getConnection()) {
-            // Verificar si ya existe el registro
             try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)) {
                 checkStmt.setInt(1, productoId);
                 checkStmt.setInt(2, bodegaId);
                 
                 try (ResultSet rs = checkStmt.executeQuery()) {
                     if (rs.next()) {
-                        // Actualizar cantidad existente
                         try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
                             updateStmt.setInt(1, cantidad);
                             updateStmt.setInt(2, productoId);
@@ -1560,7 +1555,6 @@ public class Function {
                             logger.info("Actualizada cantidad de producto " + productoId + " en bodega " + bodegaId);
                         }
                     } else {
-                        // Insertar nuevo registro
                         try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
                             insertStmt.setInt(1, productoId);
                             insertStmt.setInt(2, bodegaId);
