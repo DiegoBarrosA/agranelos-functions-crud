@@ -7,6 +7,12 @@ url: "https://diegobarrosa.github.io"
 markdown: kramdown
 highlighter: rouge
 
+# Plugins
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
 # Collections
 collections:
   docs:
@@ -28,5 +34,13 @@ twitter:
   card: summary
 
 # Build settings
+theme: minima
+remote_theme: jekyll/minima
 incremental: true
 safe: true
+
+# Minima theme settings
+minima:
+  skin: auto
+  social_links:
+    github: DiegoBarrosA
