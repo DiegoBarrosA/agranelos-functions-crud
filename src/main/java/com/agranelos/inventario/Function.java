@@ -1498,10 +1498,10 @@ public class Function {
                     producto.put("id", rs.getInt("ProductoId"));
                     producto.put("nombre", rs.getString("Nombre"));
                     producto.put("descripcion", rs.getString("Descripcion"));
-                    producto.put("precio", rs.getBigDecimal("Precio"));
-                    producto.put("cantidadEnBodega", rs.getInt("Cantidad"));
-                    producto.put("fechaCreacion", rs.getTimestamp("FechaCreacion"));
-                    producto.put("fechaActualizacion", rs.getTimestamp("FechaActualizacion"));
+                    producto.put("precio", rs.getDouble("Precio"));
+                    producto.put("cantidad", rs.getInt("Cantidad"));
+                    producto.put("fechaCreacion", rs.getString("FechaCreacion"));
+                    producto.put("fechaActualizacion", rs.getString("FechaActualizacion"));
                     productos.add(producto);
                 }
             }
