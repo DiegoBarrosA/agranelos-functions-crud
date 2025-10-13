@@ -4,6 +4,10 @@ title: Quick Reference
 description: Quick reference guide for GraphQL API calls
 ---
 
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.css">
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-footer.css">
+<script src="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.js"></script>
+
 # GraphQL API - Quick Reference
 ## Agranelos Inventario System
 

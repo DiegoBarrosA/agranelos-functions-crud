@@ -1,3 +1,12 @@
+---
+title: System Architecture
+layout: default
+---
+
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.css">
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-footer.css">
+<script src="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.js"></script>
+
 # Arquitectura del Sistema de Inventario Agranelos
 
 ## Índice

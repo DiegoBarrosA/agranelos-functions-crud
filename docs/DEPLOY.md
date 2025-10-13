@@ -1,3 +1,12 @@
+---
+title: Azure Deployment Guide
+layout: default
+---
+
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.css">
+<link rel="stylesheet" href="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-footer.css">
+<script src="https://diegobarrosa.github.io/diegobarrosaraya-assets/shared-theme.js"></script>
+
 # Guía de Despliegue en Azure
 
 Esta guía te llevará paso a paso por el proceso de despliegue del Sistema de Inventario Agranelos en Azure Cloud.

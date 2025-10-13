@@ -23,26 +23,25 @@ jobs:
       DB_SSL_MODE: 'disable'
     
     steps:
-    - name: '📥 Checkout repository'
+    - name: 'Checkout repository'
       uses: actions/checkout@v3
 
-    - name: '☕ Setup Java JDK ${{ env.JAVA_VERSION }}'
+    - name: 'Setup Java JDK ${{ env.JAVA_VERSION }}'
       uses: actions/setup-java@v3
       with:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: '🔍 Display Maven version'
+    - name: 'Display Maven version'
       run: mvn -version
 
-    - name: '📦 Build with Maven'
+    - name: 'Build with Maven'
       run: |
-        echo "Building the project..."
         mvn clean package -DskipTests
-        echo "✅ Build completed successfully!"
+        echo "Build completed successfully!"
 
-    - name: '📂 List build artifacts'
+    - name: 'List build artifacts'
       run: |
         echo "Contents of target directory:"
         ls -lh target/
@@ -50,22 +49,22 @@ jobs:
         echo "Contents of azure-functions directory:"
         ls -lh target/azure-functions/
 
-    - name: '✅ Build Summary'
+    - name: 'Build Summary'
       if: success()
       run: |
         echo "================================"
-        echo "✅ BUILD SUCCESSFUL"
+        echo "BUILD SUCCESSFUL"
         echo "================================"
         echo "Java Version: ${{ env.JAVA_VERSION }}"
         echo "Maven Build: SUCCESS"
         echo "Artifacts: Generated in target/"
         echo "================================"
 
-    - name: '❌ Build Failed'
+    - name: 'Build Failed'
       if: failure()
       run: |
         echo "================================"
-        echo "❌ BUILD FAILED"
+        echo "BUILD FAILED"
         echo "================================"
         echo "Please check the logs above for details"
         echo "================================"
@@ -75,42 +74,42 @@ jobs:
     needs: build
     
     steps:
-    - name: '📥 Checkout repository'
+    - name: 'Checkout repository'
       uses: actions/checkout@v3
 
-    - name: '☕ Setup Java JDK ${{ env.JAVA_VERSION }}'
+    - name: 'Setup Java JDK ${{ env.JAVA_VERSION }}'
       uses: actions/setup-java@v3
       with:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: '📦 Build project'
+    - name: 'Build project'
       run: mvn clean package -DskipTests
 
-    - name: '🔍 Verify Azure Functions structure'
+    - name: 'Verify Azure Functions structure'
       run: |
         echo "Verifying Azure Functions structure..."
         
         FUNCTION_DIR="target/azure-functions/agranelos-inventario-functions"
         
         if [ ! -d "$FUNCTION_DIR" ]; then
-          echo "❌ Azure Functions directory not found!"
+          echo "Azure Functions directory not found!"
           echo "Expected: $FUNCTION_DIR"
           echo "Contents of target/azure-functions/:"
           ls -la target/azure-functions/ || echo "Directory doesn't exist"
           exit 1
         fi
         
-        echo "✅ Azure Functions directory exists"
+        echo "Azure Functions directory exists"
         
         # Check for required files
         files=("host.json" "local.settings.json" "inventario-functions-create-1.0-SNAPSHOT.jar")
         for file in "${files[@]}"; do
           if [ -f "$FUNCTION_DIR/$file" ]; then
-            echo "✅ $file found"
+            echo "$file found"
           else
-            echo "❌ $file not found"
+            echo "$file not found"
             exit 1
           fi
         done
@@ -122,22 +121,22 @@ jobs:
         
         for func in "${functions[@]}"; do
           if [ -d "$FUNCTION_DIR/$func" ]; then
-            echo "✅ Function $func exists"
+            echo "Function $func exists"
             if [ -f "$FUNCTION_DIR/$func/function.json" ]; then
-              echo "  ✅ function.json found"
+              echo "  function.json found"
             else
-              echo "  ❌ function.json not found"
+              echo "  function.json not found"
               exit 1
             fi
           else
-            echo "❌ Function $func not found"
+            echo "Function $func not found"
             exit 1
           fi
         done
         
         echo ""
         echo "================================"
-        echo "✅ ALL VERIFICATIONS PASSED"
+        echo "ALL VERIFICATIONS PASSED"
         echo "================================"
 
   check-event-grid-integration:
@@ -145,52 +144,52 @@ jobs:
     needs: build
     
     steps:
-    - name: '📥 Checkout repository'
+    - name: 'Checkout repository'
       uses: actions/checkout@v3
 
-    - name: '🔍 Verify Event Grid integration files'
+    - name: 'Verify Event Grid integration files'
       run: |
         echo "Checking Event Grid integration..."
         
         # Check event classes
         if [ -f "src/main/java/com/agranelos/inventario/events/EventType.java" ]; then
-          echo "✅ EventType.java exists"
+          echo "EventType.java exists"
         else
-          echo "❌ EventType.java not found"
+          echo "EventType.java not found"
           exit 1
         fi
         
         if [ -f "src/main/java/com/agranelos/inventario/events/EventGridPublisher.java" ]; then
-          echo "✅ EventGridPublisher.java exists"
+          echo "EventGridPublisher.java exists"
         else
-          echo "❌ EventGridPublisher.java not found"
+          echo "EventGridPublisher.java not found"
           exit 1
         fi
         
         if [ -f "src/main/java/com/agranelos/inventario/events/EventGridConsumer.java" ]; then
-          echo "✅ EventGridConsumer.java exists"
+          echo "EventGridConsumer.java exists"
         else
-          echo "❌ EventGridConsumer.java not found"
+          echo "EventGridConsumer.java not found"
           exit 1
         fi
         
         if [ -f "src/main/java/com/agranelos/inventario/events/ProductoEventData.java" ]; then
-          echo "✅ ProductoEventData.java exists"
+          echo "ProductoEventData.java exists"
         else
-          echo "❌ ProductoEventData.java not found"
+          echo "ProductoEventData.java not found"
           exit 1
         fi
         
         if [ -f "src/main/java/com/agranelos/inventario/events/BodegaEventData.java" ]; then
-          echo "✅ BodegaEventData.java exists"
+          echo "BodegaEventData.java exists"
         else
-          echo "❌ BodegaEventData.java not found"
+          echo "BodegaEventData.java not found"
           exit 1
         fi
         
         echo ""
         echo "================================"
-        echo "✅ EVENT GRID FILES VERIFIED"
+        echo "EVENT GRID FILES VERIFIED"
         echo "================================"
 
   check-dependencies:
@@ -198,17 +197,17 @@ jobs:
     needs: build
     
     steps:
-    - name: '📥 Checkout repository'
+    - name: 'Checkout repository'
       uses: actions/checkout@v3
 
-    - name: '☕ Setup Java JDK ${{ env.JAVA_VERSION }}'
+    - name: 'Setup Java JDK ${{ env.JAVA_VERSION }}'
       uses: actions/setup-java@v3
       with:
         java-version: ${{ env.JAVA_VERSION }}
         distribution: 'temurin'
         cache: 'maven'
 
-    - name: '🔍 Check Maven dependencies'
+    - name: 'Check Maven dependencies'
       run: |
         echo "Checking Maven dependencies..."
         mvn dependency:tree
@@ -218,49 +217,49 @@ jobs:
         
         # Check for Azure Event Grid
         if mvn dependency:tree | grep -q "azure-messaging-eventgrid"; then
-          echo "✅ Azure Event Grid dependency found"
+          echo "Azure Event Grid dependency found"
         else
-          echo "❌ Azure Event Grid dependency not found"
+          echo "Azure Event Grid dependency not found"
           exit 1
         fi
         
         # Check for Azure Identity
         if mvn dependency:tree | grep -q "azure-identity"; then
-          echo "✅ Azure Identity dependency found"
+          echo "Azure Identity dependency found"
         else
-          echo "❌ Azure Identity dependency not found"
+          echo "Azure Identity dependency not found"
           exit 1
         fi
         
         # Check for PostgreSQL
         if mvn dependency:tree | grep -q "postgresql"; then
-          echo "✅ PostgreSQL dependency found"
+          echo "PostgreSQL dependency found"
         else
-          echo "❌ PostgreSQL dependency not found"
+          echo "PostgreSQL dependency not found"
           exit 1
         fi
         
         # Check for GraphQL
         if mvn dependency:tree | grep -q "graphql-java"; then
-          echo "✅ GraphQL dependency found"
+          echo "GraphQL dependency found"
         else
-          echo "❌ GraphQL dependency not found"
+          echo "GraphQL dependency not found"
           exit 1
         fi
         
         echo ""
         echo "================================"
-        echo "✅ ALL DEPENDENCIES VERIFIED"
+        echo "ALL DEPENDENCIES VERIFIED"
         echo "================================"
 
   documentation-check:
     runs-on: ubuntu-latest
     
     steps:
-    - name: '📥 Checkout repository'
+    - name: 'Checkout repository'
       uses: actions/checkout@v3
 
-    - name: '📚 Verify documentation files'
+    - name: 'Verify documentation files'
       run: |
         echo "Checking documentation..."
         
@@ -269,16 +268,16 @@ jobs:
         
         for file in "${files[@]}"; do
           if [ -f "$file" ]; then
-            echo "✅ $file exists"
+            echo "$file exists"
           else
-            echo "❌ $file not found"
+            echo "$file not found"
             exit 1
           fi
         done
         
         echo ""
         echo "================================"
-        echo "✅ DOCUMENTATION VERIFIED"
+        echo "DOCUMENTATION VERIFIED"
         echo "================================"
         echo "Note: Deployment handled entirely by CI/CD pipeline"
 
@@ -288,7 +287,7 @@ jobs:
     if: always()
     
     steps:
-    - name: '📊 Test Summary'
+    - name: 'Test Summary'
       run: |
         echo "╔════════════════════════════════════════════════════════════╗"
         echo "║          CI/CD PIPELINE - TEST SUMMARY                    ║"
@@ -313,13 +312,13 @@ jobs:
            [ "${{ needs.check-dependencies.result }}" == "success" ] && \
            [ "${{ needs.documentation-check.result }}" == "success" ]; then
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║               ✅ ALL TESTS PASSED!                         ║"
+          echo "║               ALL TESTS PASSED!                         ║"
           echo "║          Sistema listo para despliegue en Azure            ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           exit 0
         else
           echo "╔════════════════════════════════════════════════════════════╗"
-          echo "║               ❌ SOME TESTS FAILED                         ║"
+          echo "║               SOME TESTS FAILED                         ║"
           echo "║          Por favor revisa los logs anteriores              ║"
           echo "╚════════════════════════════════════════════════════════════╝"
           exit 1
