@@ -265,8 +265,7 @@ jobs:
         echo "Checking documentation..."
         
         files=("README.md" "docs/ARQUITECTURA.md" "docs/DEPLOY.md" 
-               "azure-deploy.json" "azure-deploy.parameters.json" 
-               "scripts/deploy-azure.sh")
+               "azure-deploy.json" "azure-deploy.parameters.json")
         
         for file in "${files[@]}"; do
           if [ -f "$file" ]; then
@@ -277,17 +276,11 @@ jobs:
           fi
         done
         
-        # Check if deploy script is executable
-        if [ -x "scripts/deploy-azure.sh" ]; then
-          echo "✅ deploy-azure.sh is executable"
-        else
-          echo "⚠️ deploy-azure.sh is not executable (will be fixed in deployment)"
-        fi
-        
         echo ""
         echo "================================"
         echo "✅ DOCUMENTATION VERIFIED"
         echo "================================"
+        echo "Note: Deployment handled entirely by CI/CD pipeline"
 
   summary:
     runs-on: ubuntu-latest
